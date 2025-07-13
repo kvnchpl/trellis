@@ -1,7 +1,7 @@
 export const gameState = {
     player: { x: 0, y: 0 },
-    map: [],
-    revealed: [],
+    map: {},
+    revealed: {},
     selector: { x: 0, y: 0 },
     time: {
         hour: 7,
@@ -18,32 +18,11 @@ export const gameState = {
 export function initState(config) {
     const { mapWidth, mapHeight } = config;
 
-    function weightedRandomTile(weights) {
-        const entries = Object.entries(weights);
-        const total = entries.reduce((sum, [, w]) => sum + w, 0);
-        const rand = Math.random() * total;
-        let acc = 0;
-        for (const [tile, weight] of entries) {
-            acc += weight;
-            if (rand < acc) return tile;
-        }
-        return entries[entries.length - 1][0]; // fallback
-    }
+    // Set up the map: now an empty object for lazy tile generation
+    gameState.map = {};
 
-    // Set up the map: 2D array of tiles, each with a type and optional plant
-    gameState.map = Array.from({ length: mapHeight }, () =>
-        Array.from({ length: mapWidth }, () => ({
-            tile: weightedRandomTile(config.initialTileWeights),
-            plant: null,
-            moisture: 0,
-            fertility: 0
-        }))
-    );
-
-    // Set up the revealed/fog state: 2D array of booleans
-    gameState.revealed = Array.from({ length: mapHeight }, () =>
-        Array.from({ length: mapWidth }, () => false)
-    );
+    // Set up the revealed/fog state: now an object for fast lookup
+    gameState.revealed = {};
 
     // Place player in the center of the map
     gameState.player = {
@@ -63,4 +42,36 @@ export function initState(config) {
         week: 1,
         seasonIndex: 0
     };
+}
+
+function weightedRandomTile(weights) {
+    const entries = Object.entries(weights);
+    const total = entries.reduce((sum, [, w]) => sum + w, 0);
+    const rand = Math.random() * total;
+    let acc = 0;
+    for (const [tile, weight] of entries) {
+        acc += weight;
+        if (rand < acc) return tile;
+    }
+    return entries[entries.length - 1][0]; // fallback
+}
+
+/**
+ * Lazily gets or generates a tile at (x, y) using config.initialTileWeights.
+ * @param {number} x
+ * @param {number} y
+ * @param {Object} config - Game configuration.
+ * @returns {Object} tile object
+ */
+export function getTile(x, y, config) {
+    const key = `${x},${y}`;
+    if (!gameState.map[key]) {
+        gameState.map[key] = {
+            tile: weightedRandomTile(config.initialTileWeights),
+            plant: null,
+            moisture: 0,
+            fertility: 0
+        };
+    }
+    return gameState.map[key];
 }
