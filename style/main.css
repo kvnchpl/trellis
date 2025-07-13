@@ -89,3 +89,10 @@ canvas {
 #tile-actions button:hover {
     background-color: var(--hover-bg);
 }
+
+#time-display {
+    margin-bottom: var(--spacing-medium);
+    font-size: var(--font-small);
+    font-weight: bold;
+    text-align: center;
+}

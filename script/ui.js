@@ -62,8 +62,43 @@ export function updateTileInfoPanel() {
                 });
                 updateTileInfoPanel();
                 saveGameState();
+                incrementTime(config.actionTimeIncrement, config);
             };
             actionsEl.appendChild(btn);
         }
     }
 }
+
+export function updateTimePanel() {
+    const el = document.getElementById('time-display');
+    if (!el) return;
+    const { hour, minute, week, seasonIndex } = gameState.time;
+    const period = hour < 12 ? 'AM' : 'PM';
+    const displayHour = ((hour - 1) % 12 + 1);
+    const paddedMinute = minute.toString().padStart(2, '0');
+    const season = config.seasons[seasonIndex];
+    el.textContent = `${season} - WEEK ${week} - ${displayHour}:${paddedMinute} ${period}`;
+}
+
+function incrementTime(minutes, config) {
+    const time = gameState.time;
+    time.minute += minutes;
+    while (time.minute >= 60) {
+        time.minute -= 60;
+        time.hour++;
+    }
+
+    if (time.hour >= config.dayEndHour) {
+        alert('A new day is starting.');
+        time.hour = config.dayStartHour;
+        time.minute = 0;
+        time.week++;
+        if (time.week > config.weeksPerSeason) {
+            time.week = 1;
+            time.seasonIndex = (time.seasonIndex + 1) % config.seasons.length;
+        }
+    }
+    updateTimePanel();
+}
+
+export { incrementTime };

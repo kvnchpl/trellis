@@ -1,5 +1,6 @@
 import { gameState } from './state.js';
 import { saveGameState } from './game.js';
+import { incrementTime } from './ui.js';
 
 // Tracks which keys are currently pressed
 let keysPressed = {};
@@ -32,6 +33,7 @@ export function updatePlayer(config) {
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.up] = false;
         saveGameState();
+        incrementTime(1, config);
     }
 
     // Move down
@@ -40,6 +42,7 @@ export function updatePlayer(config) {
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.down] = false;
         saveGameState();
+        incrementTime(1, config);
     }
 
     // Move left
@@ -48,6 +51,7 @@ export function updatePlayer(config) {
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.left] = false;
         saveGameState();
+        incrementTime(1, config);
     }
 
     // Move right
@@ -56,6 +60,7 @@ export function updatePlayer(config) {
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.right] = false;
         saveGameState();
+        incrementTime(1, config);
     }
 
     // Select tile above player

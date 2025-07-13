@@ -2,7 +2,13 @@ export const gameState = {
     player: { x: 0, y: 0 },
     map: [],
     revealed: [],
-    selector: { x: 0, y: 0 }
+    selector: { x: 0, y: 0 },
+    time: {
+        hour: 7,
+        minute: 0,
+        week: 1,
+        seasonIndex: 0
+    }
 };
 
 /**
@@ -37,5 +43,12 @@ export function initState(config) {
     gameState.selector = {
         x: gameState.player.x,
         y: gameState.player.y
+    };
+    // Reset time to start of day/season
+    gameState.time = {
+        hour: 7,
+        minute: 0,
+        week: 1,
+        seasonIndex: 0
     };
 }

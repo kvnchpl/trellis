@@ -2,7 +2,7 @@ import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
 import { gameState, initState } from './state.js';
 import { render } from './renderer.js';
-import { updateTileInfoPanel } from './ui.js';
+import { updateTileInfoPanel, updateTimePanel } from './ui.js';
 
 const configUrl = 'config.json';
 let config;
@@ -75,6 +75,7 @@ async function initGame(loadExisting = false, slot = null) {
 
     initPlayer(config);
     updateFog(config);
+    updateTimePanel();
     render(config);
     requestAnimationFrame(() => gameLoop(config));
 }
@@ -84,6 +85,7 @@ function gameLoop(config) {
     updateFog(config);    // update fog visibility
     render(config);       // re-render map
     updateTileInfoPanel(); // refresh info panel
+    updateTimePanel();
     requestAnimationFrame(() => gameLoop(config));
 }
 

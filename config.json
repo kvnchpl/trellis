@@ -73,6 +73,16 @@
         "grass": "Grassy Patch",
         "rock": "Rocky Ground"
     },
+    "dayStartHour": 7,
+    "dayEndHour": 19,
+    "actionTimeIncrement": 5,
+    "seasons": [
+        "WINTER",
+        "SPRING",
+        "SUMMER",
+        "FALL"
+    ],
+    "weeksPerSeason": 13,
     "moistureLabels": {
         "dry": "Dry",
         "wet": "Wet"
