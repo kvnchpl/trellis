@@ -30,60 +30,62 @@ export function updatePlayer(config) {
     // Move up
     if (keysPressed[controls.up] && player.y > 0) {
         player.y--;
+        gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.up] = false;
     }
-    
+
     // Move down
     else if (keysPressed[controls.down] && player.y < mapHeight - 1) {
         player.y++;
+        gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.down] = false;
     }
 
     // Move left
     else if (keysPressed[controls.left] && player.x > 0) {
         player.x--;
+        gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.left] = false;
     }
 
     // Move right
     else if (keysPressed[controls.right] && player.x < mapWidth - 1) {
         player.x++;
+        gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.right] = false;
     }
 
-    // Move selector up
-    else if (keysPressed[controls.selectUp] && gameState.selector.y > 0) {
-        const newY = gameState.selector.y - 1;
-        if (!(gameState.selector.x === player.x && newY === player.y)) {
-            gameState.selector.y = newY;
-        }
+    // Select tile above player
+    else if (keysPressed[controls.selectUp]) {
+        const newY = player.y - 1;
+        if (newY >= 0) gameState.selector = { x: player.x, y: newY };
         keysPressed[controls.selectUp] = false;
     }
 
-    // Move selector down
-    else if (keysPressed[controls.selectDown] && gameState.selector.y < mapHeight - 1) {
-        const newY = gameState.selector.y + 1;
-        if (!(gameState.selector.x === player.x && newY === player.y)) {
-            gameState.selector.y = newY;
-        }
+    // Select tile below player
+    else if (keysPressed[controls.selectDown]) {
+        const newY = player.y + 1;
+        if (newY < mapHeight) gameState.selector = { x: player.x, y: newY };
         keysPressed[controls.selectDown] = false;
     }
 
-    // Move selector left
-    else if (keysPressed[controls.selectLeft] && gameState.selector.x > 0) {
-        const newX = gameState.selector.x - 1;
-        if (!(newX === player.x && gameState.selector.y === player.y)) {
-            gameState.selector.x = newX;
-        }
+    // Select tile left of player
+    else if (keysPressed[controls.selectLeft]) {
+        const newX = player.x - 1;
+        if (newX >= 0) gameState.selector = { x: newX, y: player.y };
         keysPressed[controls.selectLeft] = false;
     }
 
-    // Move selector right
-    else if (keysPressed[controls.selectRight] && gameState.selector.x < mapWidth - 1) {
-        const newX = gameState.selector.x + 1;
-        if (!(newX === player.x && gameState.selector.y === player.y)) {
-            gameState.selector.x = newX;
-        }
+    // Select tile right of player
+    else if (keysPressed[controls.selectRight]) {
+        const newX = player.x + 1;
+        if (newX < mapWidth) gameState.selector = { x: newX, y: player.y };
         keysPressed[controls.selectRight] = false;
+    }
+
+    // Reset selector to player position
+    else if (keysPressed['q']) {
+        gameState.selector = { x: player.x, y: player.y };
+        keysPressed['q'] = false;
     }
 }
