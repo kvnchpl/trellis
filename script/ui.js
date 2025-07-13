@@ -3,12 +3,22 @@ import { saveGameState } from './game.js';
 
 export function updateTileInfoPanel() {
     const tile = gameState.map[gameState.selector.y][gameState.selector.x];
-    const typeEl = document.getElementById('tile-type');
-    const plantEl = document.getElementById('tile-plant');
     const actionsEl = document.getElementById('tile-actions');
 
-    typeEl.textContent = tile.tile || 'unknown';
-    plantEl.textContent = tile.plant || 'none';
+    const detailsEl = document.getElementById('tile-details');
+    detailsEl.innerHTML = '';
+
+    const details = {
+        Type: tile.tile || 'unknown',
+        Plant: tile.plant || 'none'
+        // Add more tile attributes here as needed
+    };
+
+    for (const [label, value] of Object.entries(details)) {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${label}:</strong> <span>${value}</span>`;
+        detailsEl.appendChild(p);
+    }
 
     // Clear old actions
     actionsEl.innerHTML = '';
