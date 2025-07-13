@@ -17,7 +17,14 @@ export function updateTileInfoPanel() {
 
     config.tileDetails.forEach(key => {
         const p = document.createElement('p');
-        p.innerHTML = `<strong>${key}:</strong> <span>${tile[key] ?? '–'}</span>`;
+        let value = tile[key] ?? '–';
+
+        // Use label from config if available
+        if (key === 'tile' && config.tileTypeLabels[value]) {
+            value = config.tileTypeLabels[value];
+        }
+
+        p.innerHTML = `<strong>${key}:</strong> <span>${value}</span>`;
         detailsEl.appendChild(p);
     });
 

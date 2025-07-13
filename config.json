@@ -43,6 +43,33 @@
             }
         }
     },
+    "tileTypes": [
+        "soil",
+        "tilled",
+        "grass",
+        "rock"
+    ],
+    "moistureLevels": [
+        "dry",
+        "wet"
+    ],
+    "fertilityLevels": [
+        "low",
+        "medium",
+        "high"
+    ],
+    "plantTypes": [
+        "none",
+        "sprout",
+        "flower",
+        "tree"
+    ],
+    "tileTypeLabels": {
+        "soil": "Bare Soil",
+        "tilled": "Tilled Soil",
+        "grass": "Grassy Patch",
+        "rock": "Rocky Ground"
+    },
     "keyBindings": {
         "up": "ArrowUp",
         "down": "ArrowDown",
