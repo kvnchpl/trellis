@@ -1,8 +1,8 @@
-import { gameState } from './state.js';
+import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 
 export function updateTileInfoPanel(config) {
-    const tile = gameState.map[gameState.selector.y][gameState.selector.x];
+    const tile = getTile(gameState.selector.x, gameState.selector.y, config);
     const detailsEl = document.getElementById('tile-details');
     const actionsEl = document.getElementById('tile-actions');
 
@@ -77,7 +77,7 @@ export function updateTileInfoPanel(config) {
                     }
                 });
                 // Replace the tile in the map with the new object
-                gameState.map[gameState.selector.y][gameState.selector.x] = newTile;
+                gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
                 console.log('After:', JSON.stringify(newTile));
                 console.groupEnd();
                 // Log tile info update after map mutation, before info panel update
