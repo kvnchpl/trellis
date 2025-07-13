@@ -1,6 +1,7 @@
 import { gameState } from './state.js';
 import { saveGameState } from './game.js';
 import { incrementTime } from './ui.js';
+import { updateTileInfoPanel } from './ui.js';
 
 // Tracks which keys are currently pressed
 let keysPressed = {};
@@ -35,6 +36,7 @@ export function updatePlayer(config) {
         saveGameState();
         incrementTime(1, config);
         console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+        updateTileInfoPanel(config);
     }
 
     // Move down
@@ -45,6 +47,7 @@ export function updatePlayer(config) {
         saveGameState();
         incrementTime(1, config);
         console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+        updateTileInfoPanel(config);
     }
 
     // Move left
@@ -55,6 +58,7 @@ export function updatePlayer(config) {
         saveGameState();
         incrementTime(1, config);
         console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+        updateTileInfoPanel(config);
     }
 
     // Move right
@@ -65,6 +69,7 @@ export function updatePlayer(config) {
         saveGameState();
         incrementTime(1, config);
         console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+        updateTileInfoPanel(config);
     }
 
     // Select tile above player
@@ -72,6 +77,7 @@ export function updatePlayer(config) {
         const newY = player.y - 1;
         if (newY >= 0) gameState.selector = { x: player.x, y: newY };
         keysPressed[controls.selectUp] = false;
+        updateTileInfoPanel(config);
     }
 
     // Select tile below player
@@ -79,6 +85,7 @@ export function updatePlayer(config) {
         const newY = player.y + 1;
         if (newY < mapHeight) gameState.selector = { x: player.x, y: newY };
         keysPressed[controls.selectDown] = false;
+        updateTileInfoPanel(config);
     }
 
     // Select tile left of player
@@ -86,6 +93,7 @@ export function updatePlayer(config) {
         const newX = player.x - 1;
         if (newX >= 0) gameState.selector = { x: newX, y: player.y };
         keysPressed[controls.selectLeft] = false;
+        updateTileInfoPanel(config);
     }
 
     // Select tile right of player
@@ -93,11 +101,13 @@ export function updatePlayer(config) {
         const newX = player.x + 1;
         if (newX < mapWidth) gameState.selector = { x: newX, y: player.y };
         keysPressed[controls.selectRight] = false;
+        updateTileInfoPanel(config);
     }
 
     // Reset selector to player position
     else if (keysPressed[controls.resetSelector]) {
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.resetSelector] = false;
+        updateTileInfoPanel(config);
     }
 }

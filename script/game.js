@@ -95,7 +95,6 @@ function gameLoop(config) {
     updatePlayer(config); // handle input + position
     updateFog(config);    // update fog visibility
     render(config);       // re-render map
-    updateTileInfoPanel(config); // refresh info panel
     updateTimePanel(config);
     requestAnimationFrame(() => gameLoop(config));
 }
