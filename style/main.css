@@ -8,10 +8,10 @@
     --hover-bg: #444;
     --panel-width: 200px;
     --font-base: 14px;
-    --font-xs: calc(var(--font-base) * 0.85);
-    --font-sm: var(--font-base);
-    --font-md: calc(var(--font-base) * 1.15);
-    --font-lg: calc(var(--font-base) * 1.35);
+    --font-small: calc(var(--font-base) * 0.85);
+    --font-medium: var(--font-base);
+    --font-large: calc(var(--font-base) * 1.15);
+    --font-extra-large: calc(var(--font-base) * 1.35);
     --spacing-base: 8px;
     --spacing-small: calc(var(--spacing-base) * 0.5);
     --spacing-medium: var(--spacing-base);
@@ -56,14 +56,14 @@ canvas {
     padding: var(--spacing-large);
     background-color: var(--canvas-background);
     color: var(--text-color);
-    font-size: var(--font-sm);
+    font-size: var(--font-medium);
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-family: var(--font-family);
 }
 
 #info-panel h2 {
-    font-size: var(--font-md);
+    font-size: var(--font-large);
     margin-bottom: var(--spacing-medium);
     color: var(--text-color);
     font-family: var(--font-family);
@@ -78,7 +78,7 @@ canvas {
     margin-top: var(--spacing-medium);
     padding: calc(var(--spacing-medium) / 3) calc(var(--spacing-medium) * 0.75);
     font-family: var(--font-family);
-    font-size: var(--font-xs);
+    font-size: var(--font-small);
     background-color: var(--background-color);
     color: var(--text-color);
     border: 1px solid var(--border-color);
