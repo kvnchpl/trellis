@@ -32,19 +32,58 @@ export function updatePlayer(config) {
         player.y--;
         keysPressed[controls.up] = false;
     }
+    
     // Move down
     else if (keysPressed[controls.down] && player.y < mapHeight - 1) {
         player.y++;
         keysPressed[controls.down] = false;
     }
+
     // Move left
     else if (keysPressed[controls.left] && player.x > 0) {
         player.x--;
         keysPressed[controls.left] = false;
     }
+
     // Move right
     else if (keysPressed[controls.right] && player.x < mapWidth - 1) {
         player.x++;
         keysPressed[controls.right] = false;
+    }
+
+    // Move selector up
+    else if (keysPressed[controls.selectUp] && gameState.selector.y > 0) {
+        const newY = gameState.selector.y - 1;
+        if (!(gameState.selector.x === player.x && newY === player.y)) {
+            gameState.selector.y = newY;
+        }
+        keysPressed[controls.selectUp] = false;
+    }
+
+    // Move selector down
+    else if (keysPressed[controls.selectDown] && gameState.selector.y < mapHeight - 1) {
+        const newY = gameState.selector.y + 1;
+        if (!(gameState.selector.x === player.x && newY === player.y)) {
+            gameState.selector.y = newY;
+        }
+        keysPressed[controls.selectDown] = false;
+    }
+
+    // Move selector left
+    else if (keysPressed[controls.selectLeft] && gameState.selector.x > 0) {
+        const newX = gameState.selector.x - 1;
+        if (!(newX === player.x && gameState.selector.y === player.y)) {
+            gameState.selector.x = newX;
+        }
+        keysPressed[controls.selectLeft] = false;
+    }
+
+    // Move selector right
+    else if (keysPressed[controls.selectRight] && gameState.selector.x < mapWidth - 1) {
+        const newX = gameState.selector.x + 1;
+        if (!(newX === player.x && gameState.selector.y === player.y)) {
+            gameState.selector.x = newX;
+        }
+        keysPressed[controls.selectRight] = false;
     }
 }
