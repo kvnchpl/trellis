@@ -48,8 +48,19 @@ function saveGameState(slot = null) {
 
 function loadGameState(slot = null) {
     const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
-    const data = JSON.parse(localStorage.getItem(`trellisSave_${targetSlot}`));
+    const raw = localStorage.getItem(`trellisSave_${targetSlot}`);
+    if (!raw) return false;
+
+    let data;
+    try {
+        data = JSON.parse(raw);
+    } catch (e) {
+        console.warn(`Corrupted save data in ${targetSlot}. Starting new game.`);
+        return false;
+    }
+
     if (!data) return false;
+
     gameState.player = data.player;
     gameState.selector = data.selector;
     gameState.map = data.map;
