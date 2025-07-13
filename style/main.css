@@ -4,6 +4,15 @@
     --background-color: #1a1a1a;
     --canvas-background: #000;
     --font-family: monospace;
+    --text-color: #fff;
+    --hover-bg: #444;
+    --panel-width: 200px;
+    --font-size-sm: 13px;
+    --font-size-md: 14px;
+    --spacing-base: 8px;
+    --spacing-small: calc(var(--spacing-base) * 0.5);
+    --spacing-medium: var(--spacing-base);
+    --spacing-large: calc(var(--spacing-base) * 2);
 }
 
 * {
@@ -25,8 +34,8 @@ body {
 #game-container {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
-    padding: 16px;
+    gap: var(--spacing-medium);
+    padding: var(--spacing-medium);
     background-color: var(--background-color);
     border: none;
     image-rendering: pixelated;
@@ -40,38 +49,40 @@ canvas {
 
 /* Info panel styles for clarity and accessibility */
 #info-panel {
-    width: 200px;
-    padding: 12px;
-    background-color: #222;
-    color: #fff;
-    font-size: 14px;
+    width: var(--panel-width);
+    padding: var(--spacing-large);
+    background-color: var(--canvas-background);
+    color: var(--text-color);
+    font-size: var(--font-size-md);
     border: 1px solid var(--border-color);
     border-radius: 4px;
+    font-family: var(--font-family);
 }
 
 #info-panel h2 {
     font-size: 16px;
-    margin-bottom: 8px;
-    color: #fff;
+    margin-bottom: var(--spacing-medium);
+    color: var(--text-color);
+    font-family: var(--font-family);
 }
 
 #tile-details p {
-    margin: 4px 0;
+    margin: var(--spacing-small) 0;
 }
 
 #tile-actions button {
     display: block;
-    margin-top: 8px;
-    padding: 4px 8px;
+    margin-top: var(--spacing-medium);
+    padding: calc(var(--spacing-medium) / 3) calc(var(--spacing-medium) * 0.75);
     font-family: var(--font-family);
-    font-size: 13px;
-    background-color: #444;
-    color: #fff;
-    border: 1px solid #666;
+    font-size: var(--font-size-sm);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
     border-radius: 3px;
     cursor: pointer;
 }
 
 #tile-actions button:hover {
-    background-color: #555;
+    background-color: var(--hover-bg);
 }
