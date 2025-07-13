@@ -17,7 +17,7 @@
     "fogColor": "#000000",
     "fogOpacity": 0.8,
     "outOfBoundsColor": "#111",
-    "playerSize": 1.0,
+    "playerSize": 0.6,
     "selectorColor": "#00FFFF",
     "tileInfoPanel": true,
     "initialTileWeights": {
