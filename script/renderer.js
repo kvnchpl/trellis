@@ -1,4 +1,4 @@
-import { gameState } from './state.js';
+import { gameState, getTile } from './state.js';
 
 /**
  * Renders the game viewport centered on the player, with fog of war and placeholder tiles.
@@ -31,7 +31,7 @@ export function render(config) {
                 mapY >= 0 && mapY < config.mapHeight
             ) {
                 // Draw tile using config.tileColors
-                const tile = gameState.map[mapY][mapX];
+                const tile = getTile(mapX, mapY, config);
                 let tileColor = config.tileColors && tile && tile.tile && config.tileColors[tile.tile]
                     ? config.tileColors[tile.tile]
                     : config.tileColors && config.tileColors.default;
@@ -39,7 +39,7 @@ export function render(config) {
                 ctx.fillRect(screenX, screenY, tileSize, tileSize);
 
                 // Apply fog of war if not revealed
-                if (!gameState.revealed[mapY][mapX]) {
+                if (!gameState.revealed[`${mapX},${mapY}`]) {
                     ctx.fillStyle = config.fogColor;
                     ctx.fillRect(screenX, screenY, tileSize, tileSize);
                 }
