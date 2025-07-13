@@ -68,6 +68,7 @@
         "tree"
     ],
     "tileTypeLabels": {
+        "none": "None",
         "soil": "Bare Soil",
         "tilled": "Tilled Soil",
         "grass": "Grassy Patch",
