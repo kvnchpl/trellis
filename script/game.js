@@ -9,9 +9,14 @@ import { render } from './renderer.js';
 const configUrl = '/config.json';
 
 async function loadConfig() {
-    const response = await fetch(configUrl);
-    if (!response.ok) throw new Error('Failed to load config');
-    return response.json();
+    try {
+        const response = await fetch(configUrl);
+        if (!response.ok) throw new Error('Failed to load config');
+        return await response.json();
+    } catch (error) {
+        console.error('Error loading config:', error);
+        throw error;
+    }
 }
 
 async function initGame() {
@@ -34,4 +39,7 @@ function gameLoop(config) {
     requestAnimationFrame(() => gameLoop(config));
 }
 
-initGame();
+initGame().catch((err) => {
+    console.error('Error initializing game:', err);
+    alert('Failed to start the game. Please try again later.');
+});
