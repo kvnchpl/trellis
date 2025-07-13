@@ -88,6 +88,7 @@ async function initGame(loadExisting = false, slot = null) {
     updateFog(config);
     updateTimePanel(config);
     render(config);
+    updateTileInfoPanel(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
