@@ -84,8 +84,8 @@ export function updatePlayer(config) {
     }
 
     // Reset selector to player position
-    else if (keysPressed['q']) {
+    else if (keysPressed[controls.resetSelector]) {
         gameState.selector = { x: player.x, y: player.y };
-        keysPressed['q'] = false;
+        keysPressed[controls.resetSelector] = false;
     }
 }

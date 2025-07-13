@@ -24,6 +24,7 @@
         "selectUp": "w",
         "selectDown": "s",
         "selectLeft": "a",
-        "selectRight": "d"
+        "selectRight": "d",
+        "resetSelector": "q"
     }
 }
