@@ -1,0 +1,6 @@
+{
+    "tileSize": 32,
+    "mapWidth": 64,
+    "mapHeight": 64,
+    "fogRevealRadius": 3
+}
