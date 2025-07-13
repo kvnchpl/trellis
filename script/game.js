@@ -22,6 +22,11 @@ async function loadConfig() {
 async function initGame() {
     const config = await loadConfig();
 
+    // Set canvas size from config
+    const canvas = document.getElementById('game-canvas');
+    canvas.width = config.canvasWidth;
+    canvas.height = config.canvasHeight;
+
     initState(config);
     generateMap(config);
     initPlayer(config);

@@ -62,7 +62,7 @@ export function render(config) {
                 }
             } else {
                 // Out-of-bounds: draw dark background
-                ctx.fillStyle = '#111';
+                ctx.fillStyle = config.outOfBoundsColor || '#111';
                 ctx.fillRect(screenX, screenY, tileSize, tileSize);
             }
         }
@@ -72,5 +72,8 @@ export function render(config) {
     const playerScreenX = Math.floor(viewSize / 2) * tileSize;
     const playerScreenY = Math.floor(viewSize / 2) * tileSize;
     ctx.fillStyle = config.playerColor;
-    ctx.fillRect(playerScreenX, playerScreenY, tileSize, tileSize);
+    const sizeRatio = config.playerSize || 1.0;
+    const playerSizePx = tileSize * sizeRatio;
+    const offset = (tileSize - playerSizePx) / 2;
+    ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
 }

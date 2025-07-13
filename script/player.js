@@ -25,7 +25,7 @@ export function initPlayer(config) {
 export function updatePlayer(config) {
     const { mapWidth, mapHeight } = config;
     const player = gameState.player;
-    const controls = config.controls;
+    const controls = config.keyBindings;
 
     // Move up
     if (keysPressed[controls.up] && player.y > 0) {
