@@ -1,4 +1,4 @@
-import { gameState } from './state.js';
+import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 import { incrementTime } from './ui.js';
 import { updateTileInfoPanel } from './ui.js';
@@ -35,7 +35,7 @@ export function updatePlayer(config) {
         keysPressed[controls.up] = false;
         saveGameState();
         incrementTime(1, config);
-        console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+        console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
         updateTileInfoPanel(config);
     }
 
@@ -46,7 +46,7 @@ export function updatePlayer(config) {
         keysPressed[controls.down] = false;
         saveGameState();
         incrementTime(1, config);
-        console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+        console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
         updateTileInfoPanel(config);
     }
 
@@ -57,7 +57,7 @@ export function updatePlayer(config) {
         keysPressed[controls.left] = false;
         saveGameState();
         incrementTime(1, config);
-        console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+        console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
         updateTileInfoPanel(config);
     }
 
@@ -68,7 +68,7 @@ export function updatePlayer(config) {
         keysPressed[controls.right] = false;
         saveGameState();
         incrementTime(1, config);
-        console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+        console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
         updateTileInfoPanel(config);
     }
 
