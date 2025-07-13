@@ -1,7 +1,3 @@
-
-
-// Basic game state manager for Trellis
-
 export const gameState = {
     player: { x: 0, y: 0 },
     map: [],

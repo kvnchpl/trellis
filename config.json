@@ -1,4 +1,5 @@
 {
+    "maxSaveSlots": 3,
     "tileSize": 32,
     "mapWidth": 64,
     "mapHeight": 64,

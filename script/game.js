@@ -1,5 +1,3 @@
-
-
 import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
 import { gameState, initState } from './state.js';
@@ -74,8 +72,14 @@ initGame(true).catch((err) => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
-    localStorage.removeItem('trellisSave');
-    initGame(false);
+    // Rotate older saves upward, drop the last one
+    for (let i = config.maxSaveSlots; i > 1; i--) {
+        const fromSlot = `trellisSave_slot${i - 1}`;
+        const toSlot = `trellisSave_slot${i}`;
+        localStorage.setItem(toSlot, localStorage.getItem(fromSlot) || '');
+    }
+    localStorage.removeItem('trellisSave_slot1');
+    initGame(false, 'slot1');
 });
 
 document.getElementById('load-game').addEventListener('click', () => {
