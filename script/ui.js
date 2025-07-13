@@ -18,27 +18,47 @@ export function updateTileInfoPanel() {
     config.tileDetails.forEach(key => {
         const p = document.createElement('p');
         let value = tile[key] ?? '–';
-        const labelMaps = {
-            tile: config.tileTypeLabels,
-            moisture: config.moistureLabels,
-            fertility: config.fertilityLabels,
-            plant: config.plantLabels
-        };
-        if (labelMaps[key] && labelMaps[key][value]) {
-            value = labelMaps[key][value];
+
+        // Use label from config if available
+        if (key === 'tile' && config.tileTypeLabels[value]) {
+            value = config.tileTypeLabels[value];
         }
+        if ((key === 'moisture' || key === 'fertility') && typeof value === 'number') {
+            value = `${value}%`;
+        }
+
         p.innerHTML = `<strong>${key}:</strong> <span>${value}</span>`;
         detailsEl.appendChild(p);
     });
 
     for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
-        const isValid = Object.entries(actionDef.condition).every(([key, value]) => tile[key] === value);
+        const isValid = Object.entries(actionDef.condition).every(([key, cond]) => {
+            const current = tile[key];
+            if (typeof cond === 'object') {
+                if ('lt' in cond && !(current < cond.lt)) return false;
+                if ('gt' in cond && !(current > cond.gt)) return false;
+                if ('lte' in cond && !(current <= cond.lte)) return false;
+                if ('gte' in cond && !(current >= cond.gte)) return false;
+            } else {
+                return current === cond;
+            }
+            return true;
+        });
         if (isValid) {
             const btn = document.createElement('button');
             btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
             btn.onclick = () => {
-                Object.entries(actionDef.effect).forEach(([key, value]) => {
-                    tile[key] = value;
+                Object.entries(actionDef.effect).forEach(([key, change]) => {
+                    if (typeof change === 'object') {
+                        if ('inc' in change) {
+                            tile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
+                        }
+                        if ('dec' in change) {
+                            tile[key] = Math.max(config[`${key}Range`].min, tile[key] - change.dec);
+                        }
+                    } else {
+                        tile[key] = change;
+                    }
                 });
                 updateTileInfoPanel();
                 saveGameState();

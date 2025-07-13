@@ -17,8 +17,8 @@ export function initState(config) {
         Array.from({ length: mapWidth }, () => ({
             tile: config.defaultTile,
             plant: null,
-            moisture: config.moistureLevels[0],
-            fertility: config.fertilityLevels[0]
+            moisture: 0,
+            fertility: 0
         }))
     );
 

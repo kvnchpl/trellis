@@ -36,10 +36,14 @@
         "water": {
             "condition": {
                 "tile": "tilled",
-                "moisture": "dry"
+                "moisture": {
+                    "lt": 100
+                }
             },
             "effect": {
-                "moisture": "wet"
+                "moisture": {
+                    "inc": 20
+                }
             }
         }
     },
@@ -49,15 +53,14 @@
         "grass",
         "rock"
     ],
-    "moistureLevels": [
-        "dry",
-        "wet"
-    ],
-    "fertilityLevels": [
-        "low",
-        "medium",
-        "high"
-    ],
+    "moistureRange": {
+        "min": 0,
+        "max": 100
+    },
+    "fertilityRange": {
+        "min": 0,
+        "max": 100
+    },
     "plantTypes": [
         "none",
         "sprout",
