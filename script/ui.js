@@ -18,12 +18,15 @@ export function updateTileInfoPanel() {
     config.tileDetails.forEach(key => {
         const p = document.createElement('p');
         let value = tile[key] ?? '–';
-
-        // Use label from config if available
-        if (key === 'tile' && config.tileTypeLabels[value]) {
-            value = config.tileTypeLabels[value];
+        const labelMaps = {
+            tile: config.tileTypeLabels,
+            moisture: config.moistureLabels,
+            fertility: config.fertilityLabels,
+            plant: config.plantLabels
+        };
+        if (labelMaps[key] && labelMaps[key][value]) {
+            value = labelMaps[key][value];
         }
-
         p.innerHTML = `<strong>${key}:</strong> <span>${value}</span>`;
         detailsEl.appendChild(p);
     });

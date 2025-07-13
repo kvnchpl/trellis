@@ -70,6 +70,21 @@
         "grass": "Grassy Patch",
         "rock": "Rocky Ground"
     },
+    "moistureLabels": {
+        "dry": "Dry",
+        "wet": "Wet"
+    },
+    "fertilityLabels": {
+        "low": "Low Fertility",
+        "medium": "Medium Fertility",
+        "high": "High Fertility"
+    },
+    "plantLabels": {
+        "none": "No Plant",
+        "sprout": "Sprout",
+        "flower": "Flower",
+        "tree": "Tree"
+    },
     "keyBindings": {
         "up": "ArrowUp",
         "down": "ArrowDown",
