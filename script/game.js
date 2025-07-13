@@ -19,35 +19,55 @@ async function loadConfig() {
     }
 }
 
-function saveGameState() {
+function listSaveSlots() {
+    const container = document.getElementById('save-slots');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 1; i <= config.maxSaveSlots; i++) {
+        const slotKey = `trellisSave_slot${i}`;
+        const data = localStorage.getItem(slotKey);
+        const button = document.createElement('button');
+        button.textContent = data ? `Load Slot ${i}` : `Empty Slot ${i}`;
+        button.disabled = !data;
+        button.addEventListener('click', () => initGame(true, `slot${i}`));
+        container.appendChild(button);
+    }
+}
+
+function saveGameState(slot = null) {
     const saveData = {
         player: gameState.player,
         selector: gameState.selector,
         map: gameState.map,
         revealed: gameState.revealed
     };
-    localStorage.setItem('trellisSave', JSON.stringify(saveData));
+    const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
+    localStorage.setItem(`trellisSave_${targetSlot}`, JSON.stringify(saveData));
+    localStorage.setItem('trellisCurrentSlot', targetSlot);
 }
 
-function loadGameState() {
-    const data = JSON.parse(localStorage.getItem('trellisSave'));
+function loadGameState(slot = null) {
+    const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
+    const data = JSON.parse(localStorage.getItem(`trellisSave_${targetSlot}`));
     if (!data) return false;
     gameState.player = data.player;
     gameState.selector = data.selector;
     gameState.map = data.map;
     gameState.revealed = data.revealed;
+    localStorage.setItem('trellisCurrentSlot', targetSlot);
     return true;
 }
 
-async function initGame(loadExisting = false) {
+async function initGame(loadExisting = false, slot = null) {
     await loadConfig();
+    listSaveSlots();
     const canvas = document.getElementById('game-canvas');
     canvas.width = config.canvasWidth;
     canvas.height = config.canvasHeight;
 
     initState(config);
 
-    if (loadExisting && loadGameState()) {
+    if (loadExisting && loadGameState(slot)) {
         console.log('Loaded game from localStorage.');
     } else {
         generateMap(config);
@@ -81,10 +101,6 @@ document.getElementById('new-game').addEventListener('click', () => {
     }
     localStorage.removeItem('trellisSave_slot1');
     initGame(false, 'slot1');
-});
-
-document.getElementById('load-game').addEventListener('click', () => {
-    initGame(true);
 });
 
 export { saveGameState };
