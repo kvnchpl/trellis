@@ -6,7 +6,7 @@ export const gameState = {
     player: { x: 0, y: 0 },
     map: [],
     revealed: [],
-    // Add more state fields as needed in future
+    selector: { x: 0, y: 0 }
 };
 
 /**
@@ -33,5 +33,11 @@ export function initState(config) {
     gameState.player = {
         x: Math.floor(mapWidth / 2),
         y: Math.floor(mapHeight / 2),
+    };
+
+    // Initialize selector position (default to player position)
+    gameState.selector = {
+        x: gameState.player.x,
+        y: gameState.player.y - 1 // default to "up" tile
     };
 }
