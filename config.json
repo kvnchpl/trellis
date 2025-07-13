@@ -3,6 +3,8 @@
     "mapWidth": 64,
     "mapHeight": 64,
     "fogRevealRadius": 3,
+    "canvasWidth": 416,
+    "canvasHeight": 416,
     "playerColor": "#FFD700",
     "tileColors": {
         "soil": "#4B6F44",
@@ -10,8 +12,9 @@
     },
     "fogColor": "#000000",
     "fogOpacity": 0.8,
-    "defaultTile": "soil",
-    "controls": {
+    "outOfBoundsColor": "#111",
+    "playerSize": 1.0,
+    "keyBindings": {
         "up": "ArrowUp",
         "down": "ArrowDown",
         "left": "ArrowLeft",
