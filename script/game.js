@@ -4,14 +4,15 @@ import { gameState, initState } from './state.js';
 import { render } from './renderer.js';
 import { updateTileInfoPanel } from './ui.js';
 
-// Load config
 const configUrl = 'config.json';
+let config;
 
 async function loadConfig() {
     try {
         const response = await fetch(configUrl);
         if (!response.ok) throw new Error('Failed to load config');
-        return await response.json();
+        config = await response.json();
+        return config;
     } catch (error) {
         console.error('Error loading config:', error);
         throw error;
@@ -39,7 +40,7 @@ function loadGameState() {
 }
 
 async function initGame(loadExisting = false) {
-    const config = await loadConfig();
+    await loadConfig();
     const canvas = document.getElementById('game-canvas');
     canvas.width = config.canvasWidth;
     canvas.height = config.canvasHeight;
