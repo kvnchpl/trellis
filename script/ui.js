@@ -3,7 +3,6 @@ import { saveGameState } from './game.js';
 
 export function updateTileInfoPanel(config) {
     const tile = gameState.map[gameState.selector.y][gameState.selector.x];
-    console.log("Updating info panel for tile at", gameState.selector, tile);
     const detailsEl = document.getElementById('tile-details');
     const actionsEl = document.getElementById('tile-actions');
 
@@ -81,6 +80,8 @@ export function updateTileInfoPanel(config) {
                 gameState.map[gameState.selector.y][gameState.selector.x] = newTile;
                 console.log('After:', JSON.stringify(newTile));
                 console.groupEnd();
+                // Log tile info update after map mutation, before info panel update
+                console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
                 updateTileInfoPanel(config);
                 saveGameState();
                 incrementTime(config.actionTimeIncrement, config);

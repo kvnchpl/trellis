@@ -34,6 +34,7 @@ export function updatePlayer(config) {
         keysPressed[controls.up] = false;
         saveGameState();
         incrementTime(1, config);
+        console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
     }
 
     // Move down
@@ -43,6 +44,7 @@ export function updatePlayer(config) {
         keysPressed[controls.down] = false;
         saveGameState();
         incrementTime(1, config);
+        console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
     }
 
     // Move left
@@ -52,6 +54,7 @@ export function updatePlayer(config) {
         keysPressed[controls.left] = false;
         saveGameState();
         incrementTime(1, config);
+        console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
     }
 
     // Move right
@@ -61,6 +64,7 @@ export function updatePlayer(config) {
         keysPressed[controls.right] = false;
         saveGameState();
         incrementTime(1, config);
+        console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
     }
 
     // Select tile above player
