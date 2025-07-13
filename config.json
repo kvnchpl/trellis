@@ -2,5 +2,12 @@
     "tileSize": 32,
     "mapWidth": 64,
     "mapHeight": 64,
-    "fogRevealRadius": 3
+    "fogRevealRadius": 3,
+    "playerColor": "#FFD700",
+    "tileColors": {
+        "soil": "#4B6F44",
+        "default": "#333"
+    },
+    "fogColor": "#000000",
+    "fogOpacity": 0.8
 }

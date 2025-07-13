@@ -11,7 +11,7 @@ export function render(config) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const tileSize = config.tileSize;
-    // Determine how many tiles fit in the viewport (assume square viewport)
+    // Use config.viewTileCount if present, else fallback to canvas size
     const viewSize = Math.floor(canvas.width / tileSize);
 
     // Calculate top-left tile of the viewport so the player is centered
@@ -32,14 +32,32 @@ export function render(config) {
                 mapX >= 0 && mapX < config.mapWidth &&
                 mapY >= 0 && mapY < config.mapHeight
             ) {
-                // Placeholder: draw soil tile or fallback color
+                // Draw tile using config.tileColors
                 const tile = gameState.map[mapY][mapX];
-                ctx.fillStyle = tile && tile.tile === 'soil' ? '#4B6F44' : '#333';
+                let tileColor = config.tileColors && tile && tile.tile && config.tileColors[tile.tile]
+                    ? config.tileColors[tile.tile]
+                    : (config.tileColors && config.tileColors.default);
+                ctx.fillStyle = tileColor;
                 ctx.fillRect(screenX, screenY, tileSize, tileSize);
 
                 // Apply fog of war if not revealed
                 if (!gameState.revealed[mapY][mapX]) {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                    const fogColor = config.fogColor;
+                    const fogOpacity = typeof config.fogOpacity === 'number' ? config.fogOpacity : 0.8;
+                    // Convert hex to rgb for rgba
+                    let rgb = [0, 0, 0];
+                    if (fogColor.startsWith('#') && (fogColor.length === 7 || fogColor.length === 4)) {
+                        let hex = fogColor.substring(1);
+                        if (hex.length === 3) {
+                            hex = hex.split('').map(c => c + c).join('');
+                        }
+                        rgb = [
+                            parseInt(hex.substring(0, 2), 16),
+                            parseInt(hex.substring(2, 4), 16),
+                            parseInt(hex.substring(4, 6), 16)
+                        ];
+                    }
+                    ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${fogOpacity})`;
                     ctx.fillRect(screenX, screenY, tileSize, tileSize);
                 }
             } else {
@@ -50,9 +68,9 @@ export function render(config) {
         }
     }
 
-    // Draw player as a yellow square in the center of the viewport
+    // Draw player as a colored square in the center of the viewport
     const playerScreenX = Math.floor(viewSize / 2) * tileSize;
     const playerScreenY = Math.floor(viewSize / 2) * tileSize;
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = config.playerColor;
     ctx.fillRect(playerScreenX, playerScreenY, tileSize, tileSize);
 }
