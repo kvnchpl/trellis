@@ -53,9 +53,7 @@
         },
         "clear": {
             "condition": {
-                "plant": {
-                    "gte": 0
-                }
+                "plant": "notNull"
             },
             "effect": {
                 "plant": null
