@@ -68,7 +68,7 @@ function gameLoop(config) {
     requestAnimationFrame(() => gameLoop(config));
 }
 
-initGame().catch((err) => {
+initGame(true).catch((err) => {
     console.error('Error initializing game:', err);
     alert('Failed to start the game. Please try again later.');
 });
