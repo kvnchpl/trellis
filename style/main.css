@@ -1,0 +1,33 @@
+:root {
+    --tile-size: 32px;
+    --border-color: #fff;
+    --background-color: #1a1a1a;
+    --canvas-background: #000;
+    --font-family: monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: var(--font-family);
+}
+
+#game-container {
+    border: 2px solid var(--border-color);
+    image-rendering: pixelated;
+}
+
+canvas {
+    display: block;
+    background-color: var(--canvas-background);
+    image-rendering: pixelated;
+}
