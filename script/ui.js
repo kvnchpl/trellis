@@ -15,7 +15,7 @@ export function updateTileInfoPanel(config) {
 
         // Normalize undefined or null to 'none' for tile and plant
         if ((key === 'tile' || key === 'plant') && (value === null || value === undefined)) {
-            value = 'none';
+            value = 'None';
         }
 
         // Apply labels if defined
