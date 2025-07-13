@@ -8,8 +8,11 @@
     "canvasHeight": 416,
     "playerColor": "#FFD700",
     "tileColors": {
-        "soil": "#4B6F44",
-        "default": "#333"
+        "soil": "#5A381E",
+        "tilled": "#A0522D",
+        "grass": "#4CAF50",
+        "rock": "#888888",
+        "default": "#333333"
     },
     "fogColor": "#000000",
     "fogOpacity": 0.8,
