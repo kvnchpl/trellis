@@ -2,7 +2,7 @@
 
 import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
-import { gameState, initState } from './state.js';
+import { initState } from './state.js';
 import { render } from './renderer.js';
 
 // Load config
