@@ -43,7 +43,7 @@ export function render(config) {
                 // Apply fog of war if not revealed
                 if (!gameState.revealed[mapY][mapX]) {
                     const fogColor = config.fogColor;
-                    const fogOpacity = typeof config.fogOpacity === 'number' ? config.fogOpacity : 0.8;
+                    const fogOpacity = config.fogOpacity;
                     // Convert hex to rgb for rgba
                     let rgb = [0, 0, 0];
                     if (fogColor.startsWith('#') && (fogColor.length === 7 || fogColor.length === 4)) {
@@ -72,7 +72,7 @@ export function render(config) {
     const playerScreenX = Math.floor(viewSize / 2) * tileSize;
     const playerScreenY = Math.floor(viewSize / 2) * tileSize;
     ctx.fillStyle = config.playerColor;
-    const sizeRatio = config.playerSize || 1.0;
+    const sizeRatio = config.playerSize;
     const playerSizePx = tileSize * sizeRatio;
     const offset = (tileSize - playerSizePx) / 2;
     ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
