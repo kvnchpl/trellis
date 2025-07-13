@@ -2,10 +2,9 @@
 
 import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
-import { initState } from './state.js';
+import { gameState, initState } from './state.js';
 import { render } from './renderer.js';
 import { updateTileInfoPanel } from './ui.js';
-import { gameState } from './state.js';
 
 // Load config
 const configUrl = 'config.json';
