@@ -43,13 +43,13 @@ export function updateTileInfoPanel(config) {
     for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
         const isValid = Object.entries(actionDef.condition).every(([key, cond]) => {
             const current = tile[key];
-            if (typeof cond === 'object') {
+            if (typeof cond === 'object' && cond !== null) {
                 if ('lt' in cond && !(current < cond.lt)) return false;
                 if ('gt' in cond && !(current > cond.gt)) return false;
                 if ('lte' in cond && !(current <= cond.lte)) return false;
                 if ('gte' in cond && !(current >= cond.gte)) return false;
             } else {
-                return current === cond;
+                if (current !== cond) return false;
             }
             return true;
         });
