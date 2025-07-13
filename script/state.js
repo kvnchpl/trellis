@@ -18,10 +18,22 @@ export const gameState = {
 export function initState(config) {
     const { mapWidth, mapHeight } = config;
 
+    function weightedRandomTile(weights) {
+        const entries = Object.entries(weights);
+        const total = entries.reduce((sum, [, w]) => sum + w, 0);
+        const rand = Math.random() * total;
+        let acc = 0;
+        for (const [tile, weight] of entries) {
+            acc += weight;
+            if (rand < acc) return tile;
+        }
+        return entries[entries.length - 1][0]; // fallback
+    }
+
     // Set up the map: 2D array of tiles, each with a type and optional plant
     gameState.map = Array.from({ length: mapHeight }, () =>
         Array.from({ length: mapWidth }, () => ({
-            tile: config.defaultTile,
+            tile: weightedRandomTile(config.initialTileWeights),
             plant: null,
             moisture: 0,
             fertility: 0

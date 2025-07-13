@@ -17,6 +17,11 @@
     "playerSize": 1.0,
     "selectorColor": "#00FFFF",
     "tileInfoPanel": true,
+    "initialTileWeights": {
+        "soil": 0.6,
+        "grass": 0.3,
+        "rock": 0.1
+    },
     "tileDetails": [
         "tile",
         "plant",
