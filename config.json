@@ -15,10 +15,10 @@
         "default": "#333333"
     },
     "tileImagePaths": {
-        "soil": "images/tiles/soil.png",
-        "tilled": "images/tiles/tilled.png",
-        "grass": "images/tiles/grass.png",
-        "rock": "images/tiles/rock.png"
+        "soil": "assets/tiles/soil.png",
+        "tilled": "assets/tiles/tilled.png",
+        "grass": "assets/tiles/grass.png",
+        "rock": "assets/tiles/rock.png"
     },
     "fogColor": "#000000",
     "fogOpacity": 0.8,
