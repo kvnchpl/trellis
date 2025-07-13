@@ -11,14 +11,29 @@ export function updateTileInfoPanel(config) {
 
     config.tileDetails.forEach(key => {
         const p = document.createElement('p');
-        let value = tile[key] ?? '–';
+        let value = tile[key];
 
-        // Use label from config if available
+        // Normalize undefined or null to 'none' for tile and plant
+        if ((key === 'tile' || key === 'plant') && (value === null || value === undefined)) {
+            value = 'none';
+        }
+
+        // Apply labels if defined
         if (key === 'tile' && config.tileTypeLabels[value]) {
             value = config.tileTypeLabels[value];
         }
+        if (key === 'plant' && config.plantLabels && config.plantLabels[value]) {
+            value = config.plantLabels[value];
+        }
+
+        // Format numeric values
         if ((key === 'moisture' || key === 'fertility') && typeof value === 'number') {
             value = `${value}%`;
+        }
+
+        // Fallback if still no value
+        if (value === null || value === undefined) {
+            value = '–';
         }
 
         p.innerHTML = `<strong>${key}:</strong> <span>${value}</span>`;
