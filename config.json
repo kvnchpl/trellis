@@ -77,10 +77,10 @@
     "dayEndHour": 19,
     "actionTimeIncrement": 5,
     "seasons": [
-        "WINTER",
-        "SPRING",
-        "SUMMER",
-        "FALL"
+        "Winter",
+        "Spring",
+        "Summer",
+        "Fall"
     ],
     "weeksPerSeason": 13,
     "moistureLabels": {
