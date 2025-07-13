@@ -44,7 +44,7 @@ export function updateTileInfoPanel(config) {
     for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
         const isValid = Object.entries(actionDef.condition).every(([key, cond]) => {
             const current = tile[key];
-            if (cond === 'notNull') {
+            if (cond === 'exists') {
                 if (current === null || current === undefined) return false;
             } else if (typeof cond === 'object' && cond !== null) {
                 if ('lt' in cond && !(current < cond.lt)) return false;

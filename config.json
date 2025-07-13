@@ -53,7 +53,7 @@
         },
         "clear": {
             "condition": {
-                "plant": "notNull"
+                "plant": "exists"
             },
             "effect": {
                 "plant": null
