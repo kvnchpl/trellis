@@ -6,7 +6,7 @@ import { initState } from './state.js';
 import { render } from './renderer.js';
 
 // Load config
-const configUrl = '/config.json';
+const configUrl = 'config.json';
 
 async function loadConfig() {
     try {
