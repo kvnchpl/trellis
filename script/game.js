@@ -5,6 +5,7 @@ import { generateMap, updateFog } from './map.js';
 import { initState } from './state.js';
 import { render } from './renderer.js';
 import { updateTileInfoPanel } from './ui.js';
+import { gameState } from './state.js';
 
 // Load config
 const configUrl = 'config.json';
@@ -20,21 +21,43 @@ async function loadConfig() {
     }
 }
 
-async function initGame() {
-    const config = await loadConfig();
+function saveGameState() {
+    const saveData = {
+        player: gameState.player,
+        selector: gameState.selector,
+        map: gameState.map,
+        revealed: gameState.revealed
+    };
+    localStorage.setItem('trellisSave', JSON.stringify(saveData));
+}
 
-    // Set canvas size from config
+function loadGameState() {
+    const data = JSON.parse(localStorage.getItem('trellisSave'));
+    if (!data) return false;
+    gameState.player = data.player;
+    gameState.selector = data.selector;
+    gameState.map = data.map;
+    gameState.revealed = data.revealed;
+    return true;
+}
+
+async function initGame(loadExisting = false) {
+    const config = await loadConfig();
     const canvas = document.getElementById('game-canvas');
     canvas.width = config.canvasWidth;
     canvas.height = config.canvasHeight;
 
     initState(config);
-    generateMap(config);
+
+    if (loadExisting && loadGameState()) {
+        console.log('Loaded game from localStorage.');
+    } else {
+        generateMap(config);
+    }
+
     initPlayer(config);
-
-    updateFog(config); // Reveal initial fog
+    updateFog(config);
     render(config);
-
     requestAnimationFrame(() => gameLoop(config));
 }
 
@@ -50,3 +73,14 @@ initGame().catch((err) => {
     console.error('Error initializing game:', err);
     alert('Failed to start the game. Please try again later.');
 });
+
+document.getElementById('new-game').addEventListener('click', () => {
+    localStorage.removeItem('trellisSave');
+    initGame(false);
+});
+
+document.getElementById('load-game').addEventListener('click', () => {
+    initGame(true);
+});
+
+export { saveGameState };
