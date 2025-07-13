@@ -40,27 +40,12 @@ export function render(config) {
 
                 // Apply fog of war if not revealed
                 if (!gameState.revealed[mapY][mapX]) {
-                    const fogColor = config.fogColor;
-                    const fogOpacity = config.fogOpacity;
-                    // Convert hex to rgb for rgba
-                    let rgb = [0, 0, 0];
-                    if (fogColor.startsWith('#') && (fogColor.length === 7 || fogColor.length === 4)) {
-                        let hex = fogColor.substring(1);
-                        if (hex.length === 3) {
-                            hex = hex.split('').map(c => c + c).join('');
-                        }
-                        rgb = [
-                            parseInt(hex.substring(0, 2), 16),
-                            parseInt(hex.substring(2, 4), 16),
-                            parseInt(hex.substring(4, 6), 16)
-                        ];
-                    }
-                    ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${fogOpacity})`;
+                    ctx.fillStyle = config.fogColor;
                     ctx.fillRect(screenX, screenY, tileSize, tileSize);
                 }
             } else {
                 // Out-of-bounds: draw dark background
-                ctx.fillStyle = config.outOfBoundsColor || '#111';
+                ctx.fillStyle = config.outOfBoundsColor;
                 ctx.fillRect(screenX, screenY, tileSize, tileSize);
             }
         }
