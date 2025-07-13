@@ -9,5 +9,12 @@
         "default": "#333"
     },
     "fogColor": "#000000",
-    "fogOpacity": 0.8
+    "fogOpacity": 0.8,
+    "defaultTile": "soil",
+    "controls": {
+        "up": "ArrowUp",
+        "down": "ArrowDown",
+        "left": "ArrowLeft",
+        "right": "ArrowRight"
+    }
 }

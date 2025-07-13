@@ -25,25 +25,26 @@ export function initPlayer(config) {
 export function updatePlayer(config) {
     const { mapWidth, mapHeight } = config;
     const player = gameState.player;
+    const controls = config.controls;
 
     // Move up
-    if (keysPressed['ArrowUp'] && player.y > 0) {
+    if (keysPressed[controls.up] && player.y > 0) {
         player.y--;
-        keysPressed['ArrowUp'] = false; // Move only once per key press
+        keysPressed[controls.up] = false;
     }
     // Move down
-    else if (keysPressed['ArrowDown'] && player.y < mapHeight - 1) {
+    else if (keysPressed[controls.down] && player.y < mapHeight - 1) {
         player.y++;
-        keysPressed['ArrowDown'] = false;
+        keysPressed[controls.down] = false;
     }
     // Move left
-    else if (keysPressed['ArrowLeft'] && player.x > 0) {
+    else if (keysPressed[controls.left] && player.x > 0) {
         player.x--;
-        keysPressed['ArrowLeft'] = false;
+        keysPressed[controls.left] = false;
     }
     // Move right
-    else if (keysPressed['ArrowRight'] && player.x < mapWidth - 1) {
+    else if (keysPressed[controls.right] && player.x < mapWidth - 1) {
         player.x++;
-        keysPressed['ArrowRight'] = false;
+        keysPressed[controls.right] = false;
     }
 }

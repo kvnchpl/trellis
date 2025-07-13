@@ -19,7 +19,7 @@ export function initState(config) {
     // Set up the map: 2D array of tiles, each with a type and optional plant
     gameState.map = Array.from({ length: mapHeight }, () =>
         Array.from({ length: mapWidth }, () => ({
-            tile: 'soil',
+            tile: config.defaultTile,
             plant: null,
         }))
     );
