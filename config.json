@@ -50,6 +50,16 @@
                     "inc": 20
                 }
             }
+        },
+        "clear": {
+            "condition": {
+                "plant": {
+                    "gte": 0
+                }
+            },
+            "effect": {
+                "plant": null
+            }
         }
     },
     "tileTypes": [
