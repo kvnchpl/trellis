@@ -1,39 +1,39 @@
 import { gameState } from './state.js';
 import { saveGameState } from './game.js';
 
+let config;
+
+fetch('config.json')
+    .then((res) => res.json())
+    .then((data) => config = data);
+
 export function updateTileInfoPanel() {
     const tile = gameState.map[gameState.selector.y][gameState.selector.x];
+    const detailsEl = document.getElementById('tile-details');
     const actionsEl = document.getElementById('tile-actions');
 
-    const detailsEl = document.getElementById('tile-details');
     detailsEl.innerHTML = '';
-
-    const details = {
-        Type: tile.tile || 'unknown',
-        Plant: tile.plant || 'none'
-        // Add more tile attributes here as needed
-    };
-
-    for (const [label, value] of Object.entries(details)) {
-        const p = document.createElement('p');
-        p.innerHTML = `<strong>${label}:</strong> <span>${value}</span>`;
-        detailsEl.appendChild(p);
-    }
-
-    // Clear old actions
     actionsEl.innerHTML = '';
 
-    // Example action: "Till"
-    if (tile.tile === 'soil' && !tile.plant) {
-        const btn = document.createElement('button');
-        btn.textContent = 'Till';
-        btn.onclick = () => {
-            tile.tile = 'tilled';
-            updateTileInfoPanel();
-            saveGameState();
-        };
-        actionsEl.appendChild(btn);
-    }
+    config.tileDetails.forEach(key => {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${key}:</strong> <span>${tile[key] ?? '–'}</span>`;
+        detailsEl.appendChild(p);
+    });
 
-    // Future: add more actions depending on tile state
+    for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
+        const isValid = Object.entries(actionDef.condition).every(([key, value]) => tile[key] === value);
+        if (isValid) {
+            const btn = document.createElement('button');
+            btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
+            btn.onclick = () => {
+                Object.entries(actionDef.effect).forEach(([key, value]) => {
+                    tile[key] = value;
+                });
+                updateTileInfoPanel();
+                saveGameState();
+            };
+            actionsEl.appendChild(btn);
+        }
+    }
 }

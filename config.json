@@ -17,6 +17,32 @@
     "playerSize": 1.0,
     "selectorColor": "#00FFFF",
     "tileInfoPanel": true,
+    "tileDetails": [
+        "tile",
+        "plant",
+        "moisture",
+        "fertility"
+    ],
+    "tileActions": {
+        "till": {
+            "condition": {
+                "tile": "soil",
+                "plant": null
+            },
+            "effect": {
+                "tile": "tilled"
+            }
+        },
+        "water": {
+            "condition": {
+                "tile": "tilled",
+                "moisture": "dry"
+            },
+            "effect": {
+                "moisture": "wet"
+            }
+        }
+    },
     "keyBindings": {
         "up": "ArrowUp",
         "down": "ArrowDown",
