@@ -6,6 +6,18 @@ export function updateTileInfoPanel(config) {
     const detailsEl = document.getElementById('tile-details');
     const actionsEl = document.getElementById('tile-actions');
 
+    // Show tile image if available
+    const imageEl = document.getElementById('tile-image');
+    if (imageEl) {
+        const imageKey = tile.tile;
+        if (imageKey && config.tileImagePaths && config.tileImagePaths[imageKey]) {
+            imageEl.src = config.tileImagePaths[imageKey];
+            imageEl.style.display = 'block';
+        } else {
+            imageEl.style.display = 'none';
+        }
+    }
+
     detailsEl.innerHTML = '';
     actionsEl.innerHTML = '';
 
