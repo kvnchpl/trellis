@@ -1,4 +1,5 @@
 import { gameState } from './state.js';
+import { saveGameState } from './game.js';
 
 export function updateTileInfoPanel() {
     const tile = gameState.map[gameState.selector.y][gameState.selector.x];
@@ -18,7 +19,8 @@ export function updateTileInfoPanel() {
         btn.textContent = 'Till';
         btn.onclick = () => {
             tile.tile = 'tilled';
-            updateTileInfoPanel(); // refresh view
+            updateTileInfoPanel();
+            saveGameState();
         };
         actionsEl.appendChild(btn);
     }
