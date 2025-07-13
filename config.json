@@ -14,10 +14,16 @@
     "fogOpacity": 0.8,
     "outOfBoundsColor": "#111",
     "playerSize": 1.0,
+    "selectorColor": "#00FFFF",
+    "tileInfoPanel": true,
     "keyBindings": {
         "up": "ArrowUp",
         "down": "ArrowDown",
         "left": "ArrowLeft",
-        "right": "ArrowRight"
+        "right": "ArrowRight",
+        "selectUp": "w",
+        "selectDown": "s",
+        "selectLeft": "a",
+        "selectRight": "d"
     }
 }
