@@ -63,19 +63,23 @@ export function updateTileInfoPanel(config) {
             btn.onclick = () => {
                 console.group(`Action: ${actionLabel}`);
                 console.log('Before:', JSON.stringify(tile));
+                // Create a new tile object for the mutation
+                const newTile = { ...tile };
                 Object.entries(actionDef.effect).forEach(([key, change]) => {
                     if (typeof change === 'object') {
                         if ('inc' in change) {
-                            tile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
+                            newTile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
                         }
                         if ('dec' in change) {
-                            tile[key] = Math.max(config[`${key}Range`].min, tile[key] - change.dec);
+                            newTile[key] = Math.max(config[`${key}Range`].min, tile[key] - change.dec);
                         }
                     } else {
-                        tile[key] = change;
+                        newTile[key] = change;
                     }
                 });
-                console.log('After:', JSON.stringify(tile));
+                // Replace the tile in the map with the new object
+                gameState.map[gameState.selector.y][gameState.selector.x] = newTile;
+                console.log('After:', JSON.stringify(newTile));
                 console.groupEnd();
                 updateTileInfoPanel(config);
                 saveGameState();
