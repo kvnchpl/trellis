@@ -1,13 +1,7 @@
 import { gameState } from './state.js';
 import { saveGameState } from './game.js';
 
-let config;
-
-fetch('config.json')
-    .then((res) => res.json())
-    .then((data) => config = data);
-
-export function updateTileInfoPanel() {
+export function updateTileInfoPanel(config) {
     const tile = gameState.map[gameState.selector.y][gameState.selector.x];
     const detailsEl = document.getElementById('tile-details');
     const actionsEl = document.getElementById('tile-actions');
@@ -60,7 +54,7 @@ export function updateTileInfoPanel() {
                         tile[key] = change;
                     }
                 });
-                updateTileInfoPanel();
+                updateTileInfoPanel(config);
                 saveGameState();
                 incrementTime(config.actionTimeIncrement, config);
             };
@@ -69,7 +63,7 @@ export function updateTileInfoPanel() {
     }
 }
 
-export function updateTimePanel() {
+export function updateTimePanel(config) {
     const el = document.getElementById('time-display');
     if (!el) return;
     const { hour, minute, week, seasonIndex } = gameState.time;
@@ -98,7 +92,7 @@ function incrementTime(minutes, config) {
             time.seasonIndex = (time.seasonIndex + 1) % config.seasons.length;
         }
     }
-    updateTimePanel();
+    updateTimePanel(config);
 }
 
 export { incrementTime };

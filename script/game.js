@@ -75,7 +75,7 @@ async function initGame(loadExisting = false, slot = null) {
 
     initPlayer(config);
     updateFog(config);
-    updateTimePanel();
+    updateTimePanel(config);
     render(config);
     requestAnimationFrame(() => gameLoop(config));
 }
@@ -84,8 +84,8 @@ function gameLoop(config) {
     updatePlayer(config); // handle input + position
     updateFog(config);    // update fog visibility
     render(config);       // re-render map
-    updateTileInfoPanel(); // refresh info panel
-    updateTimePanel();
+    updateTileInfoPanel(config); // refresh info panel
+    updateTimePanel(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
