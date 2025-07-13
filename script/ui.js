@@ -3,6 +3,7 @@ import { saveGameState } from './game.js';
 
 export function updateTileInfoPanel(config) {
     const tile = gameState.map[gameState.selector.y][gameState.selector.x];
+    console.log("Updating info panel for tile at", gameState.selector, tile);
     const detailsEl = document.getElementById('tile-details');
     const actionsEl = document.getElementById('tile-actions');
 
@@ -53,10 +54,13 @@ export function updateTileInfoPanel(config) {
             }
             return true;
         });
+        console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:', tile);
         if (isValid) {
             const btn = document.createElement('button');
             btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
             btn.onclick = () => {
+                console.group(`Action: ${actionLabel}`);
+                console.log('Before:', JSON.stringify(tile));
                 Object.entries(actionDef.effect).forEach(([key, change]) => {
                     if (typeof change === 'object') {
                         if ('inc' in change) {
@@ -69,6 +73,8 @@ export function updateTileInfoPanel(config) {
                         tile[key] = change;
                     }
                 });
+                console.log('After:', JSON.stringify(tile));
+                console.groupEnd();
                 updateTileInfoPanel(config);
                 saveGameState();
                 incrementTime(config.actionTimeIncrement, config);
