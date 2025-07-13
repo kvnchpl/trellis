@@ -38,6 +38,6 @@ export function initState(config) {
     // Initialize selector position (default to player position)
     gameState.selector = {
         x: gameState.player.x,
-        y: gameState.player.y - 1 // default to "up" tile
+        y: gameState.player.y
     };
 }
