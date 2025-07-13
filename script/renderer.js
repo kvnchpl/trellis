@@ -76,4 +76,19 @@ export function render(config) {
     const playerSizePx = tileSize * sizeRatio;
     const offset = (tileSize - playerSizePx) / 2;
     ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
+
+    // Draw selector
+    const selectorOffsetX = gameState.selector.x - startX;
+    const selectorOffsetY = gameState.selector.y - startY;
+
+    if (
+        selectorOffsetX >= 0 && selectorOffsetX < viewSize &&
+        selectorOffsetY >= 0 && selectorOffsetY < viewSize
+    ) {
+        const selectorX = selectorOffsetX * tileSize;
+        const selectorY = selectorOffsetY * tileSize;
+        ctx.strokeStyle = config.selectorColor;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(selectorX + 1, selectorY + 1, tileSize - 2, tileSize - 2);
+    }
 }
