@@ -4,6 +4,7 @@ import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
 import { initState } from './state.js';
 import { render } from './renderer.js';
+import { updateTileInfoPanel } from './ui.js';
 
 // Load config
 const configUrl = 'config.json';
@@ -41,6 +42,7 @@ function gameLoop(config) {
     updatePlayer(config); // handle input + position
     updateFog(config);    // update fog visibility
     render(config);       // re-render map
+    updateTileInfoPanel(); // refresh info panel
     requestAnimationFrame(() => gameLoop(config));
 }
 
