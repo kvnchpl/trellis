@@ -36,7 +36,7 @@ export function render(config) {
                 const tile = gameState.map[mapY][mapX];
                 let tileColor = config.tileColors && tile && tile.tile && config.tileColors[tile.tile]
                     ? config.tileColors[tile.tile]
-                    : (config.tileColors && config.tileColors.default);
+                    : config.tileColors && config.tileColors.default;
                 ctx.fillStyle = tileColor;
                 ctx.fillRect(screenX, screenY, tileSize, tileSize);
 
