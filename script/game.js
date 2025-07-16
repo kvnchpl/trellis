@@ -24,16 +24,33 @@ function listSaveSlots() {
     if (!container) return;
     container.innerHTML = '';
 
-    const currentSlot = localStorage.getItem('trellisCurrentSlot') || 'slot1';
+    // Ensure trellisCurrentSlot is always set
+    let currentSlot = localStorage.getItem('trellisCurrentSlot');
+    if (!currentSlot) {
+        currentSlot = 'slot1';
+        localStorage.setItem('trellisCurrentSlot', currentSlot);
+    }
 
     for (let i = 1; i <= config.maxSaveSlots; i++) {
         const slotKey = `trellisSave_slot${i}`;
         const data = localStorage.getItem(slotKey);
         const button = document.createElement('button');
 
-        if (data && data.trim() !== '') {
+        let isValidSave = false;
+        if (data) {
+            try {
+                const parsed = JSON.parse(data);
+                if (parsed && typeof parsed === 'object' && parsed.player) {
+                    isValidSave = true;
+                }
+            } catch (e) {
+                isValidSave = false;
+            }
+        }
+
+        if (isValidSave) {
             button.textContent = `Load Slot ${i}` + (currentSlot === `slot${i}` ? ' [ACTIVE]' : '');
-            button.disabled = currentSlot === `slot${i}`; // prevent loading the already active slot
+            button.disabled = currentSlot === `slot${i}`;
             button.addEventListener('click', () => initGame(true, `slot${i}`));
         } else {
             button.textContent = `Empty Slot ${i}`;
@@ -119,13 +136,25 @@ document.getElementById('new-game').addEventListener('click', () => {
     const firstSlotKey = 'trellisSave_slot1';
     const firstSlotData = localStorage.getItem(firstSlotKey);
 
-    // Only rotate if slot1 actually has a saved game
-    if (firstSlotData && firstSlotData.trim() !== '') {
+    // Only rotate if slot1 has valid JSON (a real save)
+    let isValidSave = false;
+    if (firstSlotData) {
+        try {
+            const parsed = JSON.parse(firstSlotData);
+            if (parsed && typeof parsed === 'object' && parsed.player) {
+                isValidSave = true;
+            }
+        } catch (e) {
+            isValidSave = false;
+        }
+    }
+
+    if (isValidSave) {
         for (let i = config.maxSaveSlots; i > 1; i--) {
             const fromSlot = `trellisSave_slot${i - 1}`;
             const toSlot = `trellisSave_slot${i}`;
             const data = localStorage.getItem(fromSlot);
-            if (data && data.trim() !== '') {
+            if (data) {
                 localStorage.setItem(toSlot, data);
             } else {
                 localStorage.removeItem(toSlot);
@@ -133,8 +162,9 @@ document.getElementById('new-game').addEventListener('click', () => {
         }
     }
 
-    // Clear the first slot for a truly new game
+    // Clear slot1 for new game
     localStorage.removeItem(firstSlotKey);
+    localStorage.setItem('trellisCurrentSlot', 'slot1');
     initGame(false, 'slot1');
 });
 
