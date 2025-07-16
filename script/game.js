@@ -71,6 +71,9 @@ function saveGameState(slot = null) {
     const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
     localStorage.setItem(`trellisSave_${targetSlot}`, JSON.stringify(saveData));
     localStorage.setItem('trellisCurrentSlot', targetSlot);
+
+    // Refresh UI immediately after saving
+    listSaveSlots();
 }
 
 function loadGameState(slot = null) {
@@ -117,6 +120,10 @@ async function initGame(loadExisting = false, slot = null) {
     updateTimePanel(config);
     render(config);
     updateTileInfoPanel(config);
+
+    // Make sure active slot text updates instantly
+    listSaveSlots();
+
     requestAnimationFrame(() => gameLoop(config));
 }
 
