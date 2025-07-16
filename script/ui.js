@@ -74,6 +74,7 @@ export function updateTileInfoPanel(config) {
             btn.onclick = () => {
                 console.group(`Action: ${actionLabel}`);
                 console.log('Before:', JSON.stringify(tile));
+
                 // Create a new tile object for the mutation
                 const newTile = { ...tile };
                 Object.entries(actionDef.effect).forEach(([key, change]) => {
@@ -88,13 +89,15 @@ export function updateTileInfoPanel(config) {
                         newTile[key] = change;
                     }
                 });
+
                 // Replace the tile in the map with the new object
                 gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
                 console.log('After:', JSON.stringify(newTile));
                 console.groupEnd();
-                // Log tile info update after map mutation, before info panel update
-                console.log("Updating info panel for tile at", gameState.selector, gameState.map[gameState.selector.y][gameState.selector.x]);
+
+                // Re-fetch updated tile before updating the info panel
                 updateTileInfoPanel(config);
+
                 saveGameState();
                 incrementTime(config.actionTimeIncrement, config);
             };
