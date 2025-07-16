@@ -42,6 +42,15 @@ export function initState(config) {
         week: 1,
         seasonIndex: 0
     };
+
+    // Force starting tile to "soil"
+    const startingKey = `${gameState.player.x},${gameState.player.y}`;
+    gameState.map[startingKey] = {
+        tile: "soil",
+        plant: null,
+        moisture: 0,
+        fertility: 0
+    };
 }
 
 function weightedRandomTile(weights) {
