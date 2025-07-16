@@ -150,15 +150,30 @@ initGame(true).catch((err) => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
-    // Rotate previous saves BEFORE clearing slot1
-    for (let i = config.maxSaveSlots; i > 1; i--) {
-        const fromSlot = `trellisSave_slot${i - 1}`;
-        const toSlot = `trellisSave_slot${i}`;
-        const data = localStorage.getItem(fromSlot);
-        if (data) {
-            localStorage.setItem(toSlot, data);
-        } else {
-            localStorage.removeItem(toSlot);
+    const firstSlotData = localStorage.getItem('trellisSave_slot1');
+    let hasValidSave = false;
+    if (firstSlotData) {
+        try {
+            const parsed = JSON.parse(firstSlotData);
+            if (parsed && typeof parsed === 'object' && parsed.player) {
+                hasValidSave = true;
+            }
+        } catch {
+            hasValidSave = false;
+        }
+    }
+
+    // Rotate only if slot1 actually has a valid save
+    if (hasValidSave) {
+        for (let i = config.maxSaveSlots; i > 1; i--) {
+            const fromSlot = `trellisSave_slot${i - 1}`;
+            const toSlot = `trellisSave_slot${i}`;
+            const data = localStorage.getItem(fromSlot);
+            if (data) {
+                localStorage.setItem(toSlot, data);
+            } else {
+                localStorage.removeItem(toSlot);
+            }
         }
     }
 
