@@ -108,6 +108,7 @@ async function initGame(loadExisting = false, slot = null) {
     if (loadExisting && loadGameState(slot)) {
         console.log('Loaded game from localStorage.');
     } else {
+        localStorage.setItem('trellisCurrentSlot', slot || 'slot1');
         generateMap(config);
     }
 
