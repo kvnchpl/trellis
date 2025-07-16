@@ -177,9 +177,9 @@ document.getElementById('new-game').addEventListener('click', () => {
         }
     }
 
-    // Clear slot1 for the new game
+    // Clear slot1 for the new game and mark current slot as null until first auto-save
     localStorage.removeItem('trellisSave_slot1');
-    localStorage.setItem('trellisCurrentSlot', 'slot1');
+    localStorage.removeItem('trellisCurrentSlot');
     initGame(false, 'slot1');
 });
 
