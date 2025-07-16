@@ -23,13 +23,23 @@ function listSaveSlots() {
     const container = document.getElementById('save-slots');
     if (!container) return;
     container.innerHTML = '';
+
+    const currentSlot = localStorage.getItem('trellisCurrentSlot') || 'slot1';
+
     for (let i = 1; i <= config.maxSaveSlots; i++) {
         const slotKey = `trellisSave_slot${i}`;
         const data = localStorage.getItem(slotKey);
         const button = document.createElement('button');
-        button.textContent = data ? `Load Slot ${i}` : `Empty Slot ${i}`;
-        button.disabled = !data;
-        button.addEventListener('click', () => initGame(true, `slot${i}`));
+
+        if (data && data.trim() !== '') {
+            button.textContent = `Load Slot ${i}` + (currentSlot === `slot${i}` ? ' [ACTIVE]' : '');
+            button.disabled = currentSlot === `slot${i}`; // prevent loading the already active slot
+            button.addEventListener('click', () => initGame(true, `slot${i}`));
+        } else {
+            button.textContent = `Empty Slot ${i}`;
+            button.disabled = true;
+        }
+
         container.appendChild(button);
     }
 }
@@ -106,13 +116,25 @@ initGame(true).catch((err) => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
-    // Rotate older saves upward, drop the last one
-    for (let i = config.maxSaveSlots; i > 1; i--) {
-        const fromSlot = `trellisSave_slot${i - 1}`;
-        const toSlot = `trellisSave_slot${i}`;
-        localStorage.setItem(toSlot, localStorage.getItem(fromSlot) || '');
+    const firstSlotKey = 'trellisSave_slot1';
+    const firstSlotData = localStorage.getItem(firstSlotKey);
+
+    // Only rotate if slot1 actually has a saved game
+    if (firstSlotData && firstSlotData.trim() !== '') {
+        for (let i = config.maxSaveSlots; i > 1; i--) {
+            const fromSlot = `trellisSave_slot${i - 1}`;
+            const toSlot = `trellisSave_slot${i}`;
+            const data = localStorage.getItem(fromSlot);
+            if (data && data.trim() !== '') {
+                localStorage.setItem(toSlot, data);
+            } else {
+                localStorage.removeItem(toSlot);
+            }
+        }
     }
-    localStorage.removeItem('trellisSave_slot1');
+
+    // Clear the first slot for a truly new game
+    localStorage.removeItem(firstSlotKey);
     initGame(false, 'slot1');
 });
 
