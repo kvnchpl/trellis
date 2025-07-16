@@ -176,8 +176,18 @@ document.getElementById('new-game').addEventListener('click', () => {
         }
     }
 
-    // Start a fresh new game in slot2 after rotating previous save
-    localStorage.removeItem(firstSlotKey);
+    // Ensure slot1 remains a valid saved game when rotated
+    if (isValidSave) {
+        // Do nothing extra; slot1 already contains previous save data until we remove it below
+    }
+
+    // Only clear slot1 for the new game after rotation; keep rotated data in slot2
+    if (isValidSave) {
+        // Do not remove slot1 data until after it has been shifted to slot2
+        // Instead of removing, leave slot1 intact as a valid save
+    } else {
+        localStorage.removeItem(firstSlotKey);
+    }
     const newActiveSlot = isValidSave ? 'slot2' : 'slot1';
     localStorage.setItem('trellisCurrentSlot', newActiveSlot);
     initGame(false, newActiveSlot);
