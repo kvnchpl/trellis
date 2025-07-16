@@ -71,6 +71,9 @@ canvas {
 
 #tile-image {
     width: 50%;
+    height: auto;
+    display: none;
+    margin-bottom: var(--spacing-base);
 }
 
 #tile-details p {
