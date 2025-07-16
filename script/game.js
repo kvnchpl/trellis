@@ -45,10 +45,12 @@ function listSaveSlots() {
                 isValidSave = false;
             }
         }
-        console.log(`Slot ${i} - valid?`, isValidSave, "current?", currentSlot === slotId, "data:", data);
+        // Use updated current calculation: both name and valid data
+        const current = (slotId === currentSlot && data !== null);
+        console.log(`Slot ${i} - valid?`, isValidSave, "current?", current, "data:", data);
 
         if (isValidSave) {
-            if (currentSlot === slotId) {
+            if (current) {
                 button.textContent = `Slot ${i} [ACTIVE]`;
                 button.disabled = true;
             } else {
@@ -57,7 +59,7 @@ function listSaveSlots() {
                 button.addEventListener('click', () => initGame(true, slotId));
             }
         } else {
-            if (currentSlot === slotId) {
+            if (current) {
                 // Only show [ACTIVE] if we've actually started a game in this slot (unsaved)
                 button.textContent = `Slot ${i} [ACTIVE]`;
                 button.disabled = true;
@@ -153,47 +155,64 @@ initGame(true).catch((err) => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
-    console.log("=== New Game Clicked ===");
-    const firstSlotData = localStorage.getItem('trellisSave_slot1');
-    console.log("Current slot1 data:", firstSlotData);
-    let hasValidSave = false;
-    if (firstSlotData) {
-        try {
-            const parsed = JSON.parse(firstSlotData);
-            if (parsed && typeof parsed === 'object' && parsed.player) {
-                hasValidSave = true;
-            }
-        } catch {
-            hasValidSave = false;
-        }
-    }
-    console.log("Has valid save in slot1?", hasValidSave);
-
-    // Rotate only if slot1 actually has a valid save
-    if (hasValidSave) {
-        console.log("Rotating save slots...");
-        for (let i = config.maxSaveSlots; i > 1; i--) {
-            const fromSlot = `trellisSave_slot${i - 1}`;
-            const toSlot = `trellisSave_slot${i}`;
-            const data = localStorage.getItem(fromSlot);
-            console.log(`Moving ${fromSlot} -> ${toSlot}`, data);
-            if (data) {
-                localStorage.setItem(toSlot, data);
-            } else {
-                localStorage.removeItem(toSlot);
-            }
-        }
-    }
-
-    // Clear slot1 for the new game and mark current slot as null until first auto-save
-    console.log("Clearing slot1 and resetting current slot");
-    localStorage.removeItem('trellisSave_slot1');
-    localStorage.removeItem('trellisCurrentSlot');
-    console.log("After clear: slot1:", localStorage.getItem('trellisSave_slot1'),
-        "slot2:", localStorage.getItem('trellisSave_slot2'),
-        "slot3:", localStorage.getItem('trellisSave_slot3'),
-        "current:", localStorage.getItem('trellisCurrentSlot'));
-    initGame(false, 'slot1');
+    startNewGame();
 });
+
+// Helper: rotates save slots, moving slot1 to slot2, slot2 to slot3, etc.
+function rotateSaveSlots() {
+    for (let i = config.maxSaveSlots; i > 1; i--) {
+        const fromSlot = `trellisSave_slot${i - 1}`;
+        const toSlot = `trellisSave_slot${i}`;
+        const data = localStorage.getItem(fromSlot);
+        if (data) {
+            localStorage.setItem(toSlot, data);
+        } else {
+            localStorage.removeItem(toSlot);
+        }
+    }
+}
+
+// Helper: clear only the specified slot's data
+function clearSlot(slotName) {
+    localStorage.removeItem("trellisSave_" + slotName);
+    console.log("Cleared slot:", slotName);
+}
+
+// Helper: create a new blank game state
+function createNewGameState() {
+    return {
+        player: { x: 0, y: 0 },
+        selector: { x: 0, y: 0 },
+        map: {}
+    };
+}
+
+// Helper: save a given game state to the current slot
+function saveGame(gameStateObj) {
+    const slot = trellisCurrentSlot || 'slot1';
+    localStorage.setItem(`trellisSave_${slot}`, JSON.stringify(gameStateObj));
+    localStorage.setItem('trellisCurrentSlot', slot);
+}
+
+// NewGame: rotates saves, clears slot1, sets slot1 as current, and saves a fresh state
+function startNewGame() {
+    console.log("=== Starting New Game ===");
+
+    // Rotate existing saves first
+    rotateSaveSlots();
+
+    // Clear slot1 to prepare for new data
+    clearSlot("slot1");
+
+    // Set current slot to slot1 now that it's cleared
+    trellisCurrentSlot = "slot1";
+
+    // Create and immediately save a fresh game state to ensure slot1 is valid
+    const newGameState = createNewGameState();
+    saveGame(newGameState);
+
+    // Log updated slot states
+    listSaveSlots();
+}
 
 export { saveGameState };
