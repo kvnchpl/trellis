@@ -20,6 +20,8 @@ async function loadConfig() {
 }
 
 function listSaveSlots() {
+    console.log("=== Listing Save Slots ===");
+    console.log("trellisCurrentSlot:", localStorage.getItem('trellisCurrentSlot'));
     const container = document.getElementById('save-slots');
     if (!container) return;
     container.innerHTML = '';
@@ -43,6 +45,7 @@ function listSaveSlots() {
                 isValidSave = false;
             }
         }
+        console.log(`Slot ${i} - valid?`, isValidSave, "current?", currentSlot === slotId, "data:", data);
 
         if (isValidSave) {
             if (currentSlot === slotId) {
@@ -150,7 +153,9 @@ initGame(true).catch((err) => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
+    console.log("=== New Game Clicked ===");
     const firstSlotData = localStorage.getItem('trellisSave_slot1');
+    console.log("Current slot1 data:", firstSlotData);
     let hasValidSave = false;
     if (firstSlotData) {
         try {
@@ -162,13 +167,16 @@ document.getElementById('new-game').addEventListener('click', () => {
             hasValidSave = false;
         }
     }
+    console.log("Has valid save in slot1?", hasValidSave);
 
     // Rotate only if slot1 actually has a valid save
     if (hasValidSave) {
+        console.log("Rotating save slots...");
         for (let i = config.maxSaveSlots; i > 1; i--) {
             const fromSlot = `trellisSave_slot${i - 1}`;
             const toSlot = `trellisSave_slot${i}`;
             const data = localStorage.getItem(fromSlot);
+            console.log(`Moving ${fromSlot} -> ${toSlot}`, data);
             if (data) {
                 localStorage.setItem(toSlot, data);
             } else {
@@ -178,8 +186,13 @@ document.getElementById('new-game').addEventListener('click', () => {
     }
 
     // Clear slot1 for the new game and mark current slot as null until first auto-save
+    console.log("Clearing slot1 and resetting current slot");
     localStorage.removeItem('trellisSave_slot1');
     localStorage.removeItem('trellisCurrentSlot');
+    console.log("After clear: slot1:", localStorage.getItem('trellisSave_slot1'),
+        "slot2:", localStorage.getItem('trellisSave_slot2'),
+        "slot3:", localStorage.getItem('trellisSave_slot3'),
+        "current:", localStorage.getItem('trellisCurrentSlot'));
     initGame(false, 'slot1');
 });
 
