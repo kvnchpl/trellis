@@ -48,7 +48,7 @@ export function updateTileInfoPanel(config) {
             value = '–';
         }
 
-        p.innerHTML = `<strong>${key}:</strong> <span>${value}</span>`;
+        p.innerHTML = `<strong>${key}:</strong> <span id="tile-value-${key}">${value}</span>`;
         detailsEl.appendChild(p);
     });
 
@@ -97,13 +97,15 @@ export function updateTileInfoPanel(config) {
 
                 // Re-fetch updated tile before updating the info panel
                 updateTileInfoPanel(config);
-                // Highlight the info panel with a quick animation
-                const panel = document.getElementById('info-panel');
-                if (panel) {
-                    panel.classList.remove('highlight-update');
-                    void panel.offsetWidth; // force reflow to restart animation
-                    panel.classList.add('highlight-update');
-                }
+                // Highlight only changed values
+                Object.entries(actionDef.effect).forEach(([key]) => {
+                    const el = document.getElementById(`tile-value-${key}`);
+                    if (el) {
+                        el.classList.remove('value-changed');
+                        void el.offsetWidth; // force reflow
+                        el.classList.add('value-changed');
+                    }
+                });
 
                 saveGameState();
                 incrementTime(config.actionTimeIncrement, config);
