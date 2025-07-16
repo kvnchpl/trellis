@@ -1,0 +1,20 @@
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Node / local development tools (if used)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Local server / build artifacts
+dist/
+build/
+.cache/
+*.log
+
+# Editor & IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
