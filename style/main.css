@@ -105,17 +105,19 @@ canvas {
 }
 
 .value-changed {
-    animation: valueFlash 0.6s ease;
+    animation: valueFlash 2s ease;
 }
 
 @keyframes valueFlash {
     0% {
-        background-color: #666;
+        color: yellow;
+    }
+
+    50% {
         color: yellow;
     }
 
     100% {
-        background-color: transparent;
         color: var(--text-color);
     }
 }
