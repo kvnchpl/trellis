@@ -69,22 +69,9 @@ function listSaveSlots() {
 }
 
 function saveGameState(slot = null) {
-    const targetSlot = slot || 'slot1';
+    const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
 
-    // Rotate only when saving to slot1 (i.e., starting a new run)
-    if (targetSlot === 'slot1') {
-        for (let i = config.maxSaveSlots; i > 1; i--) {
-            const fromSlot = `trellisSave_slot${i - 1}`;
-            const toSlot = `trellisSave_slot${i}`;
-            const data = localStorage.getItem(fromSlot);
-            if (data) {
-                localStorage.setItem(toSlot, data);
-            } else {
-                localStorage.removeItem(toSlot);
-            }
-        }
-    }
-
+    // Overwrite the active slot
     localStorage.setItem(`trellisSave_${targetSlot}`, JSON.stringify({
         player: gameState.player,
         selector: gameState.selector,
@@ -163,7 +150,19 @@ initGame(true).catch((err) => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
-    // Start fresh: clear slot1 and reset current active slot
+    // Rotate previous saves BEFORE clearing slot1
+    for (let i = config.maxSaveSlots; i > 1; i--) {
+        const fromSlot = `trellisSave_slot${i - 1}`;
+        const toSlot = `trellisSave_slot${i}`;
+        const data = localStorage.getItem(fromSlot);
+        if (data) {
+            localStorage.setItem(toSlot, data);
+        } else {
+            localStorage.removeItem(toSlot);
+        }
+    }
+
+    // Clear slot1 for the new game
     localStorage.removeItem('trellisSave_slot1');
     localStorage.setItem('trellisCurrentSlot', 'slot1');
     initGame(false, 'slot1');
