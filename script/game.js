@@ -153,7 +153,7 @@ document.getElementById('new-game').addEventListener('click', () => {
     const firstSlotKey = 'trellisSave_slot1';
     const firstSlotData = localStorage.getItem(firstSlotKey);
 
-    // Only rotate if slot1 has valid JSON (a real save)
+    // Only rotate if slot1 has a valid save
     let isValidSave = false;
     if (firstSlotData) {
         try {
@@ -179,7 +179,7 @@ document.getElementById('new-game').addEventListener('click', () => {
         }
     }
 
-    // Clear slot1 for new game
+    // Start a fresh new game in slot1
     localStorage.removeItem(firstSlotKey);
     localStorage.setItem('trellisCurrentSlot', 'slot1');
     initGame(false, 'slot1');
