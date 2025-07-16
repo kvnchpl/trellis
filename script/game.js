@@ -69,13 +69,29 @@ function listSaveSlots() {
 }
 
 function saveGameState(slot = null) {
-    const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
+    const targetSlot = slot || 'slot1';
+
+    // Rotate only when saving to slot1 (i.e., starting a new run)
+    if (targetSlot === 'slot1') {
+        for (let i = config.maxSaveSlots; i > 1; i--) {
+            const fromSlot = `trellisSave_slot${i - 1}`;
+            const toSlot = `trellisSave_slot${i}`;
+            const data = localStorage.getItem(fromSlot);
+            if (data) {
+                localStorage.setItem(toSlot, data);
+            } else {
+                localStorage.removeItem(toSlot);
+            }
+        }
+    }
+
     localStorage.setItem(`trellisSave_${targetSlot}`, JSON.stringify({
         player: gameState.player,
         selector: gameState.selector,
         map: gameState.map,
         revealed: gameState.revealed
     }));
+
     localStorage.setItem('trellisCurrentSlot', targetSlot);
     listSaveSlots();
 }
@@ -147,46 +163,10 @@ initGame(true).catch((err) => {
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
-    const firstSlotKey = 'trellisSave_slot1';
-    const firstSlotData = localStorage.getItem(firstSlotKey);
-
-    // Only rotate if slot1 has a valid save
-    let isValidSave = false;
-    if (firstSlotData) {
-        try {
-            const parsed = JSON.parse(firstSlotData);
-            if (parsed && typeof parsed === 'object' && parsed.player) {
-                isValidSave = true;
-            }
-        } catch (e) {
-            isValidSave = false;
-        }
-    }
-
-    if (isValidSave) {
-        for (let i = config.maxSaveSlots; i > 1; i--) {
-            const fromSlot = `trellisSave_slot${i - 1}`;
-            const toSlot = `trellisSave_slot${i}`;
-            const data = localStorage.getItem(fromSlot);
-            if (data) {
-                localStorage.setItem(toSlot, data);
-            } else {
-                localStorage.removeItem(toSlot);
-            }
-        }
-    }
-
-    // After rotation, clear slot1 to start a brand new game there
-    if (isValidSave) {
-        localStorage.removeItem(firstSlotKey);
-    }
-
-    // Determine the new active slot:
-    // If we rotated (valid save existed), we are starting fresh in slot1 again
-    // If no valid save, we also start in slot1
-    const newActiveSlot = 'slot1';
-    localStorage.setItem('trellisCurrentSlot', newActiveSlot);
-    initGame(false, newActiveSlot);
+    // Start fresh: clear slot1 and reset current active slot
+    localStorage.removeItem('trellisSave_slot1');
+    localStorage.setItem('trellisCurrentSlot', 'slot1');
+    initGame(false, 'slot1');
 });
 
 export { saveGameState };
