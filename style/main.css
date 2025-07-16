@@ -103,3 +103,12 @@ canvas {
     font-weight: bold;
     text-align: center;
 }
+
+.highlight-update {
+    animation: flashUpdate 0.5s ease;
+}
+
+@keyframes flashUpdate {
+    0% { background-color: #444; }
+    100% { background-color: var(--canvas-background); }
+}

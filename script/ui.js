@@ -97,6 +97,13 @@ export function updateTileInfoPanel(config) {
 
                 // Re-fetch updated tile before updating the info panel
                 updateTileInfoPanel(config);
+                // Highlight the info panel with a quick animation
+                const panel = document.getElementById('info-panel');
+                if (panel) {
+                    panel.classList.remove('highlight-update');
+                    void panel.offsetWidth; // force reflow to restart animation
+                    panel.classList.add('highlight-update');
+                }
 
                 saveGameState();
                 incrementTime(config.actionTimeIncrement, config);
