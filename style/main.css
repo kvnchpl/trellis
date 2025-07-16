@@ -111,9 +111,11 @@ canvas {
 @keyframes valueFlash {
     0% {
         background-color: #666;
+        color: yellow;
     }
 
     100% {
         background-color: transparent;
+        color: var(--text-color);
     }
 }
