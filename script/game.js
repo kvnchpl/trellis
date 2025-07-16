@@ -189,7 +189,7 @@ function createNewGameState() {
 
 // Helper: save a given game state to the current slot
 function saveGame(gameStateObj) {
-    const slot = trellisCurrentSlot || 'slot1';
+    const slot = localStorage.getItem('trellisCurrentSlot') || 'slot1';
     localStorage.setItem(`trellisSave_${slot}`, JSON.stringify(gameStateObj));
     localStorage.setItem('trellisCurrentSlot', slot);
 }
@@ -204,8 +204,8 @@ function startNewGame() {
     // Clear slot1 to prepare for new data
     clearSlot("slot1");
 
-    // Set current slot to slot1 now that it's cleared
-    trellisCurrentSlot = "slot1";
+    // Properly set current slot in localStorage
+    localStorage.setItem('trellisCurrentSlot', 'slot1');
 
     // Create and immediately save a fresh game state to ensure slot1 is valid
     const newGameState = createNewGameState();
