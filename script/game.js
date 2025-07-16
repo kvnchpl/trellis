@@ -176,10 +176,11 @@ document.getElementById('new-game').addEventListener('click', () => {
         }
     }
 
-    // Start a fresh new game in slot1
+    // Start a fresh new game in slot2 after rotating previous save
     localStorage.removeItem(firstSlotKey);
-    localStorage.setItem('trellisCurrentSlot', 'slot1');
-    initGame(false, 'slot1');
+    const newActiveSlot = isValidSave ? 'slot2' : 'slot1';
+    localStorage.setItem('trellisCurrentSlot', newActiveSlot);
+    initGame(false, newActiveSlot);
 });
 
 export { saveGameState };
