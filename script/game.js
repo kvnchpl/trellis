@@ -24,18 +24,14 @@ function listSaveSlots() {
     if (!container) return;
     container.innerHTML = '';
 
-    let currentSlot = localStorage.getItem('trellisCurrentSlot');
-    if (!currentSlot) {
-        currentSlot = 'slot1';
-        localStorage.setItem('trellisCurrentSlot', currentSlot);
-    }
+    const currentSlot = localStorage.getItem('trellisCurrentSlot') || null;
 
     for (let i = 1; i <= config.maxSaveSlots; i++) {
-        const slotKey = `trellisSave_slot${i}`;
+        const slotId = `slot${i}`;
+        const slotKey = `trellisSave_${slotId}`;
         const data = localStorage.getItem(slotKey);
         const button = document.createElement('button');
 
-        // Check for valid save
         let isValidSave = false;
         if (data) {
             try {
@@ -43,30 +39,29 @@ function listSaveSlots() {
                 if (parsed && typeof parsed === 'object' && parsed.player) {
                     isValidSave = true;
                 }
-            } catch (e) {
+            } catch {
                 isValidSave = false;
             }
         }
 
-        // Determine label & behavior
-        const slotId = `slot${i}`;
-        if (currentSlot === slotId && isValidSave) {
-            // Active slot
-            button.textContent = `Slot ${i} [ACTIVE]`;
-            button.disabled = true;
-        } else if (isValidSave) {
-            // Saved but not active
-            button.textContent = `Load Slot ${i}`;
-            button.disabled = false;
-            button.addEventListener('click', () => initGame(true, slotId));
-        } else if (currentSlot === slotId && !isValidSave) {
-            // Empty but currently active slot (fresh game)
-            button.textContent = `Slot ${i} [ACTIVE]`;
-            button.disabled = true;
+        if (isValidSave) {
+            if (currentSlot === slotId) {
+                button.textContent = `Slot ${i} [ACTIVE]`;
+                button.disabled = true;
+            } else {
+                button.textContent = `Load Slot ${i}`;
+                button.disabled = false;
+                button.addEventListener('click', () => initGame(true, slotId));
+            }
         } else {
-            // Fully empty
-            button.textContent = `Empty Slot ${i}`;
-            button.disabled = true;
+            if (currentSlot === slotId) {
+                // Only show [ACTIVE] if we've actually started a game in this slot (unsaved)
+                button.textContent = `Slot ${i} [ACTIVE]`;
+                button.disabled = true;
+            } else {
+                button.textContent = `Empty Slot ${i}`;
+                button.disabled = true;
+            }
         }
 
         container.appendChild(button);
@@ -74,17 +69,15 @@ function listSaveSlots() {
 }
 
 function saveGameState(slot = null) {
-    const saveData = {
+    const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
+    localStorage.setItem(`trellisSave_${targetSlot}`, JSON.stringify({
         player: gameState.player,
         selector: gameState.selector,
         map: gameState.map,
         revealed: gameState.revealed
-    };
-    const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
-    localStorage.setItem(`trellisSave_${targetSlot}`, JSON.stringify(saveData));
+    }));
     localStorage.setItem('trellisCurrentSlot', targetSlot);
-
-    listSaveSlots(); // refresh immediately after save
+    listSaveSlots();
 }
 
 function loadGameState(slot = null) {
@@ -122,7 +115,12 @@ async function initGame(loadExisting = false, slot = null) {
     if (loadExisting && loadGameState(slot)) {
         console.log('Loaded game from localStorage.');
     } else {
-        localStorage.setItem('trellisCurrentSlot', slot || 'slot1');
+        // Only set trellisCurrentSlot when actually starting a new game
+        if (slot) {
+            localStorage.setItem('trellisCurrentSlot', slot);
+        } else if (!localStorage.getItem('trellisCurrentSlot')) {
+            // Do NOT set by default on page load; leave null until first save/move
+        }
         generateMap(config);
     }
 
@@ -131,8 +129,7 @@ async function initGame(loadExisting = false, slot = null) {
     updateTimePanel(config);
     render(config);
     updateTileInfoPanel(config);
-
-    listSaveSlots(); // ensure correct slot labels right after init
+    listSaveSlots();
     requestAnimationFrame(() => gameLoop(config));
 }
 
