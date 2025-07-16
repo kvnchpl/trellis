@@ -24,7 +24,6 @@ function listSaveSlots() {
     if (!container) return;
     container.innerHTML = '';
 
-    // Ensure trellisCurrentSlot is always set
     let currentSlot = localStorage.getItem('trellisCurrentSlot');
     if (!currentSlot) {
         currentSlot = 'slot1';
@@ -36,6 +35,7 @@ function listSaveSlots() {
         const data = localStorage.getItem(slotKey);
         const button = document.createElement('button');
 
+        // Check for valid save
         let isValidSave = false;
         if (data) {
             try {
@@ -48,11 +48,23 @@ function listSaveSlots() {
             }
         }
 
-        if (isValidSave) {
-            button.textContent = `Load Slot ${i}` + (currentSlot === `slot${i}` ? ' [ACTIVE]' : '');
-            button.disabled = currentSlot === `slot${i}`;
-            button.addEventListener('click', () => initGame(true, `slot${i}`));
+        // Determine label & behavior
+        const slotId = `slot${i}`;
+        if (currentSlot === slotId && isValidSave) {
+            // Active slot
+            button.textContent = `Slot ${i} [ACTIVE]`;
+            button.disabled = true;
+        } else if (isValidSave) {
+            // Saved but not active
+            button.textContent = `Load Slot ${i}`;
+            button.disabled = false;
+            button.addEventListener('click', () => initGame(true, slotId));
+        } else if (currentSlot === slotId && !isValidSave) {
+            // Empty but currently active slot (fresh game)
+            button.textContent = `Slot ${i} [ACTIVE]`;
+            button.disabled = true;
         } else {
+            // Fully empty
             button.textContent = `Empty Slot ${i}`;
             button.disabled = true;
         }
@@ -72,8 +84,7 @@ function saveGameState(slot = null) {
     localStorage.setItem(`trellisSave_${targetSlot}`, JSON.stringify(saveData));
     localStorage.setItem('trellisCurrentSlot', targetSlot);
 
-    // Refresh UI immediately after saving
-    listSaveSlots();
+    listSaveSlots(); // refresh immediately after save
 }
 
 function loadGameState(slot = null) {
@@ -121,9 +132,7 @@ async function initGame(loadExisting = false, slot = null) {
     render(config);
     updateTileInfoPanel(config);
 
-    // Make sure active slot text updates instantly
-    listSaveSlots();
-
+    listSaveSlots(); // ensure correct slot labels right after init
     requestAnimationFrame(() => gameLoop(config));
 }
 
