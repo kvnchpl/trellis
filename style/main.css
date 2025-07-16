@@ -6,7 +6,7 @@
     --font-family: monospace;
     --text-color: #fff;
     --hover-bg: #444;
-    --panel-width: 200px;
+    --panel-width: 300px;
     --font-base: 14px;
     --font-small: calc(var(--font-base) * 0.85);
     --font-medium: var(--font-base);
@@ -67,6 +67,10 @@ canvas {
     margin-bottom: var(--spacing-medium);
     color: var(--text-color);
     font-family: var(--font-family);
+}
+
+#tile-image {
+    width: 50%;
 }
 
 #tile-details p {
