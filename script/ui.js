@@ -259,6 +259,8 @@ function updateGrowth(config) {
         tile.moisture = Math.max(0, tile.moisture - def.moistureUse);
         tile.fertility = Math.max(0, tile.fertility - def.fertilityUse);
     }
+    // Refresh tile info panel to reflect updated growth stage and image
+    updateTileInfoPanel(config);
 }
 
 export { incrementTime };
