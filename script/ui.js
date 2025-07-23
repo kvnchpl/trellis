@@ -6,15 +6,20 @@ export function updateTileInfoPanel(config) {
     const detailsEl = document.getElementById('tile-details');
     const actionsEl = document.getElementById('tile-actions');
 
-    // Show tile image if available
+    // Show tile image if available (prefer plant image if plantType present)
     const imageEl = document.getElementById('tile-image');
     if (imageEl) {
-        const imageKey = tile.tile;
-        if (imageKey && config.tileImagePaths && config.tileImagePaths[imageKey]) {
-            imageEl.src = config.tileImagePaths[imageKey];
+        if (tile.plantType && config.plantImagePaths && config.plantImagePaths[tile.plantType]) {
+            imageEl.src = config.plantImagePaths[tile.plantType];
             imageEl.style.display = 'block';
         } else {
-            imageEl.style.display = 'none';
+            const imageKey = tile.tile;
+            if (imageKey && config.tileImagePaths && config.tileImagePaths[imageKey]) {
+                imageEl.src = config.tileImagePaths[imageKey];
+                imageEl.style.display = 'block';
+            } else {
+                imageEl.style.display = 'none';
+            }
         }
     }
 

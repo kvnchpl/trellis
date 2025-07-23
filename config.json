@@ -20,6 +20,16 @@
         "grass": "assets/tiles/grass.png",
         "rock": "assets/tiles/rock.png"
     },
+    "plantImagePaths": {
+        "strawberry": "assets/plants/strawberry.png",
+        "apple": "assets/plants/apple.png",
+        "pumpkin": "assets/plants/pumpkin.png",
+        "beans": "assets/plants/beans.png",
+        "corn": "assets/plants/corn.png",
+        "walnut": "assets/plants/walnut.png",
+        "sugarMaple": "assets/plants/sugar_maple.png",
+        "milkweed": "assets/plants/milkweed.png"
+    },
     "fogColor": "#000000",
     "fogOpacity": 0.8,
     "outOfBoundsColor": "#111",
