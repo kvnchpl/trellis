@@ -48,6 +48,9 @@ export function initState(config) {
     gameState.map[startingKey] = {
         tile: "soil",
         plant: null,
+        plantType: null,
+        growthStage: null,
+        growthProgress: 0,
         moisture: 0,
         fertility: 0,
         weeds: false,
@@ -82,6 +85,9 @@ export function getTile(x, y, config) {
         gameState.map[key] = {
             tile: weightedRandomTile(config.initialTileWeights),
             plant: null,
+            plantType: null,
+            growthStage: null,
+            growthProgress: 0,
             moisture: 0,
             fertility: 0,
             weeds: false,

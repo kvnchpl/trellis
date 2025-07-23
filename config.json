@@ -198,6 +198,98 @@
         "flower": "Flower",
         "tree": "Tree"
     },
+    "plantDefinitions": {
+        "strawberry": {
+            "growthStages": [
+                "sprout",
+                "flower",
+                "fruiting"
+            ],
+            "growthTime": 2,
+            "harvestable": true,
+            "yield": "Strawberries",
+            "moistureUse": 5,
+            "fertilityUse": 2
+        },
+        "apple": {
+            "growthStages": [
+                "sapling",
+                "tree",
+                "fruiting"
+            ],
+            "growthTime": 6,
+            "harvestable": true,
+            "yield": "Apples",
+            "moistureUse": 8,
+            "fertilityUse": 5
+        },
+        "pumpkin": {
+            "growthStages": [
+                "sprout",
+                "vine",
+                "fruiting"
+            ],
+            "growthTime": 4,
+            "harvestable": true,
+            "yield": "Pumpkins",
+            "moistureUse": 6,
+            "fertilityUse": 3
+        },
+        "beans": {
+            "growthStages": [
+                "sprout",
+                "flower",
+                "pod"
+            ],
+            "growthTime": 2,
+            "harvestable": true,
+            "yield": "Bean Pods",
+            "moistureUse": 4,
+            "fertilityUse": 2
+        },
+        "corn": {
+            "growthStages": [
+                "shoot",
+                "stalk",
+                "cob"
+            ],
+            "growthTime": 3,
+            "harvestable": true,
+            "yield": "Corn Cobs",
+            "moistureUse": 6,
+            "fertilityUse": 3
+        },
+        "walnut": {
+            "growthStages": [
+                "sapling",
+                "tree"
+            ],
+            "growthTime": 10,
+            "harvestable": false,
+            "moistureUse": 5,
+            "fertilityUse": 4
+        },
+        "sugarMaple": {
+            "growthStages": [
+                "sapling",
+                "tree"
+            ],
+            "growthTime": 12,
+            "harvestable": false,
+            "moistureUse": 4,
+            "fertilityUse": 4
+        },
+        "milkweed": {
+            "growthStages": [
+                "sprout",
+                "flower"
+            ],
+            "growthTime": 3,
+            "harvestable": false,
+            "moistureUse": 2,
+            "fertilityUse": 1
+        }
+    },
     "keyBindings": {
         "up": "ArrowUp",
         "down": "ArrowDown",

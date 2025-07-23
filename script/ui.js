@@ -76,6 +76,9 @@ export function updateTileInfoPanel(config) {
         const isValid = evaluateCondition(actionDef.condition);
         console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:', tile);
         if (isValid) {
+            if (actionLabel === "harvest" && tile.plantType && !config.plantDefinitions[tile.plantType]?.harvestable) {
+                continue; // skip harvest button for non-harvestable plants
+            }
             const btn = document.createElement('button');
             btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
             btn.onclick = () => {
@@ -84,18 +87,31 @@ export function updateTileInfoPanel(config) {
 
                 // Create a new tile object for the mutation
                 const newTile = { ...tile };
-                Object.entries(actionDef.effect).forEach(([key, change]) => {
-                    if (typeof change === 'object') {
-                        if ('inc' in change) {
-                            newTile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
-                        }
-                        if ('dec' in change) {
-                            newTile[key] = Math.max(config[`${key}Range`].min, tile[key] - change.dec);
-                        }
-                    } else {
-                        newTile[key] = change;
+                if (actionLabel === "plant") {
+                    const options = Object.keys(config.plantDefinitions);
+                    const choice = prompt("Choose a plant to plant:\n" + options.join(", "));
+                    if (!choice || !config.plantDefinitions[choice]) {
+                        console.log("Invalid plant choice.");
+                        console.groupEnd();
+                        return;
                     }
-                });
+                    newTile.plantType = choice;
+                    newTile.growthStage = config.plantDefinitions[choice].growthStages[0];
+                    newTile.growthProgress = 0;
+                } else {
+                    Object.entries(actionDef.effect).forEach(([key, change]) => {
+                        if (typeof change === 'object') {
+                            if ('inc' in change) {
+                                newTile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
+                            }
+                            if ('dec' in change) {
+                                newTile[key] = Math.max(config[`${key}Range`].min, tile[key] - change.dec);
+                            }
+                        } else {
+                            newTile[key] = change;
+                        }
+                    });
+                }
 
                 // Replace the tile in the map with the new object
                 gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
@@ -105,14 +121,25 @@ export function updateTileInfoPanel(config) {
                 // Re-fetch updated tile before updating the info panel
                 updateTileInfoPanel(config);
                 // Highlight only changed values
-                Object.entries(actionDef.effect).forEach(([key]) => {
-                    const el = document.getElementById(`tile-value-${key}`);
-                    if (el) {
-                        el.classList.remove('value-changed');
-                        void el.offsetWidth; // force reflow
-                        el.classList.add('value-changed');
-                    }
-                });
+                if (actionLabel === "plant") {
+                    ["plantType", "growthStage", "growthProgress"].forEach((key) => {
+                        const el = document.getElementById(`tile-value-${key}`);
+                        if (el) {
+                            el.classList.remove('value-changed');
+                            void el.offsetWidth; // force reflow
+                            el.classList.add('value-changed');
+                        }
+                    });
+                } else {
+                    Object.entries(actionDef.effect).forEach(([key]) => {
+                        const el = document.getElementById(`tile-value-${key}`);
+                        if (el) {
+                            el.classList.remove('value-changed');
+                            void el.offsetWidth; // force reflow
+                            el.classList.add('value-changed');
+                        }
+                    });
+                }
 
                 saveGameState();
                 incrementTime(config.actionTimeIncrement, config);
@@ -150,8 +177,32 @@ function incrementTime(minutes, config) {
             time.week = 1;
             time.seasonIndex = (time.seasonIndex + 1) % config.seasons.length;
         }
+        updateGrowth(config);
     }
     updateTimePanel(config);
+}
+
+function updateGrowth(config) {
+    for (const tile of Object.values(gameState.map)) {
+        if (!tile.plantType) continue;
+        const def = config.plantDefinitions[tile.plantType];
+        if (!def) continue;
+
+        tile.growthProgress++;
+        if (tile.growthProgress >= def.growthTime) {
+            const idx = def.growthStages.indexOf(tile.growthStage);
+            if (idx < def.growthStages.length - 1) {
+                tile.growthStage = def.growthStages[idx + 1];
+                tile.growthProgress = 0;
+                if (def.harvestable && tile.growthStage === def.growthStages[def.growthStages.length - 1]) {
+                    tile.readyToHarvest = true;
+                }
+            }
+        }
+
+        tile.moisture = Math.max(0, tile.moisture - def.moistureUse);
+        tile.fertility = Math.max(0, tile.fertility - def.fertilityUse);
+    }
 }
 
 export { incrementTime };
