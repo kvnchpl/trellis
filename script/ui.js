@@ -53,20 +53,27 @@ export function updateTileInfoPanel(config) {
     });
 
     for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
-        const isValid = Object.entries(actionDef.condition).every(([key, cond]) => {
-            const current = tile[key];
-            if (cond === 'exists') {
-                if (current === null || current === undefined) return false;
-            } else if (typeof cond === 'object' && cond !== null) {
-                if ('lt' in cond && !(current < cond.lt)) return false;
-                if ('gt' in cond && !(current > cond.gt)) return false;
-                if ('lte' in cond && !(current <= cond.lte)) return false;
-                if ('gte' in cond && !(current >= cond.gte)) return false;
-            } else {
-                if (current !== cond) return false;
+        function evaluateCondition(condObj) {
+            if (condObj.or && Array.isArray(condObj.or)) {
+                return condObj.or.some(c => evaluateCondition(c));
             }
-            return true;
-        });
+            return Object.entries(condObj).every(([key, cond]) => {
+                const current = tile[key];
+                if (cond === 'exists') {
+                    return !(current === null || current === undefined);
+                } else if (typeof cond === 'object' && cond !== null) {
+                    if ('not' in cond) return current !== cond.not;
+                    if ('lt' in cond && !(current < cond.lt)) return false;
+                    if ('gt' in cond && !(current > cond.gt)) return false;
+                    if ('lte' in cond && !(current <= cond.lte)) return false;
+                    if ('gte' in cond && !(current >= cond.gte)) return false;
+                } else {
+                    if (current !== cond) return false;
+                }
+                return true;
+            });
+        }
+        const isValid = evaluateCondition(actionDef.condition);
         console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:', tile);
         if (isValid) {
             const btn = document.createElement('button');

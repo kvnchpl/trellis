@@ -49,7 +49,11 @@ export function initState(config) {
         tile: "soil",
         plant: null,
         moisture: 0,
-        fertility: 0
+        fertility: 0,
+        weeds: false,
+        mulch: false,
+        readyToHarvest: false,
+        fertilized: false
     };
 }
 
@@ -79,7 +83,11 @@ export function getTile(x, y, config) {
             tile: weightedRandomTile(config.initialTileWeights),
             plant: null,
             moisture: 0,
-            fertility: 0
+            fertility: 0,
+            weeds: false,
+            mulch: false,
+            readyToHarvest: false,
+            fertilized: false
         };
     }
     return gameState.map[key];

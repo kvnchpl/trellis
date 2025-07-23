@@ -60,12 +60,89 @@
                 }
             }
         },
-        "clear": {
+        "fertilize": {
             "condition": {
-                "plant": "exists"
+                "tile": "tilled",
+                "fertility": {
+                    "lt": 100
+                }
             },
             "effect": {
+                "fertility": {
+                    "inc": 20
+                },
+                "fertilized": true
+            }
+        },
+        "plant": {
+            "condition": {
+                "tile": "tilled",
                 "plant": null
+            },
+            "effect": {
+                "plant": "sprout",
+                "fertility": {
+                    "dec": 5
+                }
+            }
+        },
+        "mulch": {
+            "condition": {
+                "tile": "tilled",
+                "mulch": false
+            },
+            "effect": {
+                "mulch": true
+            }
+        },
+        "weed": {
+            "condition": {
+                "weeds": true
+            },
+            "effect": {
+                "weeds": false,
+                "fertility": {
+                    "inc": 5
+                }
+            }
+        },
+        "harvest": {
+            "condition": {
+                "readyToHarvest": true
+            },
+            "effect": {
+                "plant": null,
+                "readyToHarvest": false,
+                "fertility": {
+                    "dec": 10
+                },
+                "moisture": 0
+            }
+        },
+        "clear": {
+            "condition": {
+                "or": [
+                    {
+                        "plant": {
+                            "not": null
+                        }
+                    },
+                    {
+                        "weeds": true
+                    },
+                    {
+                        "mulch": true
+                    }
+                ]
+            },
+            "effect": {
+                "tile": "soil",
+                "plant": null,
+                "mulch": false,
+                "weeds": false,
+                "fertility": {
+                    "dec": 10
+                }
             }
         }
     },
