@@ -50,7 +50,7 @@ function loadGameState() {
 
 function startNewGame() {
     if (localStorage.getItem("trellisSave")) {
-        const confirmNew = confirm("Start a new game? This will overwrite your current progress.");
+        const confirmNew = confirm("start a new game? this will overwrite your current progress.");
         if (!confirmNew) return;
     }
     localStorage.removeItem("trellisSave");
