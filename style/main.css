@@ -94,6 +94,18 @@ canvas {
     cursor: pointer;
 }
 
+#plant-select {
+    display: block;
+    margin-top: var(--spacing-medium);
+    padding: calc(var(--spacing-medium) / 3);
+    font-family: var(--font-family);
+    font-size: var(--font-small);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+}
+
 #tile-actions button:hover {
     background-color: var(--hover-bg);
 }

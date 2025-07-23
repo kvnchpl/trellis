@@ -21,7 +21,7 @@ export function updateTileInfoPanel(config) {
     detailsEl.innerHTML = '';
     actionsEl.innerHTML = '';
 
-    config.tileDetails.forEach(key => {
+    config.tileDetails.forEach((key, idx) => {
         const p = document.createElement('p');
         let value = tile[key];
 
@@ -31,7 +31,7 @@ export function updateTileInfoPanel(config) {
         }
 
         // Apply labels if defined
-        if (key === 'tile' && config.tileTypeLabels[value]) {
+        if (key === 'tile' && config.tileTypeLabels && config.tileTypeLabels[value]) {
             value = config.tileTypeLabels[value];
         }
         if (key === 'plant' && config.plantLabels && config.plantLabels[value]) {
@@ -50,7 +50,23 @@ export function updateTileInfoPanel(config) {
 
         p.innerHTML = `<strong>${key}:</strong> <span id="tile-value-${key}">${value}</span>`;
         detailsEl.appendChild(p);
+
+        // Add plantType and growthStage display dynamically if not in config.tileDetails
+        if (!config.tileDetails.includes("plantType") && tile.plantType && idx === config.tileDetails.length - 1) {
+            const pType = document.createElement('p');
+            pType.innerHTML = `<strong>plantType:</strong> <span id="tile-value-plantType">${tile.plantType || '–'}</span>`;
+            detailsEl.appendChild(pType);
+        }
+        if (!config.tileDetails.includes("growthStage") && tile.growthStage && idx === config.tileDetails.length - 1) {
+            const gStage = document.createElement('p');
+            gStage.innerHTML = `<strong>growthStage:</strong> <span id="tile-value-growthStage">${tile.growthStage || '–'}</span>`;
+            detailsEl.appendChild(gStage);
+        }
     });
+
+    // Hide plant select dropdown by default
+    const plantSelectEl = document.getElementById('plant-select');
+    if (plantSelectEl) plantSelectEl.style.display = 'none';
 
     for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
         function evaluateCondition(condObj) {
@@ -88,16 +104,43 @@ export function updateTileInfoPanel(config) {
                 // Create a new tile object for the mutation
                 const newTile = { ...tile };
                 if (actionLabel === "plant") {
-                    const options = Object.keys(config.plantDefinitions);
-                    const choice = prompt("Choose a plant to plant:\n" + options.join(", "));
-                    if (!choice || !config.plantDefinitions[choice]) {
-                        console.log("Invalid plant choice.");
+                    const selectEl = document.getElementById('plant-select');
+                    selectEl.innerHTML = '';
+                    Object.keys(config.plantDefinitions).forEach(plant => {
+                        const opt = document.createElement('option');
+                        opt.value = plant;
+                        opt.textContent = plant;
+                        selectEl.appendChild(opt);
+                    });
+                    selectEl.style.display = 'block';
+                    selectEl.onchange = () => {
+                        const choice = selectEl.value;
+                        if (!choice || !config.plantDefinitions[choice]) {
+                            console.log("Invalid plant choice.");
+                            console.groupEnd();
+                            selectEl.style.display = 'none';
+                            return;
+                        }
+                        newTile.plantType = choice;
+                        newTile.growthStage = config.plantDefinitions[choice].growthStages[0];
+                        newTile.growthProgress = 0;
+                        gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+                        console.log('After:', JSON.stringify(newTile));
                         console.groupEnd();
-                        return;
-                    }
-                    newTile.plantType = choice;
-                    newTile.growthStage = config.plantDefinitions[choice].growthStages[0];
-                    newTile.growthProgress = 0;
+                        updateTileInfoPanel(config);
+                        ["plantType", "growthStage", "growthProgress"].forEach((key) => {
+                            const el = document.getElementById(`tile-value-${key}`);
+                            if (el) {
+                                el.classList.remove('value-changed');
+                                void el.offsetWidth;
+                                el.classList.add('value-changed');
+                            }
+                        });
+                        saveGameState();
+                        incrementTime(config.actionTimeIncrement, config);
+                        selectEl.style.display = 'none';
+                    };
+                    return;
                 } else {
                     Object.entries(actionDef.effect).forEach(([key, change]) => {
                         if (typeof change === 'object') {
@@ -126,7 +169,7 @@ export function updateTileInfoPanel(config) {
                         const el = document.getElementById(`tile-value-${key}`);
                         if (el) {
                             el.classList.remove('value-changed');
-                            void el.offsetWidth; // force reflow
+                            void el.offsetWidth;
                             el.classList.add('value-changed');
                         }
                     });
@@ -135,7 +178,7 @@ export function updateTileInfoPanel(config) {
                         const el = document.getElementById(`tile-value-${key}`);
                         if (el) {
                             el.classList.remove('value-changed');
-                            void el.offsetWidth; // force reflow
+                            void el.offsetWidth;
                             el.classList.add('value-changed');
                         }
                     });
