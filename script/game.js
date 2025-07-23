@@ -19,117 +19,64 @@ async function loadConfig() {
     }
 }
 
-function listSaveSlots() {
-    console.log("=== Listing Save Slots ===");
-    console.log("trellisCurrentSlot:", localStorage.getItem('trellisCurrentSlot'));
-    const container = document.getElementById('save-slots');
-    if (!container) return;
-    container.innerHTML = '';
-
-    const currentSlot = localStorage.getItem('trellisCurrentSlot') || null;
-
-    for (let i = 1; i <= config.maxSaveSlots; i++) {
-        const slotId = `slot${i}`;
-        const slotKey = `trellisSave_${slotId}`;
-        const data = localStorage.getItem(slotKey);
-        const button = document.createElement('button');
-
-        let isValidSave = false;
-        if (data) {
-            try {
-                const parsed = JSON.parse(data);
-                if (parsed && typeof parsed === 'object' && parsed.player) {
-                    isValidSave = true;
-                }
-            } catch {
-                isValidSave = false;
-            }
-        }
-        // Use updated current calculation: both name and valid data
-        const current = (slotId === currentSlot && data !== null);
-        console.log(`Slot ${i} - valid?`, isValidSave, "current?", current, "data:", data);
-
-        if (isValidSave) {
-            if (current) {
-                button.textContent = `Slot ${i} [ACTIVE]`;
-                button.disabled = true;
-            } else {
-                button.textContent = `Load Slot ${i}`;
-                button.disabled = false;
-                button.addEventListener('click', () => initGame(true, slotId));
-            }
-        } else {
-            if (current) {
-                // Only show [ACTIVE] if we've actually started a game in this slot (unsaved)
-                button.textContent = `Slot ${i} [ACTIVE]`;
-                button.disabled = true;
-            } else {
-                button.textContent = `Empty Slot ${i}`;
-                button.disabled = true;
-            }
-        }
-
-        container.appendChild(button);
-    }
-}
-
-function saveGameState(slot = null) {
-    const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
-
-    // Overwrite the active slot
-    localStorage.setItem(`trellisSave_${targetSlot}`, JSON.stringify({
+function saveGameState() {
+    localStorage.setItem("trellisSave", JSON.stringify({
         player: gameState.player,
         selector: gameState.selector,
         map: gameState.map,
-        revealed: gameState.revealed
+        revealed: gameState.revealed,
+        time: gameState.time
     }));
-
-    localStorage.setItem('trellisCurrentSlot', targetSlot);
-    listSaveSlots();
+    console.log("Game saved.");
 }
 
-function loadGameState(slot = null) {
-    const targetSlot = slot || localStorage.getItem('trellisCurrentSlot') || 'slot1';
-    const raw = localStorage.getItem(`trellisSave_${targetSlot}`);
-    if (!raw) return false;
-
-    let data;
+function loadGameState() {
+    const saved = localStorage.getItem("trellisSave");
+    if (!saved) return false;
     try {
-        data = JSON.parse(raw);
+        const data = JSON.parse(saved);
+        gameState.player = data.player;
+        gameState.selector = data.selector;
+        gameState.map = data.map;
+        gameState.revealed = data.revealed;
+        gameState.time = data.time;
+        console.log("Game loaded.");
+        return true;
     } catch (e) {
-        console.warn(`Corrupted save data in ${targetSlot}. Starting new game.`);
+        console.warn("Corrupted save data. Starting new game.");
         return false;
     }
-
-    if (!data) return false;
-
-    gameState.player = data.player;
-    gameState.selector = data.selector;
-    gameState.map = data.map;
-    gameState.revealed = data.revealed;
-    localStorage.setItem('trellisCurrentSlot', targetSlot);
-    return true;
 }
 
-async function initGame(loadExisting = false, slot = null) {
+function startNewGame() {
+    if (localStorage.getItem("trellisSave")) {
+        const confirmNew = confirm("Start a new game? This will overwrite your current progress.");
+        if (!confirmNew) return;
+    }
+    localStorage.removeItem("trellisSave");
+    initState(config);
+    generateMap(config);
+    initPlayer(config);
+    updateFog(config);
+    updateTimePanel(config);
+    render(config);
+    updateTileInfoPanel(config);
+    saveGameState();
+    console.log("Started a new game.");
+}
+
+async function initGame(loadExisting = true) {
     await loadConfig();
-    listSaveSlots();
     const canvas = document.getElementById('game-canvas');
     canvas.width = config.canvasWidth;
     canvas.height = config.canvasHeight;
 
-    initState(config);
-
-    if (loadExisting && loadGameState(slot)) {
-        console.log('Loaded game from localStorage.');
+    if (loadExisting && loadGameState()) {
+        console.log("Loaded game from localStorage.");
     } else {
-        // Only set trellisCurrentSlot when actually starting a new game
-        if (slot) {
-            localStorage.setItem('trellisCurrentSlot', slot);
-        } else if (!localStorage.getItem('trellisCurrentSlot')) {
-            // Do NOT set by default on page load; leave null until first save/move
-        }
+        initState(config);
         generateMap(config);
+        saveGameState();
     }
 
     initPlayer(config);
@@ -137,7 +84,6 @@ async function initGame(loadExisting = false, slot = null) {
     updateTimePanel(config);
     render(config);
     updateTileInfoPanel(config);
-    listSaveSlots();
     requestAnimationFrame(() => gameLoop(config));
 }
 
@@ -157,62 +103,5 @@ initGame(true).catch((err) => {
 document.getElementById('new-game').addEventListener('click', () => {
     startNewGame();
 });
-
-// Helper: rotates save slots, moving slot1 to slot2, slot2 to slot3, etc.
-function rotateSaveSlots() {
-    for (let i = config.maxSaveSlots; i > 1; i--) {
-        const fromSlot = `trellisSave_slot${i - 1}`;
-        const toSlot = `trellisSave_slot${i}`;
-        const data = localStorage.getItem(fromSlot);
-        if (data) {
-            localStorage.setItem(toSlot, data);
-        } else {
-            localStorage.removeItem(toSlot);
-        }
-    }
-}
-
-// Helper: clear only the specified slot's data
-function clearSlot(slotName) {
-    localStorage.removeItem("trellisSave_" + slotName);
-    console.log("Cleared slot:", slotName);
-}
-
-// Helper: create a new blank game state
-function createNewGameState() {
-    return {
-        player: { x: 0, y: 0 },
-        selector: { x: 0, y: 0 },
-        map: {}
-    };
-}
-
-// Helper: save a given game state to the current slot
-function saveGame(gameStateObj) {
-    const slot = localStorage.getItem('trellisCurrentSlot') || 'slot1';
-    localStorage.setItem(`trellisSave_${slot}`, JSON.stringify(gameStateObj));
-    localStorage.setItem('trellisCurrentSlot', slot);
-}
-
-// NewGame: rotates saves, clears slot1, sets slot1 as current, and saves a fresh state
-function startNewGame() {
-    console.log("=== Starting New Game ===");
-
-    // Rotate existing saves first
-    rotateSaveSlots();
-
-    // Clear slot1 to prepare for new data
-    clearSlot("slot1");
-
-    // Properly set current slot in localStorage
-    localStorage.setItem('trellisCurrentSlot', 'slot1');
-
-    // Create and immediately save a fresh game state to ensure slot1 is valid
-    const newGameState = createNewGameState();
-    saveGame(newGameState);
-
-    // Log updated slot states
-    listSaveSlots();
-}
 
 export { saveGameState };
