@@ -12,6 +12,11 @@ export function render(config) {
     // Use config.viewTileCount if present, else fallback to canvas size
     const viewSize = Math.floor(canvas.width / tileSize);
 
+    // Preload images on first render
+    if (!config._imageCache) {
+        config._imageCache = preloadImages(config);
+    }
+
     // Calculate top-left tile of the viewport so the player is centered
     const startX = gameState.player.x - Math.floor(viewSize / 2);
     const startY = gameState.player.y - Math.floor(viewSize / 2);
@@ -30,13 +35,30 @@ export function render(config) {
                 mapX >= 0 && mapX < config.mapWidth &&
                 mapY >= 0 && mapY < config.mapHeight
             ) {
-                // Draw tile using config.tileColors
+                // Draw tile using config.tileColors or images
                 const tile = getTile(mapX, mapY, config);
-                let tileColor = config.tileColors && tile && tile.tile && config.tileColors[tile.tile]
-                    ? config.tileColors[tile.tile]
-                    : config.tileColors && config.tileColors.default;
-                ctx.fillStyle = tileColor;
-                ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                let drawn = false;
+                // Prefer plant sprite if plantType present
+                if (tile.plantType && config.plantImagePaths && config._imageCache.plants[tile.plantType]) {
+                    const stageImg = config._imageCache.plants[tile.plantType][tile.growthStage] || config._imageCache.plants[tile.plantType].default;
+                    if (stageImg) {
+                        ctx.drawImage(stageImg, screenX, screenY, tileSize, tileSize);
+                        drawn = true;
+                    }
+                }
+                // Otherwise draw tile sprite if available
+                if (!drawn) {
+                    if (tile.tile && config._imageCache.tiles[tile.tile]) {
+                        ctx.drawImage(config._imageCache.tiles[tile.tile], screenX, screenY, tileSize, tileSize);
+                        drawn = true;
+                    } else {
+                        let tileColor = config.tileColors && tile && tile.tile && config.tileColors[tile.tile]
+                            ? config.tileColors[tile.tile]
+                            : config.tileColors && config.tileColors.default;
+                        ctx.fillStyle = tileColor;
+                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                    }
+                }
 
                 // Apply fog of war if not revealed
                 if (!gameState.revealed[`${mapX},${mapY}`]) {
@@ -51,14 +73,18 @@ export function render(config) {
         }
     }
 
-    // Draw player as a colored square in the center of the viewport
+    // Draw player (sprite preferred, fallback to colored square)
     const playerScreenX = Math.floor(viewSize / 2) * tileSize;
     const playerScreenY = Math.floor(viewSize / 2) * tileSize;
-    ctx.fillStyle = config.playerColor;
-    const sizeRatio = config.playerSize;
-    const playerSizePx = tileSize * sizeRatio;
-    const offset = (tileSize - playerSizePx) / 2;
-    ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
+    if (config.playerImagePath && config._imageCache.player) {
+        ctx.drawImage(config._imageCache.player, playerScreenX, playerScreenY, tileSize, tileSize);
+    } else {
+        ctx.fillStyle = config.playerColor;
+        const sizeRatio = config.playerSize;
+        const playerSizePx = tileSize * sizeRatio;
+        const offset = (tileSize - playerSizePx) / 2;
+        ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
+    }
 
     // Draw selector
     const selectorOffsetX = gameState.selector.x - startX;
@@ -74,4 +100,46 @@ export function render(config) {
         ctx.lineWidth = 2;
         ctx.strokeRect(selectorX + 1, selectorY + 1, tileSize - 2, tileSize - 2);
     }
+}
+
+/**
+ * Preload all tile, plant, and player images and return a cache object.
+ * @param {Object} config
+ * @returns {Object} image cache
+ */
+function preloadImages(config) {
+    const cache = {
+        tiles: {},
+        plants: {},
+        player: null
+    };
+
+    // Tile images
+    if (config.tileImagePaths) {
+        for (const [tileType, path] of Object.entries(config.tileImagePaths)) {
+            const img = new window.Image();
+            img.src = path;
+            cache.tiles[tileType] = img;
+        }
+    }
+
+    // Plant images (by plantType, then by stage)
+    if (config.plantImagePaths) {
+        for (const [plantType, stages] of Object.entries(config.plantImagePaths)) {
+            cache.plants[plantType] = {};
+            for (const [stage, path] of Object.entries(stages)) {
+                const img = new window.Image();
+                img.src = path;
+                cache.plants[plantType][stage] = img;
+            }
+        }
+    }
+
+    // Player image
+    if (config.playerImagePath) {
+        const img = new window.Image();
+        img.src = config.playerImagePath;
+        cache.player = img;
+    }
+    return cache;
 }
