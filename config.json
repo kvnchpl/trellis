@@ -164,7 +164,7 @@
             "condition": {
                 "or": [
                     {
-                        "plant": {
+                        "plantType": {
                             "not": null
                         }
                     },
