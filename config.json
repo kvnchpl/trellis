@@ -2,64 +2,163 @@
     "maxSaveSlots": 3,
     "saveSizeWarningKB": 750,
     "saveSizeCriticalKB": 950,
-    "tileSize": 32,
     "mapWidth": 64,
     "mapHeight": 64,
     "fogRevealRadius": 3,
     "canvasWidth": 416,
     "canvasHeight": 416,
     "playerColor": "#FFD700",
-    "tileColors": {
-        "soil": "#5A381E",
-        "tilled": "#A0522D",
-        "grass": "#4CAF50",
-        "rock": "#888888",
-        "default": "#333333"
-    },
-    "tileImagePaths": {
-        "soil": "assets/tiles/soil.png",
-        "tilled": "assets/tiles/tilled.png",
-        "grass": "assets/tiles/grass.png",
-        "rock": "assets/tiles/rock.png"
-    },
-    "plantImagePaths": {
-        "strawberry": [
-            "assets/plants/strawberry/strawberry_1.png",
-            "assets/plants/strawberry/strawberry_2.png",
-            "assets/plants/strawberry/strawberry_3.png"
+    "tiles": {
+        "size": 32,
+        "colors": {
+            "soil": "#5A381E",
+            "tilled": "#A0522D",
+            "grass": "#4CAF50",
+            "rock": "#888888",
+            "default": "#333333"
+        },
+        "images": {
+            "soil": "assets/tiles/soil.png",
+            "tilled": "assets/tiles/tilled.png",
+            "grass": "assets/tiles/grass.png",
+            "rock": "assets/tiles/rock.png"
+        },
+        "detailsOrder": [
+            "tile",
+            "plantType",
+            "growthStage",
+            "moisture",
+            "fertility"
         ],
-        "apple": [
-            "assets/plants/apple/apple_1.png",
-            "assets/plants/apple/apple_2.png",
-            "assets/plants/apple/apple_3.png"
-        ],
-        "pumpkin": [
-            "assets/plants/pumpkin/pumpkin_1.png",
-            "assets/plants/pumpkin/pumpkin_2.png",
-            "assets/plants/pumpkin/pumpkin_3.png"
-        ],
-        "beans": [
-            "assets/plants/beans/beans_1.png",
-            "assets/plants/beans/beans_2.png",
-            "assets/plants/beans/beans_3.png"
-        ],
-        "corn": [
-            "assets/plants/corn/corn_1.png",
-            "assets/plants/corn/corn_2.png",
-            "assets/plants/corn/corn_3.png"
-        ],
-        "walnut": [
-            "assets/plants/walnut/walnut_1.png",
-            "assets/plants/walnut/walnut_2.png"
-        ],
-        "sugarMaple": [
-            "assets/plants/sugar_maple/sugar_maple_1.png",
-            "assets/plants/sugar_maple/sugar_maple_2.png"
-        ],
-        "milkweed": [
-            "assets/plants/milkweed/milkweed_1.png",
-            "assets/plants/milkweed/milkweed_2.png"
-        ]
+        "labels": {
+            "none": "None",
+            "soil": "Bare Soil",
+            "tilled": "Tilled Soil",
+            "grass": "Grassy Patch",
+            "rock": "Rocky Ground"
+        },
+        "actions": {
+            "till": {
+                "condition": {
+                    "tile": "soil",
+                    "plantType": null
+                },
+                "effect": {
+                    "tile": "tilled"
+                }
+            },
+            "water": {
+                "condition": {
+                    "tile": "tilled",
+                    "moisture": {
+                        "lt": 100
+                    }
+                },
+                "effect": {
+                    "moisture": {
+                        "inc": 20
+                    }
+                }
+            },
+            "fertilize": {
+                "condition": {
+                    "tile": "tilled",
+                    "fertility": {
+                        "lt": 100
+                    }
+                },
+                "effect": {
+                    "fertility": {
+                        "inc": 20
+                    },
+                    "fertilized": true
+                }
+            },
+            "plant": {
+                "condition": {
+                    "tile": "tilled",
+                    "plantType": null
+                },
+                "effect": {
+                    "plantType": null,
+                    "growthStage": null,
+                    "growthProgress": 0,
+                    "fertility": {
+                        "dec": 5
+                    }
+                }
+            },
+            "mulch": {
+                "condition": {
+                    "tile": "tilled",
+                    "mulch": false
+                },
+                "effect": {
+                    "mulch": true
+                }
+            },
+            "weed": {
+                "condition": {
+                    "weeds": true
+                },
+                "effect": {
+                    "weeds": false,
+                    "fertility": {
+                        "inc": 5
+                    }
+                }
+            },
+            "harvest": {
+                "condition": {
+                    "readyToHarvest": true
+                },
+                "effect": {
+                    "plantType": null,
+                    "growthStage": null,
+                    "growthProgress": 0,
+                    "readyToHarvest": false,
+                    "fertility": {
+                        "dec": 10
+                    },
+                    "moisture": 0
+                }
+            },
+            "clear": {
+                "condition": {
+                    "or": [
+                        {
+                            "plantType": {
+                                "not": null
+                            }
+                        },
+                        {
+                            "weeds": true
+                        },
+                        {
+                            "mulch": true
+                        },
+                        {
+                            "tile": "grass"
+                        },
+                        {
+                            "tile": "rock"
+                        }
+                    ]
+                },
+                "effect": {
+                    "tile": "soil",
+                    "plant": null,
+                    "plantType": null,
+                    "growthStage": null,
+                    "growthProgress": 0,
+                    "mulch": false,
+                    "weeds": false,
+                    "fertility": {
+                        "dec": 10
+                    }
+                }
+            }
+        }
     },
     "fogColor": "#000000",
     "fogOpacity": 0.8,
@@ -72,141 +171,6 @@
         "grass": 0.3,
         "rock": 0.1
     },
-    "tileDetails": [
-        "tile",
-        "plantType",
-        "growthStage",
-        "moisture",
-        "fertility"
-    ],
-    "tileActions": {
-        "till": {
-            "condition": {
-                "tile": "soil",
-                "plantType": null
-            },
-            "effect": {
-                "tile": "tilled"
-            }
-        },
-        "water": {
-            "condition": {
-                "tile": "tilled",
-                "moisture": {
-                    "lt": 100
-                }
-            },
-            "effect": {
-                "moisture": {
-                    "inc": 20
-                }
-            }
-        },
-        "fertilize": {
-            "condition": {
-                "tile": "tilled",
-                "fertility": {
-                    "lt": 100
-                }
-            },
-            "effect": {
-                "fertility": {
-                    "inc": 20
-                },
-                "fertilized": true
-            }
-        },
-        "plant": {
-            "condition": {
-                "tile": "tilled",
-                "plantType": null
-            },
-            "effect": {
-                "plantType": null,
-                "growthStage": null,
-                "growthProgress": 0,
-                "fertility": {
-                    "dec": 5
-                }
-            }
-        },
-        "mulch": {
-            "condition": {
-                "tile": "tilled",
-                "mulch": false
-            },
-            "effect": {
-                "mulch": true
-            }
-        },
-        "weed": {
-            "condition": {
-                "weeds": true
-            },
-            "effect": {
-                "weeds": false,
-                "fertility": {
-                    "inc": 5
-                }
-            }
-        },
-        "harvest": {
-            "condition": {
-                "readyToHarvest": true
-            },
-            "effect": {
-                "plantType": null,
-                "growthStage": null,
-                "growthProgress": 0,
-                "readyToHarvest": false,
-                "fertility": {
-                    "dec": 10
-                },
-                "moisture": 0
-            }
-        },
-        "clear": {
-            "condition": {
-                "or": [
-                    {
-                        "plantType": {
-                            "not": null
-                        }
-                    },
-                    {
-                        "weeds": true
-                    },
-                    {
-                        "mulch": true
-                    },
-                    {
-                        "tile": "grass"
-                    },
-                    {
-                        "tile": "rock"
-                    }
-                ]
-            },
-            "effect": {
-                "tile": "soil",
-                "plant": null,
-                "plantType": null,
-                "growthStage": null,
-                "growthProgress": 0,
-                "mulch": false,
-                "weeds": false,
-                "fertility": {
-                    "dec": 10
-                }
-            }
-        }
-    },
-    "tileTypes": [
-        "soil",
-        "tilled",
-        "grass",
-        "rock"
-    ],
     "moistureRange": {
         "min": 0,
         "max": 100
@@ -215,12 +179,138 @@
         "min": 0,
         "max": 100
     },
-    "tileTypeLabels": {
-        "none": "None",
-        "soil": "Bare Soil",
-        "tilled": "Tilled Soil",
-        "grass": "Grassy Patch",
-        "rock": "Rocky Ground"
+    "plants": {
+        "images": {
+            "strawberry": [
+                "assets/plants/strawberry/strawberry_1.png",
+                "assets/plants/strawberry/strawberry_2.png",
+                "assets/plants/strawberry/strawberry_3.png"
+            ],
+            "apple": [
+                "assets/plants/apple/apple_1.png",
+                "assets/plants/apple/apple_2.png",
+                "assets/plants/apple/apple_3.png"
+            ],
+            "pumpkin": [
+                "assets/plants/pumpkin/pumpkin_1.png",
+                "assets/plants/pumpkin/pumpkin_2.png",
+                "assets/plants/pumpkin/pumpkin_3.png"
+            ],
+            "beans": [
+                "assets/plants/beans/beans_1.png",
+                "assets/plants/beans/beans_2.png",
+                "assets/plants/beans/beans_3.png"
+            ],
+            "corn": [
+                "assets/plants/corn/corn_1.png",
+                "assets/plants/corn/corn_2.png",
+                "assets/plants/corn/corn_3.png"
+            ],
+            "walnut": [
+                "assets/plants/walnut/walnut_1.png",
+                "assets/plants/walnut/walnut_2.png"
+            ],
+            "sugarMaple": [
+                "assets/plants/sugar_maple/sugar_maple_1.png",
+                "assets/plants/sugar_maple/sugar_maple_2.png"
+            ],
+            "milkweed": [
+                "assets/plants/milkweed/milkweed_1.png",
+                "assets/plants/milkweed/milkweed_2.png"
+            ]
+        },
+        "definitions": {
+            "strawberry": {
+                "growthStages": [
+                    "sprout",
+                    "flower",
+                    "fruiting"
+                ],
+                "growthTime": 2,
+                "harvestable": true,
+                "yield": "Strawberries",
+                "moistureUse": 5,
+                "fertilityUse": 2
+            },
+            "apple": {
+                "growthStages": [
+                    "sapling",
+                    "tree",
+                    "fruiting"
+                ],
+                "growthTime": 6,
+                "harvestable": true,
+                "yield": "Apples",
+                "moistureUse": 8,
+                "fertilityUse": 5
+            },
+            "pumpkin": {
+                "growthStages": [
+                    "sprout",
+                    "vine",
+                    "fruiting"
+                ],
+                "growthTime": 4,
+                "harvestable": true,
+                "yield": "Pumpkins",
+                "moistureUse": 6,
+                "fertilityUse": 3
+            },
+            "beans": {
+                "growthStages": [
+                    "sprout",
+                    "flower",
+                    "pod"
+                ],
+                "growthTime": 2,
+                "harvestable": true,
+                "yield": "Bean Pods",
+                "moistureUse": 4,
+                "fertilityUse": 2
+            },
+            "corn": {
+                "growthStages": [
+                    "shoot",
+                    "stalk",
+                    "cob"
+                ],
+                "growthTime": 3,
+                "harvestable": true,
+                "yield": "Corn Cobs",
+                "moistureUse": 6,
+                "fertilityUse": 3
+            },
+            "walnut": {
+                "growthStages": [
+                    "sapling",
+                    "tree"
+                ],
+                "growthTime": 10,
+                "harvestable": false,
+                "moistureUse": 5,
+                "fertilityUse": 4
+            },
+            "sugarMaple": {
+                "growthStages": [
+                    "sapling",
+                    "tree"
+                ],
+                "growthTime": 12,
+                "harvestable": false,
+                "moistureUse": 4,
+                "fertilityUse": 4
+            },
+            "milkweed": {
+                "growthStages": [
+                    "sprout",
+                    "flower"
+                ],
+                "growthTime": 3,
+                "harvestable": false,
+                "moistureUse": 2,
+                "fertilityUse": 1
+            }
+        }
     },
     "dayStartHour": 7,
     "dayEndHour": 19,
@@ -240,98 +330,6 @@
         "low": "Low Fertility",
         "medium": "Medium Fertility",
         "high": "High Fertility"
-    },
-    "plantDefinitions": {
-        "strawberry": {
-            "growthStages": [
-                "sprout",
-                "flower",
-                "fruiting"
-            ],
-            "growthTime": 2,
-            "harvestable": true,
-            "yield": "Strawberries",
-            "moistureUse": 5,
-            "fertilityUse": 2
-        },
-        "apple": {
-            "growthStages": [
-                "sapling",
-                "tree",
-                "fruiting"
-            ],
-            "growthTime": 6,
-            "harvestable": true,
-            "yield": "Apples",
-            "moistureUse": 8,
-            "fertilityUse": 5
-        },
-        "pumpkin": {
-            "growthStages": [
-                "sprout",
-                "vine",
-                "fruiting"
-            ],
-            "growthTime": 4,
-            "harvestable": true,
-            "yield": "Pumpkins",
-            "moistureUse": 6,
-            "fertilityUse": 3
-        },
-        "beans": {
-            "growthStages": [
-                "sprout",
-                "flower",
-                "pod"
-            ],
-            "growthTime": 2,
-            "harvestable": true,
-            "yield": "Bean Pods",
-            "moistureUse": 4,
-            "fertilityUse": 2
-        },
-        "corn": {
-            "growthStages": [
-                "shoot",
-                "stalk",
-                "cob"
-            ],
-            "growthTime": 3,
-            "harvestable": true,
-            "yield": "Corn Cobs",
-            "moistureUse": 6,
-            "fertilityUse": 3
-        },
-        "walnut": {
-            "growthStages": [
-                "sapling",
-                "tree"
-            ],
-            "growthTime": 10,
-            "harvestable": false,
-            "moistureUse": 5,
-            "fertilityUse": 4
-        },
-        "sugarMaple": {
-            "growthStages": [
-                "sapling",
-                "tree"
-            ],
-            "growthTime": 12,
-            "harvestable": false,
-            "moistureUse": 4,
-            "fertilityUse": 4
-        },
-        "milkweed": {
-            "growthStages": [
-                "sprout",
-                "flower"
-            ],
-            "growthTime": 3,
-            "harvestable": false,
-            "moistureUse": 2,
-            "fertilityUse": 1
-        }
     },
     "keyBindings": {
         "up": "ArrowUp",
