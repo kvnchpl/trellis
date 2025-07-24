@@ -17,6 +17,7 @@
     --spacing-small: calc(var(--spacing-base) * 0.5);
     --spacing-medium: var(--spacing-base);
     --spacing-large: calc(var(--spacing-base) * 2);
+    --control-border-radius: 3px;
 }
 
 * {
@@ -94,7 +95,7 @@ canvas {
     background-color: var(--background-color);
     color: var(--text-color);
     border: 1px solid var(--border-color);
-    border-radius: 3px;
+    border-radius: var(--control-border-radius);
     cursor: pointer;
 }
 
@@ -108,8 +109,11 @@ canvas {
     background-color: var(--background-color);
     color: var(--text-color);
     border: 1px solid var(--border-color);
-    border-radius: 3px;
+    border-radius: var(--control-border-radius);
     cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 #tile-actions button:hover {
