@@ -3,6 +3,21 @@ import { saveGameState } from './game.js';
 import { incrementTime } from './ui.js';
 import { updateTileInfoPanel } from './ui.js';
 
+// DRY helper for player movement
+function attemptMove(player, dx, dy, config) {
+    const newX = player.x + dx;
+    const newY = player.y + dy;
+    const targetTile = getTile(newX, newY, config);
+    if (targetTile.tile !== 'rock' && !targetTile.plantType) {
+        player.x = newX;
+        player.y = newY;
+        gameState.selector = { x: player.x, y: player.y };
+        saveGameState();
+        incrementTime(1, config);
+        updateTileInfoPanel(config);
+    }
+}
+
 // Tracks which keys are currently pressed
 let keysPressed = {};
 
@@ -30,66 +45,20 @@ export function updatePlayer(config) {
 
     // Move up
     if (keysPressed[controls.up]) {
-        const newY = player.y - 1;
-        const targetTile = getTile(player.x, newY, config);
-        if (targetTile.tile !== 'rock' && !targetTile.plantType) {
-            player.y = newY;
-            gameState.selector = { x: player.x, y: player.y };
-            keysPressed[controls.up] = false;
-            saveGameState();
-            incrementTime(1, config);
-            updateTileInfoPanel(config);
-        } else {
-            keysPressed[controls.up] = false;
-        }
+        attemptMove(player, 0, -1, config);
+        keysPressed[controls.up] = false;
     }
-
-    // Move down
     else if (keysPressed[controls.down]) {
-        const newY = player.y + 1;
-        const targetTile = getTile(player.x, newY, config);
-        if (targetTile.tile !== 'rock' && !targetTile.plantType) {
-            player.y = newY;
-            gameState.selector = { x: player.x, y: player.y };
-            keysPressed[controls.down] = false;
-            saveGameState();
-            incrementTime(1, config);
-            updateTileInfoPanel(config);
-        } else {
-            keysPressed[controls.down] = false;
-        }
+        attemptMove(player, 0, 1, config);
+        keysPressed[controls.down] = false;
     }
-
-    // Move left
     else if (keysPressed[controls.left]) {
-        const newX = player.x - 1;
-        const targetTile = getTile(newX, player.y, config);
-        if (targetTile.tile !== 'rock' && !targetTile.plantType) {
-            player.x = newX;
-            gameState.selector = { x: player.x, y: player.y };
-            keysPressed[controls.left] = false;
-            saveGameState();
-            incrementTime(1, config);
-            updateTileInfoPanel(config);
-        } else {
-            keysPressed[controls.left] = false;
-        }
+        attemptMove(player, -1, 0, config);
+        keysPressed[controls.left] = false;
     }
-
-    // Move right
     else if (keysPressed[controls.right]) {
-        const newX = player.x + 1;
-        const targetTile = getTile(newX, player.y, config);
-        if (targetTile.tile !== 'rock' && !targetTile.plantType) {
-            player.x = newX;
-            gameState.selector = { x: player.x, y: player.y };
-            keysPressed[controls.right] = false;
-            saveGameState();
-            incrementTime(1, config);
-            updateTileInfoPanel(config);
-        } else {
-            keysPressed[controls.right] = false;
-        }
+        attemptMove(player, 1, 0, config);
+        keysPressed[controls.right] = false;
     }
 
     // Select tile above player
