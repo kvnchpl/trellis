@@ -19,19 +19,6 @@ async function loadConfig() {
     }
 }
 
-function updateSaveSizeDisplay() {
-    const saveEl = document.getElementById("save-size");
-    if (!saveEl) return;
-    const savedData = localStorage.getItem("trellisSave");
-    if (!savedData) {
-        saveEl.textContent = "(no save)";
-        return;
-    }
-    const sizeInBytes = new Blob([savedData]).size;
-    const sizeInKB = (sizeInBytes / 1024).toFixed(2);
-    saveEl.textContent = `(${sizeInKB} KB)`;
-}
-
 function saveGameState() {
     function defaultTile(config) {
         return {
