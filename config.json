@@ -74,7 +74,8 @@
     },
     "tileDetails": [
         "tile",
-        "plant",
+        "plantType",
+        "growthStage",
         "moisture",
         "fertility"
     ],
@@ -82,7 +83,7 @@
         "till": {
             "condition": {
                 "tile": "soil",
-                "plant": null
+                "plantType": null
             },
             "effect": {
                 "tile": "tilled"
@@ -118,10 +119,12 @@
         "plant": {
             "condition": {
                 "tile": "tilled",
-                "plant": null
+                "plantType": null
             },
             "effect": {
-                "plant": "sprout",
+                "plantType": null,
+                "growthStage": null,
+                "growthProgress": 0,
                 "fertility": {
                     "dec": 5
                 }
@@ -152,7 +155,9 @@
                 "readyToHarvest": true
             },
             "effect": {
-                "plant": null,
+                "plantType": null,
+                "growthStage": null,
+                "growthProgress": 0,
                 "readyToHarvest": false,
                 "fertility": {
                     "dec": 10
@@ -210,12 +215,6 @@
         "min": 0,
         "max": 100
     },
-    "plantTypes": [
-        "none",
-        "sprout",
-        "flower",
-        "tree"
-    ],
     "tileTypeLabels": {
         "none": "None",
         "soil": "Bare Soil",
@@ -241,12 +240,6 @@
         "low": "Low Fertility",
         "medium": "Medium Fertility",
         "high": "High Fertility"
-    },
-    "plantLabels": {
-        "none": "No Plant",
-        "sprout": "Sprout",
-        "flower": "Flower",
-        "tree": "Tree"
     },
     "plantDefinitions": {
         "strawberry": {
