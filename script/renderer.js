@@ -124,14 +124,14 @@ function preloadImages(config) {
         }
     }
 
-    // Plant images (by plantType, then by stage)
+    // Plant images (arrays by index mapped to growthStages)
     if (config.plantImagePaths) {
         for (const [plantType, paths] of Object.entries(config.plantImagePaths)) {
-            config._imageCache.plants[plantType] = [];
+            cache.plants[plantType] = [];
             paths.forEach((path, index) => {
                 const img = new window.Image();
                 img.src = path;
-                config._imageCache.plants[plantType][index] = img;
+                cache.plants[plantType][index] = img;
             });
         }
     }
