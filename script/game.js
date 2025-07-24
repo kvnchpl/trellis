@@ -19,10 +19,23 @@ async function loadConfig() {
     }
 }
 
+function updateSaveSizeDisplay() {
+    const saveEl = document.getElementById("save-size");
+    if (!saveEl) return;
+    const savedData = localStorage.getItem("trellisSave");
+    if (!savedData) {
+        saveEl.textContent = "(no save)";
+        return;
+    }
+    const sizeInBytes = new Blob([savedData]).size;
+    const sizeInKB = (sizeInBytes / 1024).toFixed(2);
+    saveEl.textContent = `(${sizeInKB} KB)`;
+}
+
 function saveGameState() {
     function defaultTile(config) {
         return {
-            tile: null, // regenerated lazily if not saved
+            tile: null,
             plant: null,
             plantType: null,
             growthStage: null,
@@ -40,7 +53,6 @@ function saveGameState() {
     const def = defaultTile(config);
 
     for (const [key, tile] of Object.entries(gameState.map)) {
-        // Only store if tile differs from default
         if (Object.keys(def).some(k => tile[k] !== def[k] && tile[k] !== undefined)) {
             optimizedMap[key] = tile;
         }
@@ -55,6 +67,7 @@ function saveGameState() {
     }));
 
     console.log(`Game saved. Tiles stored: ${Object.keys(optimizedMap).length}`);
+    updateSaveSizeDisplay();
 }
 
 function loadGameState() {
@@ -111,6 +124,7 @@ async function initGame(loadExisting = true) {
     updateTimePanel(config);
     render(config);
     updateTileInfoPanel(config);
+    updateSaveSizeDisplay();
     requestAnimationFrame(() => gameLoop(config));
 }
 
@@ -119,6 +133,7 @@ function gameLoop(config) {
     updateFog(config);    // update fog visibility
     render(config);       // re-render map
     updateTimePanel(config);
+    updateSaveSizeDisplay();
     requestAnimationFrame(() => gameLoop(config));
 }
 
