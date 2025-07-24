@@ -18,6 +18,8 @@
     --spacing-medium: var(--spacing-base);
     --spacing-large: calc(var(--spacing-base) * 2);
     --control-border-radius: 3px;
+    --caret-size: 10px;
+    --caret-padding: calc(var(--spacing-small) * 3);
 }
 
 * {
@@ -114,6 +116,10 @@ canvas {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+    width: auto;
+    min-width: unset;
+    background-size: var(--caret-size);
+    padding-right: var(--caret-padding);
 }
 
 #tile-actions button:hover {
