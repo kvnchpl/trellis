@@ -17,6 +17,11 @@ export function render(config) {
         config._imageCache = preloadImages(config);
     }
 
+    // Cache commonly used variables
+    const cache = config._imageCache;
+    const tileColors = config.tileColors;
+    const fogColor = config.fogColor;
+
     // Calculate top-left tile of the viewport so the player is centered
     const startX = gameState.player.x - Math.floor(viewSize / 2);
     const startY = gameState.player.y - Math.floor(viewSize / 2);
@@ -32,35 +37,9 @@ export function render(config) {
 
             // Always draw a tile, no boundaries
             const tile = getTile(mapX, mapY, config);
-            let drawn = false;
-
-            // Prefer plant sprite if present
-            if (tile.plantType && config._imageCache.plants[tile.plantType]) {
-                const stageIndex = config.plantDefinitions[tile.plantType].growthStages.indexOf(tile.growthStage);
-                const stageImg = config._imageCache.plants[tile.plantType][stageIndex];
-                if (stageImg) {
-                    ctx.drawImage(stageImg, screenX, screenY, tileSize, tileSize);
-                    drawn = true;
-                }
-            }
-
-            // Otherwise draw tile sprite or color
-            if (!drawn) {
-                if (tile.tile && config._imageCache.tiles[tile.tile]) {
-                    ctx.drawImage(config._imageCache.tiles[tile.tile], screenX, screenY, tileSize, tileSize);
-                } else {
-                    let tileColor = config.tileColors && tile && tile.tile && config.tileColors[tile.tile]
-                        ? config.tileColors[tile.tile]
-                        : config.tileColors && config.tileColors.default;
-                    ctx.fillStyle = tileColor;
-                    ctx.fillRect(screenX, screenY, tileSize, tileSize);
-                }
-            }
-
-            // Apply fog of war if not revealed
+            drawTileOrColor(ctx, tile, config, cache, tileColors, screenX, screenY, tileSize);
             if (!gameState.revealed[`${mapX},${mapY}`]) {
-                ctx.fillStyle = config.fogColor;
-                ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                drawFog(ctx, fogColor, screenX, screenY, tileSize);
             }
         }
     }
@@ -68,8 +47,8 @@ export function render(config) {
     // Draw player (sprite preferred, fallback to colored square)
     const playerScreenX = Math.floor(viewSize / 2) * tileSize;
     const playerScreenY = Math.floor(viewSize / 2) * tileSize;
-    if (config.playerImagePath && config._imageCache.player) {
-        ctx.drawImage(config._imageCache.player, playerScreenX, playerScreenY, tileSize, tileSize);
+    if (config.playerImagePath && cache.player) {
+        ctx.drawImage(cache.player, playerScreenX, playerScreenY, tileSize, tileSize);
     } else {
         ctx.fillStyle = config.playerColor;
         const sizeRatio = config.playerSize;
@@ -134,4 +113,32 @@ function preloadImages(config) {
         cache.player = img;
     }
     return cache;
+}
+
+// --- Helper functions for drawing tiles and fog (DRY) ---
+function drawTileOrColor(ctx, tile, config, cache, tileColors, x, y, size) {
+    // Prefer plant sprite if present
+    if (tile.plantType && cache.plants[tile.plantType]) {
+        const stageIndex = config.plantDefinitions[tile.plantType].growthStages.indexOf(tile.growthStage);
+        const stageImg = cache.plants[tile.plantType][stageIndex];
+        if (stageImg) {
+            ctx.drawImage(stageImg, x, y, size, size);
+            return;
+        }
+    }
+    // Otherwise draw tile sprite or fallback color
+    if (tile.tile && cache.tiles[tile.tile]) {
+        ctx.drawImage(cache.tiles[tile.tile], x, y, size, size);
+    } else {
+        const color = tileColors && tile.tile && tileColors[tile.tile]
+            ? tileColors[tile.tile]
+            : tileColors && tileColors.default;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, size, size);
+    }
+}
+
+function drawFog(ctx, color, x, y, size) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, size, size);
 }
