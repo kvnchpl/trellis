@@ -75,10 +75,55 @@ export function updateTileInfoPanel(config) {
         }
     });
 
-    // Hide plant select dropdown by default
-    const plantSelectEl = document.getElementById('plant-select');
-    if (plantSelectEl) plantSelectEl.style.display = 'none';
+    // Remove old plant select dropdown logic
 
+    // Prepare plant select dropdown if "plant" action is valid
+    let plantActionValid = false;
+    let plantActionDef = null;
+    for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
+        if (actionLabel === "plant") {
+            function evaluateCondition(condObj) {
+                if (condObj.or && Array.isArray(condObj.or)) {
+                    return condObj.or.some(c => evaluateCondition(c));
+                }
+                return Object.entries(condObj).every(([key, cond]) => {
+                    const current = tile[key];
+                    if (cond === 'exists') {
+                        return !(current === null || current === undefined);
+                    } else if (typeof cond === 'object' && cond !== null) {
+                        if ('not' in cond) return current !== cond.not;
+                        if ('lt' in cond && !(current < cond.lt)) return false;
+                        if ('gt' in cond && !(current > cond.gt)) return false;
+                        if ('lte' in cond && !(current <= cond.lte)) return false;
+                        if ('gte' in cond && !(current >= cond.gte)) return false;
+                    } else {
+                        if (current !== cond) return false;
+                    }
+                    return true;
+                });
+            }
+            if (evaluateCondition(actionDef.condition)) {
+                plantActionValid = true;
+                plantActionDef = actionDef;
+                break;
+            }
+        }
+    }
+    // If plant action is valid, render select dropdown with options
+    let plantSelectEl = null;
+    if (plantActionValid) {
+        plantSelectEl = document.createElement('select');
+        plantSelectEl.id = 'plant-select';
+        Object.keys(config.plantDefinitions).forEach(plant => {
+            const opt = document.createElement('option');
+            opt.value = plant;
+            opt.textContent = plant;
+            plantSelectEl.appendChild(opt);
+        });
+        actionsEl.appendChild(plantSelectEl);
+    }
+
+    // Now iterate actions and render their buttons (handling "plant" specially)
     for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
         function evaluateCondition(condObj) {
             if (condObj.or && Array.isArray(condObj.or)) {
@@ -106,53 +151,48 @@ export function updateTileInfoPanel(config) {
             if (actionLabel === "harvest" && tile.plantType && !config.plantDefinitions[tile.plantType]?.harvestable) {
                 continue; // skip harvest button for non-harvestable plants
             }
-            const btn = document.createElement('button');
-            btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
-            btn.onclick = () => {
-                console.group(`Action: ${actionLabel}`);
-                console.log('Before:', JSON.stringify(tile));
-
-                // Create a new tile object for the mutation
-                const newTile = { ...tile };
-                if (actionLabel === "plant") {
-                    const selectEl = document.getElementById('plant-select');
-                    selectEl.innerHTML = '';
-                    Object.keys(config.plantDefinitions).forEach(plant => {
-                        const opt = document.createElement('option');
-                        opt.value = plant;
-                        opt.textContent = plant;
-                        selectEl.appendChild(opt);
-                    });
-                    selectEl.style.display = 'block';
-                    selectEl.onchange = () => {
-                        const choice = selectEl.value;
-                        if (!choice || !config.plantDefinitions[choice]) {
-                            console.log("Invalid plant choice.");
-                            console.groupEnd();
-                            selectEl.style.display = 'none';
-                            return;
+            if (actionLabel === "plant") {
+                // The select is already rendered above if valid; render the button here
+                const btn = document.createElement('button');
+                btn.textContent = "Plant";
+                btn.onclick = () => {
+                    if (!plantSelectEl) return;
+                    const choice = plantSelectEl.value;
+                    if (!choice || !config.plantDefinitions[choice]) {
+                        console.log("Invalid plant choice.");
+                        return;
+                    }
+                    console.group(`Action: plant`);
+                    console.log('Before:', JSON.stringify(tile));
+                    // Create a new tile object for the mutation
+                    const newTile = { ...tile };
+                    newTile.plantType = choice;
+                    newTile.growthStage = config.plantDefinitions[choice].growthStages[0];
+                    newTile.growthProgress = 0;
+                    gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+                    console.log('After:', JSON.stringify(newTile));
+                    console.groupEnd();
+                    updateTileInfoPanel(config);
+                    ["plantType", "growthStage", "growthProgress"].forEach((key) => {
+                        const el = document.getElementById(`tile-value-${key}`);
+                        if (el) {
+                            el.classList.remove('value-changed');
+                            void el.offsetWidth;
+                            el.classList.add('value-changed');
                         }
-                        newTile.plantType = choice;
-                        newTile.growthStage = config.plantDefinitions[choice].growthStages[0];
-                        newTile.growthProgress = 0;
-                        gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-                        console.log('After:', JSON.stringify(newTile));
-                        console.groupEnd();
-                        updateTileInfoPanel(config);
-                        ["plantType", "growthStage", "growthProgress"].forEach((key) => {
-                            const el = document.getElementById(`tile-value-${key}`);
-                            if (el) {
-                                el.classList.remove('value-changed');
-                                void el.offsetWidth;
-                                el.classList.add('value-changed');
-                            }
-                        });
-                        saveGameState();
-                        incrementTime(config.actionTimeIncrement, config);
-                        selectEl.style.display = 'none';
-                    };
-                    return;
-                } else {
+                    });
+                    saveGameState();
+                    incrementTime(config.actionTimeIncrement, config);
+                };
+                actionsEl.appendChild(btn);
+            } else {
+                const btn = document.createElement('button');
+                btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
+                btn.onclick = () => {
+                    console.group(`Action: ${actionLabel}`);
+                    console.log('Before:', JSON.stringify(tile));
+                    // Create a new tile object for the mutation
+                    const newTile = { ...tile };
                     Object.entries(actionDef.effect).forEach(([key, change]) => {
                         if (typeof change === 'object') {
                             if ('inc' in change) {
@@ -165,26 +205,13 @@ export function updateTileInfoPanel(config) {
                             newTile[key] = change;
                         }
                     });
-                }
-
-                // Replace the tile in the map with the new object
-                gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-                console.log('After:', JSON.stringify(newTile));
-                console.groupEnd();
-
-                // Re-fetch updated tile before updating the info panel
-                updateTileInfoPanel(config);
-                // Highlight only changed values
-                if (actionLabel === "plant") {
-                    ["plantType", "growthStage", "growthProgress"].forEach((key) => {
-                        const el = document.getElementById(`tile-value-${key}`);
-                        if (el) {
-                            el.classList.remove('value-changed');
-                            void el.offsetWidth;
-                            el.classList.add('value-changed');
-                        }
-                    });
-                } else {
+                    // Replace the tile in the map with the new object
+                    gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+                    console.log('After:', JSON.stringify(newTile));
+                    console.groupEnd();
+                    // Re-fetch updated tile before updating the info panel
+                    updateTileInfoPanel(config);
+                    // Highlight only changed values
                     Object.entries(actionDef.effect).forEach(([key]) => {
                         const el = document.getElementById(`tile-value-${key}`);
                         if (el) {
@@ -193,12 +220,11 @@ export function updateTileInfoPanel(config) {
                             el.classList.add('value-changed');
                         }
                     });
-                }
-
-                saveGameState();
-                incrementTime(config.actionTimeIncrement, config);
-            };
-            actionsEl.appendChild(btn);
+                    saveGameState();
+                    incrementTime(config.actionTimeIncrement, config);
+                };
+                actionsEl.appendChild(btn);
+            }
         }
     }
 }
