@@ -2,12 +2,33 @@
     "maxSaveSlots": 3,
     "saveSizeWarningKB": 750,
     "saveSizeCriticalKB": 950,
-    "mapWidth": 64,
-    "mapHeight": 64,
-    "fogRevealRadius": 3,
     "canvasWidth": 416,
     "canvasHeight": 416,
+    "mapWidth": 64,
+    "mapHeight": 64,
+    "initialTileWeights": {
+        "soil": 0.6,
+        "grass": 0.3,
+        "rock": 0.1
+    },
     "playerColor": "#FFD700",
+    "playerSize": 0.6,
+    "selectorColor": "#00FFFF",
+    "tileInfoPanel": true,
+    "fogRevealRadius": 3,
+    "fogColor": "#000000",
+    "fogOpacity": 0.8,
+    "outOfBoundsColor": "#111",
+    "dayStartHour": 7,
+    "dayEndHour": 19,
+    "actionTimeIncrement": 5,
+    "seasons": [
+        "Winter",
+        "Spring",
+        "Summer",
+        "Fall"
+    ],
+    "weeksPerSeason": 13,
     "tiles": {
         "size": 32,
         "colors": {
@@ -160,25 +181,6 @@
             }
         }
     },
-    "fogColor": "#000000",
-    "fogOpacity": 0.8,
-    "outOfBoundsColor": "#111",
-    "playerSize": 0.6,
-    "selectorColor": "#00FFFF",
-    "tileInfoPanel": true,
-    "initialTileWeights": {
-        "soil": 0.6,
-        "grass": 0.3,
-        "rock": 0.1
-    },
-    "moistureRange": {
-        "min": 0,
-        "max": 100
-    },
-    "fertilityRange": {
-        "min": 0,
-        "max": 100
-    },
     "plants": {
         "images": {
             "strawberry": [
@@ -312,16 +314,14 @@
             }
         }
     },
-    "dayStartHour": 7,
-    "dayEndHour": 19,
-    "actionTimeIncrement": 5,
-    "seasons": [
-        "Winter",
-        "Spring",
-        "Summer",
-        "Fall"
-    ],
-    "weeksPerSeason": 13,
+    "moistureRange": {
+        "min": 0,
+        "max": 100
+    },
+    "fertilityRange": {
+        "min": 0,
+        "max": 100
+    },
     "moistureLabels": {
         "dry": "Dry",
         "wet": "Wet"
