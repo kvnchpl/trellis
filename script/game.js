@@ -133,4 +133,29 @@ document.getElementById('new-game').addEventListener('click', () => {
     startNewGame();
 });
 
+// Display save size and warning/critical status
+function updateSaveSizeDisplay() {
+    const saveEl = document.getElementById("save-size");
+    if (!saveEl) return;
+
+    const savedData = localStorage.getItem("trellisSave");
+    if (!savedData) {
+        saveEl.textContent = "(no save)";
+        return;
+    }
+
+    const sizeInBytes = new Blob([savedData]).size;
+    const sizeInKB = (sizeInBytes / 1024).toFixed(2);
+
+    let warningText = "";
+    if (config.saveSizeWarningKB && sizeInBytes > 1024 * config.saveSizeWarningKB) {
+        warningText = " ⚠ nearing limit";
+    }
+    if (config.saveSizeCriticalKB && sizeInBytes > 1024 * config.saveSizeCriticalKB) {
+        warningText = " ⚠⚠ close to limit!";
+    }
+
+    saveEl.textContent = `(${sizeInKB} KB${warningText})`;
+}
+
 export { saveGameState };

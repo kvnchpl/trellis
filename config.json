@@ -1,5 +1,7 @@
 {
     "maxSaveSlots": 3,
+    "saveSizeWarningKB": 750,
+    "saveSizeCriticalKB": 950,
     "tileSize": 32,
     "mapWidth": 64,
     "mapHeight": 64,
