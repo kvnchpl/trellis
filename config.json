@@ -48,15 +48,25 @@
             "tile",
             "plantType",
             "growthStage",
+            "growthProgress",
             "moisture",
-            "fertility"
+            "fertility",
+            "weeds",
+            "mulch",
+            "fertilized",
+            "readyToHarvest"
         ],
         "labels": {
             "none": "None",
             "soil": "Bare Soil",
             "tilled": "Tilled Soil",
             "grass": "Grassy Patch",
-            "rock": "Rocky Ground"
+            "rock": "Rocky Ground",
+            "growthProgress": "Growth Progress",
+            "weeds": "Weeds Present",
+            "mulch": "Mulched",
+            "fertilized": "Fertilized",
+            "readyToHarvest": "Ready to Harvest"
         },
         "actions": {
             "till": {

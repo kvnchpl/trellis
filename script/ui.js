@@ -96,6 +96,14 @@ export function updateTileInfoPanel(config) {
             value = 'none';
         }
 
+        // Handle boolean values: show only if true, display Yes/No
+        if (typeof value === 'boolean') {
+            if (!value) {
+                return; // skip appending if false
+            }
+            value = 'Yes';
+        }
+
         // Apply labels if defined
         if (key === 'tile' && config.tiles.labels && config.tiles.labels[value]) {
             value = config.tiles.labels[value];
@@ -114,7 +122,11 @@ export function updateTileInfoPanel(config) {
             value = '–';
         }
 
-        p.innerHTML = `<strong>${key}:</strong> <span id="tile-value-${key}">${value}</span>`;
+        // Apply custom labels for these keys if defined
+        const label = (config.tiles.labels && config.tiles.labels[key])
+            ? config.tiles.labels[key]
+            : key;
+        p.innerHTML = `<strong>${label}:</strong> <span id="tile-value-${key}">${value}</span>`;
         detailsEl.appendChild(p);
     });
 
