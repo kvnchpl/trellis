@@ -9,17 +9,15 @@ export function updateTileInfoPanel(config) {
     // Show tile image if available (prefer plant image if plantType present)
     const imageEl = document.getElementById('tile-image');
     if (imageEl) {
-        if (tile.plantType && config.plantImagePaths && config.plantImagePaths[tile.plantType]) {
-            const plantImages = config.plantImagePaths[tile.plantType];
-            if (tile.growthStage && plantImages[tile.growthStage]) {
-                imageEl.src = plantImages[tile.growthStage];
-            } else if (plantImages.default) {
-                imageEl.src = plantImages.default;
+        if (tile.plantType && config.plantImagePaths && Array.isArray(config.plantImagePaths[tile.plantType])) {
+            const stageIndex = config.plantDefinitions[tile.plantType].growthStages.indexOf(tile.growthStage);
+            if (stageIndex >= 0 && config.plantImagePaths[tile.plantType][stageIndex]) {
+                imageEl.src = config.plantImagePaths[tile.plantType][stageIndex];
+                imageEl.style.display = 'block';
             } else {
                 imageEl.style.display = 'none';
                 return;
             }
-            imageEl.style.display = 'block';
         } else {
             const imageKey = tile.tile;
             if (imageKey && config.tileImagePaths && config.tileImagePaths[imageKey]) {

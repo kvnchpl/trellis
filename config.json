@@ -21,43 +21,43 @@
         "rock": "assets/tiles/rock.png"
     },
     "plantImagePaths": {
-        "strawberry": {
-            "sprout": "assets/plants/strawberry/strawberry_sprout.png",
-            "flower": "assets/plants/strawberry/strawberry_flower.png",
-            "fruiting": "assets/plants/strawberry/strawberry_fruiting.png"
-        },
-        "apple": {
-            "sapling": "assets/plants/apple/apple_sapling.png",
-            "tree": "assets/plants/apple/apple_tree.png",
-            "fruiting": "assets/plants/apple/apple_fruiting.png"
-        },
-        "pumpkin": {
-            "sprout": "assets/plants/pumpkin/pumpkin_sprout.png",
-            "vine": "assets/plants/pumpkin/pumpkin_vine.png",
-            "fruiting": "assets/plants/pumpkin/pumpkin_fruiting.png"
-        },
-        "beans": {
-            "sprout": "assets/plants/beans/beans_sprout.png",
-            "flower": "assets/plants/beans/beans_flower.png",
-            "pod": "assets/plants/beans/beans_pod.png"
-        },
-        "corn": {
-            "shoot": "assets/plants/corn/corn_shoot.png",
-            "stalk": "assets/plants/corn/corn_stalk.png",
-            "cob": "assets/plants/corn/corn_cob.png"
-        },
-        "walnut": {
-            "sapling": "assets/plants/walnut/walnut_sapling.png",
-            "tree": "assets/plants/walnut/walnut_tree.png"
-        },
-        "sugarMaple": {
-            "sapling": "assets/plants/sugar_maple/sugar_maple_sapling.png",
-            "tree": "assets/plants/sugar_maple/sugar_maple_tree.png"
-        },
-        "milkweed": {
-            "sprout": "assets/plants/milkweed/milkweed_sprout.png",
-            "flower": "assets/plants/milkweed/milkweed_flower.png"
-        }
+        "strawberry": [
+            "assets/plants/strawberry/strawberry_1.png",
+            "assets/plants/strawberry/strawberry_2.png",
+            "assets/plants/strawberry/strawberry_3.png"
+        ],
+        "apple": [
+            "assets/plants/apple/apple_1.png",
+            "assets/plants/apple/apple_2.png",
+            "assets/plants/apple/apple_3.png"
+        ],
+        "pumpkin": [
+            "assets/plants/pumpkin/pumpkin_1.png",
+            "assets/plants/pumpkin/pumpkin_2.png",
+            "assets/plants/pumpkin/pumpkin_3.png"
+        ],
+        "beans": [
+            "assets/plants/beans/beans_1.png",
+            "assets/plants/beans/beans_2.png",
+            "assets/plants/beans/beans_3.png"
+        ],
+        "corn": [
+            "assets/plants/corn/corn_1.png",
+            "assets/plants/corn/corn_2.png",
+            "assets/plants/corn/corn_3.png"
+        ],
+        "walnut": [
+            "assets/plants/walnut/walnut_1.png",
+            "assets/plants/walnut/walnut_2.png"
+        ],
+        "sugarMaple": [
+            "assets/plants/sugar_maple/sugar_maple_1.png",
+            "assets/plants/sugar_maple/sugar_maple_2.png"
+        ],
+        "milkweed": [
+            "assets/plants/milkweed/milkweed_1.png",
+            "assets/plants/milkweed/milkweed_2.png"
+        ]
     },
     "fogColor": "#000000",
     "fogOpacity": 0.8,

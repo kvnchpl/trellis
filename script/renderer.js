@@ -39,8 +39,9 @@ export function render(config) {
                 const tile = getTile(mapX, mapY, config);
                 let drawn = false;
                 // Prefer plant sprite if plantType present
-                if (tile.plantType && config.plantImagePaths && config._imageCache.plants[tile.plantType]) {
-                    const stageImg = config._imageCache.plants[tile.plantType][tile.growthStage] || config._imageCache.plants[tile.plantType].default;
+                if (tile.plantType && config._imageCache.plants[tile.plantType]) {
+                    const stageIndex = config.plantDefinitions[tile.plantType].growthStages.indexOf(tile.growthStage);
+                    const stageImg = config._imageCache.plants[tile.plantType][stageIndex];
                     if (stageImg) {
                         ctx.drawImage(stageImg, screenX, screenY, tileSize, tileSize);
                         drawn = true;
@@ -125,13 +126,13 @@ function preloadImages(config) {
 
     // Plant images (by plantType, then by stage)
     if (config.plantImagePaths) {
-        for (const [plantType, stages] of Object.entries(config.plantImagePaths)) {
-            cache.plants[plantType] = {};
-            for (const [stage, path] of Object.entries(stages)) {
+        for (const [plantType, paths] of Object.entries(config.plantImagePaths)) {
+            config._imageCache.plants[plantType] = [];
+            paths.forEach((path, index) => {
                 const img = new window.Image();
                 img.src = path;
-                cache.plants[plantType][stage] = img;
-            }
+                config._imageCache.plants[plantType][index] = img;
+            });
         }
     }
 
