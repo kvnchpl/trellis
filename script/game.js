@@ -1,3 +1,15 @@
+// --- DRY helpers for rendering and UI updates ---
+function refreshUI(config) {
+    updateTimePanel(config);
+    updateTileInfoPanel(config);
+    updateSaveSizeDisplay();
+}
+
+function fullRender(config) {
+    updateFog(config);
+    render(config);
+    refreshUI(config);
+}
 import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
 import { gameState, initState } from './state.js';
@@ -83,10 +95,7 @@ function startNewGame() {
     initState(config);
     generateMap(config);
     initPlayer(config);
-    updateFog(config);
-    updateTimePanel(config);
-    render(config);
-    updateTileInfoPanel(config);
+    fullRender(config);
     saveGameState();
     console.log("Started a new game.");
 }
@@ -106,20 +115,13 @@ async function initGame(loadExisting = true) {
     }
 
     initPlayer(config);
-    updateFog(config);
-    updateTimePanel(config);
-    render(config);
-    updateTileInfoPanel(config);
-    updateSaveSizeDisplay();
+    fullRender(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
 function gameLoop(config) {
     updatePlayer(config); // handle input + position
-    updateFog(config);    // update fog visibility
-    render(config);       // re-render map
-    updateTimePanel(config);
-    updateSaveSizeDisplay();
+    fullRender(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
