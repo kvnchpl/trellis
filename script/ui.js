@@ -110,18 +110,7 @@ export function updateTileInfoPanel(config) {
     // If plant action is valid, render a single select dropdown styled as a button
     if (plantActionValid) {
         const plantSelect = document.createElement('select');
-        // Style as button
-        plantSelect.className = 'button'; // for compatibility, but see below for better style
-        plantSelect.classList.add('plant-action-select');
-        plantSelect.style.display = 'block';
-        plantSelect.style.marginTop = '8px';
-        plantSelect.style.padding = '3px 8px';
-        plantSelect.style.fontFamily = 'monospace';
-        plantSelect.style.fontSize = '12px';
-        plantSelect.style.backgroundColor = 'var(--background-color)';
-        plantSelect.style.color = 'var(--text-color)';
-        plantSelect.style.border = '1px solid var(--border-color)';
-        plantSelect.style.borderRadius = '3px';
+        plantSelect.className = 'plant-action-select';
         // First option: "Plant"
         const defaultOpt = document.createElement('option');
         defaultOpt.value = '';
@@ -167,8 +156,6 @@ export function updateTileInfoPanel(config) {
             // Reset select after planting
             plantSelect.value = '';
         };
-        // Use same classes as buttons for visual consistency
-        plantSelect.classList.add('plant-select');
         actionsEl.appendChild(plantSelect);
     }
 
