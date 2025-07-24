@@ -1,6 +1,9 @@
 import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 
+// --- Growth update throttling/caching ---
+let lastGrowthUpdateWeek = null;
+
 // --- Helper functions for DRY logic ---
 function evaluateCondition(tile, condObj) {
     if (condObj.or && Array.isArray(condObj.or)) {
@@ -244,7 +247,11 @@ function incrementTime(minutes, config) {
             time.week = 1;
             time.seasonIndex = (time.seasonIndex + 1) % config.seasons.length;
         }
-        updateGrowth(config);
+        // Only update growth if not already updated for this week
+        if (time.week !== lastGrowthUpdateWeek) {
+            updateGrowth(config);
+            lastGrowthUpdateWeek = time.week;
+        }
     }
     updateTimePanel(config);
 }
@@ -266,11 +273,11 @@ function updateGrowth(config) {
                 }
             }
         }
-
         tile.moisture = Math.max(0, tile.moisture - def.moistureUse);
         tile.fertility = Math.max(0, tile.fertility - def.fertilityUse);
     }
-    // Refresh tile info panel to reflect updated growth stage and image
+    // Refresh tile info panel to reflect updated growth stage and image.
+    // This call is only made once per day rollover due to incrementTime throttling.
     updateTileInfoPanel(config);
 }
 
