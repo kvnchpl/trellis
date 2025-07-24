@@ -47,7 +47,6 @@ export function initState(config) {
     const startingKey = `${gameState.player.x},${gameState.player.y}`;
     gameState.map[startingKey] = {
         tile: "soil",
-        plant: null,
         plantType: null,
         growthStage: null,
         growthProgress: 0,
@@ -84,7 +83,6 @@ export function getTile(x, y, config) {
     if (!gameState.map[key]) {
         gameState.map[key] = {
             tile: weightedRandomTile(config.initialTileWeights),
-            plant: null,
             plantType: null,
             growthStage: null,
             growthProgress: 0,

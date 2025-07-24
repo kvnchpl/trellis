@@ -23,7 +23,6 @@ function saveGameState() {
     function defaultTile(config) {
         return {
             tile: null,
-            plant: null,
             plantType: null,
             growthStage: null,
             growthProgress: 0,
