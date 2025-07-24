@@ -92,7 +92,7 @@ export function updateTileInfoPanel(config) {
         let value = tile[key];
 
         // Normalize undefined or null to 'none' for tile and plant
-        if ((key === 'tile' || key === 'plant') && (value === null || value === undefined)) {
+        if ((key === 'tile' || key === 'plantType') && (value === null || value === undefined)) {
             value = 'none';
         }
 
@@ -100,8 +100,8 @@ export function updateTileInfoPanel(config) {
         if (key === 'tile' && config.tiles.labels && config.tiles.labels[value]) {
             value = config.tiles.labels[value];
         }
-        if (key === 'plant' && config.plantLabels && config.plantLabels[value]) {
-            value = config.plantLabels[value];
+        if (key === 'plantType') {
+            value = config.plants.definitions[value]?.label || value;
         }
 
         // Format numeric values
@@ -118,12 +118,12 @@ export function updateTileInfoPanel(config) {
         detailsEl.appendChild(p);
 
         // Add plantType and growthStage display dynamically if not in config.tiles.detailsOrder
-        if (!config.tiles.detailsOrder.includes("plantType") && tile.plantType && idx === config.tiles.detailsOrder.length - 1) {
+        if (!config.tiles.detailsOrder.includes("plantType") && idx === config.tiles.detailsOrder.length - 1) {
             const pType = document.createElement('p');
             pType.innerHTML = `<strong>plantType:</strong> <span id="tile-value-plantType">${tile.plantType || '–'}</span>`;
             detailsEl.appendChild(pType);
         }
-        if (!config.tiles.detailsOrder.includes("growthStage") && tile.growthStage && idx === config.tiles.detailsOrder.length - 1) {
+        if (!config.tiles.detailsOrder.includes("growthStage") && idx === config.tiles.detailsOrder.length - 1) {
             const gStage = document.createElement('p');
             gStage.innerHTML = `<strong>growthStage:</strong> <span id="tile-value-growthStage">${tile.growthStage || '–'}</span>`;
             detailsEl.appendChild(gStage);
@@ -132,12 +132,10 @@ export function updateTileInfoPanel(config) {
 
     // Prepare plant select dropdown if "plant" action is valid
     let plantActionValid = false;
-    let plantActionDef = null;
     for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
         if (actionLabel === "plant") {
             if (evaluateCondition(tile, actionDef.condition)) {
                 plantActionValid = true;
-                plantActionDef = actionDef;
                 break;
             }
         }
