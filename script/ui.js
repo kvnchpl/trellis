@@ -107,6 +107,10 @@ export function updateTileInfoPanel(config) {
             }
         }
     }
+    // Prevent planting if tile already has a plant
+    if (tile.plantType) {
+        plantActionValid = false;
+    }
     // If plant action is valid, render a single select dropdown styled as a button
     if (plantActionValid) {
         const plantSelect = document.createElement('select');

@@ -30,46 +30,70 @@ export function updatePlayer(config) {
 
     // Move up
     if (keysPressed[controls.up]) {
-        player.y--;
-        gameState.selector = { x: player.x, y: player.y };
-        keysPressed[controls.up] = false;
-        saveGameState();
-        incrementTime(1, config);
-        console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
-        updateTileInfoPanel(config);
+        const newY = player.y - 1;
+        const targetTile = getTile(player.x, newY, config);
+        if (targetTile.tile !== 'rock' && !targetTile.plantType) {
+            player.y = newY;
+            gameState.selector = { x: player.x, y: player.y };
+            keysPressed[controls.up] = false;
+            saveGameState();
+            incrementTime(1, config);
+            console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
+            updateTileInfoPanel(config);
+        } else {
+            keysPressed[controls.up] = false;
+        }
     }
 
     // Move down
     else if (keysPressed[controls.down]) {
-        player.y++;
-        gameState.selector = { x: player.x, y: player.y };
-        keysPressed[controls.down] = false;
-        saveGameState();
-        incrementTime(1, config);
-        console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
-        updateTileInfoPanel(config);
+        const newY = player.y + 1;
+        const targetTile = getTile(player.x, newY, config);
+        if (targetTile.tile !== 'rock' && !targetTile.plantType) {
+            player.y = newY;
+            gameState.selector = { x: player.x, y: player.y };
+            keysPressed[controls.down] = false;
+            saveGameState();
+            incrementTime(1, config);
+            console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
+            updateTileInfoPanel(config);
+        } else {
+            keysPressed[controls.down] = false;
+        }
     }
 
     // Move left
     else if (keysPressed[controls.left]) {
-        player.x--;
-        gameState.selector = { x: player.x, y: player.y };
-        keysPressed[controls.left] = false;
-        saveGameState();
-        incrementTime(1, config);
-        console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
-        updateTileInfoPanel(config);
+        const newX = player.x - 1;
+        const targetTile = getTile(newX, player.y, config);
+        if (targetTile.tile !== 'rock' && !targetTile.plantType) {
+            player.x = newX;
+            gameState.selector = { x: player.x, y: player.y };
+            keysPressed[controls.left] = false;
+            saveGameState();
+            incrementTime(1, config);
+            console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
+            updateTileInfoPanel(config);
+        } else {
+            keysPressed[controls.left] = false;
+        }
     }
 
     // Move right
     else if (keysPressed[controls.right]) {
-        player.x++;
-        gameState.selector = { x: player.x, y: player.y };
-        keysPressed[controls.right] = false;
-        saveGameState();
-        incrementTime(1, config);
-        console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
-        updateTileInfoPanel(config);
+        const newX = player.x + 1;
+        const targetTile = getTile(newX, player.y, config);
+        if (targetTile.tile !== 'rock' && !targetTile.plantType) {
+            player.x = newX;
+            gameState.selector = { x: player.x, y: player.y };
+            keysPressed[controls.right] = false;
+            saveGameState();
+            incrementTime(1, config);
+            console.log("Updating info panel for tile at", gameState.selector, getTile(gameState.selector.x, gameState.selector.y, config));
+            updateTileInfoPanel(config);
+        } else {
+            keysPressed[controls.right] = false;
+        }
     }
 
     // Select tile above player

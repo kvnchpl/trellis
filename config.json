@@ -173,6 +173,12 @@
                     },
                     {
                         "mulch": true
+                    },
+                    {
+                        "tile": "grass"
+                    },
+                    {
+                        "tile": "rock"
                     }
                 ]
             },
