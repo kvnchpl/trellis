@@ -118,7 +118,10 @@ canvas {
     -moz-appearance: none;
     width: auto;
     min-width: unset;
-    background-size: var(--caret-size);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'><path fill='%23ffffff' d='M0 0l5 6 5-6z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-small) center;
+    background-size: var(--caret-size) auto;
     padding-right: var(--caret-padding);
 }
 
