@@ -1,4 +1,6 @@
 :root {
+    --canvas-height: 416px;
+    --panel-width: 300px;
     --tile-size: 32px;
     --border-color: #fff;
     --background-color: #1a1a1a;
@@ -6,7 +8,6 @@
     --font-family: monospace;
     --text-color: #fff;
     --hover-bg: #444;
-    --panel-width: 300px;
     --font-base: 14px;
     --font-small: calc(var(--font-base) * 0.85);
     --font-medium: var(--font-base);
@@ -49,6 +50,7 @@ canvas {
     display: block;
     background-color: var(--canvas-background);
     image-rendering: pixelated;
+    height: var(--canvas-height);
 }
 
 /* Info panel styles for clarity and accessibility */
@@ -61,6 +63,8 @@ canvas {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-family: var(--font-family);
+    height: var(--canvas-height);
+    overflow-y: auto;
 }
 
 #info-panel h2 {
