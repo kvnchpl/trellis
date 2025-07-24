@@ -1,15 +1,3 @@
-// --- DRY helpers for rendering and UI updates ---
-function refreshUI(config) {
-    updateTimePanel(config);
-    updateTileInfoPanel(config);
-    updateSaveSizeDisplay();
-}
-
-function fullRender(config) {
-    updateFog(config);
-    render(config);
-    refreshUI(config);
-}
 import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
 import { gameState, initState } from './state.js';
@@ -18,6 +6,11 @@ import { updateTileInfoPanel, updateTimePanel } from './ui.js';
 
 const configUrl = 'config.json';
 let config;
+
+// --- Performance/throttling tracking variables ---
+let lastSelectorKey = null;
+let lastSaveSizeUpdate = 0;
+let lastPlayerKey = null;
 
 async function loadConfig() {
     try {
@@ -95,7 +88,10 @@ function startNewGame() {
     initState(config);
     generateMap(config);
     initPlayer(config);
-    fullRender(config);
+    updateFog(config);
+    updateTimePanel(config);
+    render(config);
+    updateTileInfoPanel(config);
     saveGameState();
     console.log("Started a new game.");
 }
@@ -115,12 +111,14 @@ async function initGame(loadExisting = true) {
     }
 
     initPlayer(config);
+    // Use fullRender to set up initial state/UI
     fullRender(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
 function gameLoop(config) {
     updatePlayer(config); // handle input + position
+    // Use fullRender for conditional, throttled updates
     fullRender(config);
     requestAnimationFrame(() => gameLoop(config));
 }
@@ -157,6 +155,43 @@ function updateSaveSizeDisplay() {
     }
 
     saveEl.textContent = `(${sizeInKB} KB${warningText})`;
+}
+
+// --- Performance optimization helper functions ---
+function maybeUpdateTileInfoPanel(config) {
+    const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
+    if (currentKey !== lastSelectorKey) {
+        updateTileInfoPanel(config);
+        lastSelectorKey = currentKey;
+    }
+}
+
+function maybeUpdateSaveSizeDisplay() {
+    const now = performance.now();
+    if (now - lastSaveSizeUpdate > 2000) { // update every 2 seconds
+        updateSaveSizeDisplay();
+        lastSaveSizeUpdate = now;
+    }
+}
+
+function maybeRender(config) {
+    const currentPlayerKey = `${gameState.player.x},${gameState.player.y}`;
+    if (currentPlayerKey !== lastPlayerKey) {
+        updateFog(config);
+        render(config);
+        lastPlayerKey = currentPlayerKey;
+    }
+}
+
+function refreshUI(config) {
+    updateTimePanel(config);
+    maybeUpdateTileInfoPanel(config);
+    maybeUpdateSaveSizeDisplay();
+}
+
+function fullRender(config) {
+    maybeRender(config);
+    refreshUI(config);
 }
 
 export { saveGameState };
