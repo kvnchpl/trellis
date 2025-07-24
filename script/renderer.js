@@ -30,45 +30,36 @@ export function render(config) {
             const screenX = x * tileSize;
             const screenY = y * tileSize;
 
-            // Draw in-bounds tile or out-of-bounds
-            if (
-                mapX >= 0 && mapX < config.mapWidth &&
-                mapY >= 0 && mapY < config.mapHeight
-            ) {
-                // Draw tile using config.tileColors or images
-                const tile = getTile(mapX, mapY, config);
-                let drawn = false;
-                // Prefer plant sprite if plantType present
-                if (tile.plantType && config._imageCache.plants[tile.plantType]) {
-                    const stageIndex = config.plantDefinitions[tile.plantType].growthStages.indexOf(tile.growthStage);
-                    const stageImg = config._imageCache.plants[tile.plantType][stageIndex];
-                    if (stageImg) {
-                        ctx.drawImage(stageImg, screenX, screenY, tileSize, tileSize);
-                        drawn = true;
-                    }
-                }
-                // Otherwise draw tile sprite if available
-                if (!drawn) {
-                    if (tile.tile && config._imageCache.tiles[tile.tile]) {
-                        ctx.drawImage(config._imageCache.tiles[tile.tile], screenX, screenY, tileSize, tileSize);
-                        drawn = true;
-                    } else {
-                        let tileColor = config.tileColors && tile && tile.tile && config.tileColors[tile.tile]
-                            ? config.tileColors[tile.tile]
-                            : config.tileColors && config.tileColors.default;
-                        ctx.fillStyle = tileColor;
-                        ctx.fillRect(screenX, screenY, tileSize, tileSize);
-                    }
-                }
+            // Always draw a tile, no boundaries
+            const tile = getTile(mapX, mapY, config);
+            let drawn = false;
 
-                // Apply fog of war if not revealed
-                if (!gameState.revealed[`${mapX},${mapY}`]) {
-                    ctx.fillStyle = config.fogColor;
+            // Prefer plant sprite if present
+            if (tile.plantType && config._imageCache.plants[tile.plantType]) {
+                const stageIndex = config.plantDefinitions[tile.plantType].growthStages.indexOf(tile.growthStage);
+                const stageImg = config._imageCache.plants[tile.plantType][stageIndex];
+                if (stageImg) {
+                    ctx.drawImage(stageImg, screenX, screenY, tileSize, tileSize);
+                    drawn = true;
+                }
+            }
+
+            // Otherwise draw tile sprite or color
+            if (!drawn) {
+                if (tile.tile && config._imageCache.tiles[tile.tile]) {
+                    ctx.drawImage(config._imageCache.tiles[tile.tile], screenX, screenY, tileSize, tileSize);
+                } else {
+                    let tileColor = config.tileColors && tile && tile.tile && config.tileColors[tile.tile]
+                        ? config.tileColors[tile.tile]
+                        : config.tileColors && config.tileColors.default;
+                    ctx.fillStyle = tileColor;
                     ctx.fillRect(screenX, screenY, tileSize, tileSize);
                 }
-            } else {
-                // Out-of-bounds: draw dark background
-                ctx.fillStyle = config.outOfBoundsColor;
+            }
+
+            // Apply fog of war if not revealed
+            if (!gameState.revealed[`${mapX},${mapY}`]) {
+                ctx.fillStyle = config.fogColor;
                 ctx.fillRect(screenX, screenY, tileSize, tileSize);
             }
         }

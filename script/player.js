@@ -29,7 +29,7 @@ export function updatePlayer(config) {
     const controls = config.keyBindings;
 
     // Move up
-    if (keysPressed[controls.up] && player.y > 0) {
+    if (keysPressed[controls.up]) {
         player.y--;
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.up] = false;
@@ -40,7 +40,7 @@ export function updatePlayer(config) {
     }
 
     // Move down
-    else if (keysPressed[controls.down] && player.y < mapHeight - 1) {
+    else if (keysPressed[controls.down]) {
         player.y++;
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.down] = false;
@@ -51,7 +51,7 @@ export function updatePlayer(config) {
     }
 
     // Move left
-    else if (keysPressed[controls.left] && player.x > 0) {
+    else if (keysPressed[controls.left]) {
         player.x--;
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.left] = false;
@@ -62,7 +62,7 @@ export function updatePlayer(config) {
     }
 
     // Move right
-    else if (keysPressed[controls.right] && player.x < mapWidth - 1) {
+    else if (keysPressed[controls.right]) {
         player.x++;
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.right] = false;
