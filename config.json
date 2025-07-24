@@ -22,41 +22,41 @@
     },
     "plantImagePaths": {
         "strawberry": {
-            "sprout": "assets/plants/strawberry_sprout.png",
-            "flower": "assets/plants/strawberry_flower.png",
-            "fruiting": "assets/plants/strawberry_fruiting.png"
+            "sprout": "assets/plants/strawberry/strawberry_sprout.png",
+            "flower": "assets/plants/strawberry/strawberry_flower.png",
+            "fruiting": "assets/plants/strawberry/strawberry_fruiting.png"
         },
         "apple": {
-            "sapling": "assets/plants/apple_sapling.png",
-            "tree": "assets/plants/apple_tree.png",
-            "fruiting": "assets/plants/apple_fruiting.png"
+            "sapling": "assets/plants/apple/apple_sapling.png",
+            "tree": "assets/plants/apple/apple_tree.png",
+            "fruiting": "assets/plants/apple/apple_fruiting.png"
         },
         "pumpkin": {
-            "sprout": "assets/plants/pumpkin_sprout.png",
-            "vine": "assets/plants/pumpkin_vine.png",
-            "fruiting": "assets/plants/pumpkin_fruiting.png"
+            "sprout": "assets/plants/pumpkin/pumpkin_sprout.png",
+            "vine": "assets/plants/pumpkin/pumpkin_vine.png",
+            "fruiting": "assets/plants/pumpkin/pumpkin_fruiting.png"
         },
         "beans": {
-            "sprout": "assets/plants/beans_sprout.png",
-            "flower": "assets/plants/beans_flower.png",
-            "pod": "assets/plants/beans_pod.png"
+            "sprout": "assets/plants/beans/beans_sprout.png",
+            "flower": "assets/plants/beans/beans_flower.png",
+            "pod": "assets/plants/beans/beans_pod.png"
         },
         "corn": {
-            "shoot": "assets/plants/corn_shoot.png",
-            "stalk": "assets/plants/corn_stalk.png",
-            "cob": "assets/plants/corn_cob.png"
+            "shoot": "assets/plants/corn/corn_shoot.png",
+            "stalk": "assets/plants/corn/corn_stalk.png",
+            "cob": "assets/plants/corn/corn_cob.png"
         },
         "walnut": {
-            "sapling": "assets/plants/walnut_sapling.png",
-            "tree": "assets/plants/walnut_tree.png"
+            "sapling": "assets/plants/walnut/walnut_sapling.png",
+            "tree": "assets/plants/walnut/walnut_tree.png"
         },
         "sugarMaple": {
-            "sapling": "assets/plants/sugar_maple_sapling.png",
-            "tree": "assets/plants/sugar_maple_tree.png"
+            "sapling": "assets/plants/sugar_maple/sugar_maple_sapling.png",
+            "tree": "assets/plants/sugar_maple/sugar_maple_tree.png"
         },
         "milkweed": {
-            "sprout": "assets/plants/milkweed_sprout.png",
-            "flower": "assets/plants/milkweed_flower.png"
+            "sprout": "assets/plants/milkweed/milkweed_sprout.png",
+            "flower": "assets/plants/milkweed/milkweed_flower.png"
         }
     },
     "fogColor": "#000000",
