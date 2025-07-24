@@ -75,8 +75,6 @@ export function updateTileInfoPanel(config) {
         }
     });
 
-    // Remove old plant select dropdown logic
-
     // Prepare plant select dropdown if "plant" action is valid
     let plantActionValid = false;
     let plantActionDef = null;
@@ -109,18 +107,69 @@ export function updateTileInfoPanel(config) {
             }
         }
     }
-    // If plant action is valid, render select dropdown with options
-    let plantSelectEl = null;
+    // If plant action is valid, render a single select dropdown styled as a button
     if (plantActionValid) {
-        plantSelectEl = document.createElement('select');
-        plantSelectEl.id = 'plant-select';
+        const plantSelect = document.createElement('select');
+        // Style as button
+        plantSelect.className = 'button'; // for compatibility, but see below for better style
+        plantSelect.classList.add('plant-action-select');
+        plantSelect.style.display = 'block';
+        plantSelect.style.marginTop = '8px';
+        plantSelect.style.padding = '3px 8px';
+        plantSelect.style.fontFamily = 'monospace';
+        plantSelect.style.fontSize = '12px';
+        plantSelect.style.backgroundColor = 'var(--background-color)';
+        plantSelect.style.color = 'var(--text-color)';
+        plantSelect.style.border = '1px solid var(--border-color)';
+        plantSelect.style.borderRadius = '3px';
+        // First option: "Plant"
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = 'Plant';
+        plantSelect.appendChild(defaultOpt);
+        // Add plant options
         Object.keys(config.plantDefinitions).forEach(plant => {
             const opt = document.createElement('option');
             opt.value = plant;
             opt.textContent = plant;
-            plantSelectEl.appendChild(opt);
+            plantSelect.appendChild(opt);
         });
-        actionsEl.appendChild(plantSelectEl);
+        plantSelect.value = '';
+        plantSelect.onchange = () => {
+            const choice = plantSelect.value;
+            if (!choice || !config.plantDefinitions[choice]) {
+                // reset select if invalid
+                plantSelect.value = '';
+                return;
+            }
+            // Perform the plant action logic (as in previous code)
+            console.group(`Action: plant`);
+            console.log('Before:', JSON.stringify(tile));
+            // Create a new tile object for the mutation
+            const newTile = { ...tile };
+            newTile.plantType = choice;
+            newTile.growthStage = config.plantDefinitions[choice].growthStages[0];
+            newTile.growthProgress = 0;
+            gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+            console.log('After:', JSON.stringify(newTile));
+            console.groupEnd();
+            updateTileInfoPanel(config);
+            ["plantType", "growthStage", "growthProgress"].forEach((key) => {
+                const el = document.getElementById(`tile-value-${key}`);
+                if (el) {
+                    el.classList.remove('value-changed');
+                    void el.offsetWidth;
+                    el.classList.add('value-changed');
+                }
+            });
+            saveGameState();
+            incrementTime(config.actionTimeIncrement, config);
+            // Reset select after planting
+            plantSelect.value = '';
+        };
+        // Use same classes as buttons for visual consistency
+        plantSelect.classList.add('plant-select');
+        actionsEl.appendChild(plantSelect);
     }
 
     // Now iterate actions and render their buttons (handling "plant" specially)
@@ -152,39 +201,8 @@ export function updateTileInfoPanel(config) {
                 continue; // skip harvest button for non-harvestable plants
             }
             if (actionLabel === "plant") {
-                // The select is already rendered above if valid; render the button here
-                const btn = document.createElement('button');
-                btn.textContent = "Plant";
-                btn.onclick = () => {
-                    if (!plantSelectEl) return;
-                    const choice = plantSelectEl.value;
-                    if (!choice || !config.plantDefinitions[choice]) {
-                        console.log("Invalid plant choice.");
-                        return;
-                    }
-                    console.group(`Action: plant`);
-                    console.log('Before:', JSON.stringify(tile));
-                    // Create a new tile object for the mutation
-                    const newTile = { ...tile };
-                    newTile.plantType = choice;
-                    newTile.growthStage = config.plantDefinitions[choice].growthStages[0];
-                    newTile.growthProgress = 0;
-                    gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-                    console.log('After:', JSON.stringify(newTile));
-                    console.groupEnd();
-                    updateTileInfoPanel(config);
-                    ["plantType", "growthStage", "growthProgress"].forEach((key) => {
-                        const el = document.getElementById(`tile-value-${key}`);
-                        if (el) {
-                            el.classList.remove('value-changed');
-                            void el.offsetWidth;
-                            el.classList.add('value-changed');
-                        }
-                    });
-                    saveGameState();
-                    incrementTime(config.actionTimeIncrement, config);
-                };
-                actionsEl.appendChild(btn);
+                // "Plant" action is handled by the select above; do not render a button here.
+                continue;
             } else {
                 const btn = document.createElement('button');
                 btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
