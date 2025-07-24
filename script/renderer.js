@@ -8,7 +8,7 @@ export function render(config) {
     const canvas = document.getElementById('game-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const tileSize = config.tileSize;
+    const tileSize = config.tiles.size;
     // Use config.viewTileCount if present, else fallback to canvas size
     const viewSize = Math.floor(canvas.width / tileSize);
 
@@ -19,7 +19,7 @@ export function render(config) {
 
     // Cache commonly used variables
     const cache = config._imageCache;
-    const tileColors = config.tileColors;
+    const tileColors = config.tiles.colors;
     const fogColor = config.fogColor;
 
     // Calculate top-left tile of the viewport so the player is centered
@@ -86,8 +86,8 @@ function preloadImages(config) {
     };
 
     // Tile images
-    if (config.tileImagePaths) {
-        for (const [tileType, path] of Object.entries(config.tileImagePaths)) {
+    if (config.tiles.images) {
+        for (const [tileType, path] of Object.entries(config.tiles.images)) {
             const img = new window.Image();
             img.src = path;
             cache.tiles[tileType] = img;
@@ -95,8 +95,8 @@ function preloadImages(config) {
     }
 
     // Plant images (arrays by index mapped to growthStages)
-    if (config.plantImagePaths) {
-        for (const [plantType, paths] of Object.entries(config.plantImagePaths)) {
+    if (config.plants.images) {
+        for (const [plantType, paths] of Object.entries(config.plants.images)) {
             cache.plants[plantType] = [];
             paths.forEach((path, index) => {
                 const img = new window.Image();
@@ -119,7 +119,7 @@ function preloadImages(config) {
 function drawTileOrColor(ctx, tile, config, cache, tileColors, x, y, size) {
     // Prefer plant sprite if present
     if (tile.plantType && cache.plants[tile.plantType]) {
-        const stageIndex = config.plantDefinitions[tile.plantType].growthStages.indexOf(tile.growthStage);
+        const stageIndex = config.plants.definitions[tile.plantType].growthStages.indexOf(tile.growthStage);
         const stageImg = cache.plants[tile.plantType][stageIndex];
         if (stageImg) {
             ctx.drawImage(stageImg, x, y, size, size);

@@ -64,10 +64,10 @@ export function updateTileInfoPanel(config) {
     // Show tile image if available (prefer plant image if plantType present)
     const imageEl = document.getElementById('tile-image');
     if (imageEl) {
-        if (tile.plantType && config.plantImagePaths && Array.isArray(config.plantImagePaths[tile.plantType])) {
-            const stageIndex = config.plantDefinitions[tile.plantType].growthStages.indexOf(tile.growthStage);
-            if (stageIndex >= 0 && config.plantImagePaths[tile.plantType][stageIndex]) {
-                imageEl.src = config.plantImagePaths[tile.plantType][stageIndex];
+        if (tile.plantType && config.plants.images && Array.isArray(config.plants.images[tile.plantType])) {
+            const stageIndex = config.plants.definitions[tile.plantType].growthStages.indexOf(tile.growthStage);
+            if (stageIndex >= 0 && config.plants.images[tile.plantType][stageIndex]) {
+                imageEl.src = config.plants.images[tile.plantType][stageIndex];
                 imageEl.style.display = 'block';
             } else {
                 imageEl.style.display = 'none';
@@ -75,8 +75,8 @@ export function updateTileInfoPanel(config) {
             }
         } else {
             const imageKey = tile.tile;
-            if (imageKey && config.tileImagePaths && config.tileImagePaths[imageKey]) {
-                imageEl.src = config.tileImagePaths[imageKey];
+            if (imageKey && config.tiles.images && config.tiles.images[imageKey]) {
+                imageEl.src = config.tiles.images[imageKey];
                 imageEl.style.display = 'block';
             } else {
                 imageEl.style.display = 'none';
@@ -87,7 +87,7 @@ export function updateTileInfoPanel(config) {
     detailsEl.innerHTML = '';
     actionsEl.innerHTML = '';
 
-    config.tileDetails.forEach((key, idx) => {
+    config.tiles.detailsOrder.forEach((key, idx) => {
         const p = document.createElement('p');
         let value = tile[key];
 
@@ -97,8 +97,8 @@ export function updateTileInfoPanel(config) {
         }
 
         // Apply labels if defined
-        if (key === 'tile' && config.tileTypeLabels && config.tileTypeLabels[value]) {
-            value = config.tileTypeLabels[value];
+        if (key === 'tile' && config.tiles.labels && config.tiles.labels[value]) {
+            value = config.tiles.labels[value];
         }
         if (key === 'plant' && config.plantLabels && config.plantLabels[value]) {
             value = config.plantLabels[value];
@@ -117,13 +117,13 @@ export function updateTileInfoPanel(config) {
         p.innerHTML = `<strong>${key}:</strong> <span id="tile-value-${key}">${value}</span>`;
         detailsEl.appendChild(p);
 
-        // Add plantType and growthStage display dynamically if not in config.tileDetails
-        if (!config.tileDetails.includes("plantType") && tile.plantType && idx === config.tileDetails.length - 1) {
+        // Add plantType and growthStage display dynamically if not in config.tiles.detailsOrder
+        if (!config.tiles.detailsOrder.includes("plantType") && tile.plantType && idx === config.tiles.detailsOrder.length - 1) {
             const pType = document.createElement('p');
             pType.innerHTML = `<strong>plantType:</strong> <span id="tile-value-plantType">${tile.plantType || '–'}</span>`;
             detailsEl.appendChild(pType);
         }
-        if (!config.tileDetails.includes("growthStage") && tile.growthStage && idx === config.tileDetails.length - 1) {
+        if (!config.tiles.detailsOrder.includes("growthStage") && tile.growthStage && idx === config.tiles.detailsOrder.length - 1) {
             const gStage = document.createElement('p');
             gStage.innerHTML = `<strong>growthStage:</strong> <span id="tile-value-growthStage">${tile.growthStage || '–'}</span>`;
             detailsEl.appendChild(gStage);
@@ -133,7 +133,7 @@ export function updateTileInfoPanel(config) {
     // Prepare plant select dropdown if "plant" action is valid
     let plantActionValid = false;
     let plantActionDef = null;
-    for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
+    for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
         if (actionLabel === "plant") {
             if (evaluateCondition(tile, actionDef.condition)) {
                 plantActionValid = true;
@@ -156,7 +156,7 @@ export function updateTileInfoPanel(config) {
         defaultOpt.textContent = 'Plant';
         plantSelect.appendChild(defaultOpt);
         // Add plant options
-        Object.keys(config.plantDefinitions).forEach(plant => {
+        Object.keys(config.plants.definitions).forEach(plant => {
             const opt = document.createElement('option');
             opt.value = plant;
             opt.textContent = plant;
@@ -165,7 +165,7 @@ export function updateTileInfoPanel(config) {
         plantSelect.value = '';
         plantSelect.onchange = () => {
             const choice = plantSelect.value;
-            if (!choice || !config.plantDefinitions[choice]) {
+            if (!choice || !config.plants.definitions[choice]) {
                 // reset select if invalid
                 plantSelect.value = '';
                 return;
@@ -176,7 +176,7 @@ export function updateTileInfoPanel(config) {
             // Create a new tile object for the mutation
             const newTile = { ...tile };
             newTile.plantType = choice;
-            newTile.growthStage = config.plantDefinitions[choice].growthStages[0];
+            newTile.growthStage = config.plants.definitions[choice].growthStages[0];
             newTile.growthProgress = 0;
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
             console.log('After:', JSON.stringify(newTile));
@@ -190,11 +190,11 @@ export function updateTileInfoPanel(config) {
     }
 
     // Now iterate actions and render their buttons (handling "plant" specially)
-    for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
+    for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
         const isValid = evaluateCondition(tile, actionDef.condition);
         console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:', tile);
         if (isValid) {
-            if (actionLabel === "harvest" && tile.plantType && !config.plantDefinitions[tile.plantType]?.harvestable) {
+            if (actionLabel === "harvest" && tile.plantType && !config.plants.definitions[tile.plantType]?.harvestable) {
                 continue; // skip harvest button for non-harvestable plants
             }
             if (actionLabel === "plant") {
@@ -259,7 +259,7 @@ function incrementTime(minutes, config) {
 function updateGrowth(config) {
     for (const tile of Object.values(gameState.map)) {
         if (!tile.plantType) continue;
-        const def = config.plantDefinitions[tile.plantType];
+        const def = config.plants.definitions[tile.plantType];
         if (!def) continue;
 
         tile.growthProgress++;
