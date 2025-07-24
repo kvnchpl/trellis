@@ -1,6 +1,58 @@
 import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 
+// --- Helper functions for DRY logic ---
+function evaluateCondition(tile, condObj) {
+    if (condObj.or && Array.isArray(condObj.or)) {
+        return condObj.or.some(c => evaluateCondition(tile, c));
+    }
+    return Object.entries(condObj).every(([key, cond]) => {
+        const current = tile[key];
+        if (cond === 'exists') return !(current === null || current === undefined);
+        if (typeof cond === 'object' && cond !== null) {
+            if ('not' in cond) return current !== cond.not;
+            if ('lt' in cond && !(current < cond.lt)) return false;
+            if ('gt' in cond && !(current > cond.gt)) return false;
+            if ('lte' in cond && !(current <= cond.lte)) return false;
+            if ('gte' in cond && !(current >= cond.gte)) return false;
+        } else {
+            if (current !== cond) return false;
+        }
+        return true;
+    });
+}
+
+function applyActionEffects(tile, actionDef, config) {
+    const newTile = { ...tile };
+    Object.entries(actionDef.effect).forEach(([key, change]) => {
+        if (change !== null && typeof change === 'object') {
+            if ('inc' in change) {
+                newTile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
+            }
+            if ('dec' in change) {
+                newTile[key] = Math.max(config[`${key}Range`].min, tile[key] - change.dec);
+            }
+        } else {
+            newTile[key] = change;
+        }
+    });
+    return newTile;
+}
+
+function finalizeAction(actionDef, config) {
+    updateTileInfoPanel(config);
+    Object.entries(actionDef.effect).forEach(([key]) => {
+        const el = document.getElementById(`tile-value-${key}`);
+        if (el) {
+            el.classList.remove('value-changed');
+            void el.offsetWidth;
+            el.classList.add('value-changed');
+        }
+    });
+    saveGameState();
+    incrementTime(config.actionTimeIncrement, config);
+}
+
 export function updateTileInfoPanel(config) {
     const tile = getTile(gameState.selector.x, gameState.selector.y, config);
     const detailsEl = document.getElementById('tile-details');
@@ -36,14 +88,17 @@ export function updateTileInfoPanel(config) {
         const p = document.createElement('p');
         let value = tile[key];
 
-        // Normalize undefined or null to 'none' for tile and plantType
-        if ((key === 'tile' || key === 'plantType') && (value === null || value === undefined)) {
+        // Normalize undefined or null to 'none' for tile and plant
+        if ((key === 'tile' || key === 'plant') && (value === null || value === undefined)) {
             value = 'none';
         }
 
         // Apply labels if defined
         if (key === 'tile' && config.tileTypeLabels && config.tileTypeLabels[value]) {
             value = config.tileTypeLabels[value];
+        }
+        if (key === 'plant' && config.plantLabels && config.plantLabels[value]) {
+            value = config.plantLabels[value];
         }
 
         // Format numeric values
@@ -58,34 +113,28 @@ export function updateTileInfoPanel(config) {
 
         p.innerHTML = `<strong>${key}:</strong> <span id="tile-value-${key}">${value}</span>`;
         detailsEl.appendChild(p);
+
+        // Add plantType and growthStage display dynamically if not in config.tileDetails
+        if (!config.tileDetails.includes("plantType") && tile.plantType && idx === config.tileDetails.length - 1) {
+            const pType = document.createElement('p');
+            pType.innerHTML = `<strong>plantType:</strong> <span id="tile-value-plantType">${tile.plantType || '–'}</span>`;
+            detailsEl.appendChild(pType);
+        }
+        if (!config.tileDetails.includes("growthStage") && tile.growthStage && idx === config.tileDetails.length - 1) {
+            const gStage = document.createElement('p');
+            gStage.innerHTML = `<strong>growthStage:</strong> <span id="tile-value-growthStage">${tile.growthStage || '–'}</span>`;
+            detailsEl.appendChild(gStage);
+        }
     });
 
     // Prepare plant select dropdown if "plant" action is valid
     let plantActionValid = false;
+    let plantActionDef = null;
     for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
         if (actionLabel === "plant") {
-            function evaluateCondition(condObj) {
-                if (condObj.or && Array.isArray(condObj.or)) {
-                    return condObj.or.some(c => evaluateCondition(c));
-                }
-                return Object.entries(condObj).every(([key, cond]) => {
-                    const current = tile[key];
-                    if (cond === 'exists') {
-                        return !(current === null || current === undefined);
-                    } else if (typeof cond === 'object' && cond !== null) {
-                        if ('not' in cond) return current !== cond.not;
-                        if ('lt' in cond && !(current < cond.lt)) return false;
-                        if ('gt' in cond && !(current > cond.gt)) return false;
-                        if ('lte' in cond && !(current <= cond.lte)) return false;
-                        if ('gte' in cond && !(current >= cond.gte)) return false;
-                    } else {
-                        if (current !== cond) return false;
-                    }
-                    return true;
-                });
-            }
-            if (evaluateCondition(actionDef.condition)) {
+            if (evaluateCondition(tile, actionDef.condition)) {
                 plantActionValid = true;
+                plantActionDef = actionDef;
                 break;
             }
         }
@@ -118,7 +167,7 @@ export function updateTileInfoPanel(config) {
                 plantSelect.value = '';
                 return;
             }
-            // Perform the plant action logic (as in previous code)
+            // Perform the plant action logic
             console.group(`Action: plant`);
             console.log('Before:', JSON.stringify(tile));
             // Create a new tile object for the mutation
@@ -129,17 +178,8 @@ export function updateTileInfoPanel(config) {
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
             console.log('After:', JSON.stringify(newTile));
             console.groupEnd();
-            updateTileInfoPanel(config);
-            ["plantType", "growthStage", "growthProgress"].forEach((key) => {
-                const el = document.getElementById(`tile-value-${key}`);
-                if (el) {
-                    el.classList.remove('value-changed');
-                    void el.offsetWidth;
-                    el.classList.add('value-changed');
-                }
-            });
-            saveGameState();
-            incrementTime(config.actionTimeIncrement, config);
+            // Use finalizeAction to DRY the update/highlight/save/time logic (simulate an actionDef)
+            finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
             // Reset select after planting
             plantSelect.value = '';
         };
@@ -148,28 +188,8 @@ export function updateTileInfoPanel(config) {
 
     // Now iterate actions and render their buttons (handling "plant" specially)
     for (const [actionLabel, actionDef] of Object.entries(config.tileActions)) {
-        function evaluateCondition(condObj) {
-            if (condObj.or && Array.isArray(condObj.or)) {
-                return condObj.or.some(c => evaluateCondition(c));
-            }
-            return Object.entries(condObj).every(([key, cond]) => {
-                const current = tile[key];
-                if (cond === 'exists') {
-                    return !(current === null || current === undefined);
-                } else if (typeof cond === 'object' && cond !== null) {
-                    if ('not' in cond) return current !== cond.not;
-                    if ('lt' in cond && !(current < cond.lt)) return false;
-                    if ('gt' in cond && !(current > cond.gt)) return false;
-                    if ('lte' in cond && !(current <= cond.lte)) return false;
-                    if ('gte' in cond && !(current >= cond.gte)) return false;
-                } else {
-                    if (current !== cond) return false;
-                }
-                return true;
-            });
-        }
-        const isValid = evaluateCondition(actionDef.condition);
-        // console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:`, tile);
+        const isValid = evaluateCondition(tile, actionDef.condition);
+        console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:', tile);
         if (isValid) {
             if (actionLabel === "harvest" && tile.plantType && !config.plantDefinitions[tile.plantType]?.harvestable) {
                 continue; // skip harvest button for non-harvestable plants
@@ -183,37 +203,12 @@ export function updateTileInfoPanel(config) {
                 btn.onclick = () => {
                     console.group(`Action: ${actionLabel}`);
                     console.log('Before:', JSON.stringify(tile));
-                    // Create a new tile object for the mutation
-                    const newTile = { ...tile };
-                    Object.entries(actionDef.effect).forEach(([key, change]) => {
-                        if (change !== null && typeof change === 'object') {
-                            if ('inc' in change) {
-                                newTile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
-                            }
-                            if ('dec' in change) {
-                                newTile[key] = Math.max(config[`${key}Range`].min, tile[key] - change.dec);
-                            }
-                        } else {
-                            newTile[key] = change;
-                        }
-                    });
-                    // Replace the tile in the map with the new object
+                    // Apply effects with DRY helper
+                    const newTile = applyActionEffects(tile, actionDef, config);
                     gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
                     console.log('After:', JSON.stringify(newTile));
                     console.groupEnd();
-                    // Re-fetch updated tile before updating the info panel
-                    updateTileInfoPanel(config);
-                    // Highlight only changed values
-                    Object.entries(actionDef.effect).forEach(([key]) => {
-                        const el = document.getElementById(`tile-value-${key}`);
-                        if (el) {
-                            el.classList.remove('value-changed');
-                            void el.offsetWidth;
-                            el.classList.add('value-changed');
-                        }
-                    });
-                    saveGameState();
-                    incrementTime(config.actionTimeIncrement, config);
+                    finalizeAction(actionDef, config);
                 };
                 actionsEl.appendChild(btn);
             }
