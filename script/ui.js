@@ -91,7 +91,7 @@ export function updateTileInfoPanel(config) {
         const p = document.createElement('p');
         let value = tile[key];
 
-        // Normalize undefined or null to 'none' for tile and plant
+        // Normalize undefined or null to 'none' for tile and plantType
         if ((key === 'tile' || key === 'plantType') && (value === null || value === undefined)) {
             value = 'none';
         }
@@ -116,18 +116,6 @@ export function updateTileInfoPanel(config) {
 
         p.innerHTML = `<strong>${key}:</strong> <span id="tile-value-${key}">${value}</span>`;
         detailsEl.appendChild(p);
-
-        // Add plantType and growthStage display dynamically if not in config.tiles.detailsOrder
-        if (!config.tiles.detailsOrder.includes("plantType") && idx === config.tiles.detailsOrder.length - 1) {
-            const pType = document.createElement('p');
-            pType.innerHTML = `<strong>plantType:</strong> <span id="tile-value-plantType">${tile.plantType || '–'}</span>`;
-            detailsEl.appendChild(pType);
-        }
-        if (!config.tiles.detailsOrder.includes("growthStage") && idx === config.tiles.detailsOrder.length - 1) {
-            const gStage = document.createElement('p');
-            gStage.innerHTML = `<strong>growthStage:</strong> <span id="tile-value-growthStage">${tile.growthStage || '–'}</span>`;
-            detailsEl.appendChild(gStage);
-        }
     });
 
     // Prepare plant select dropdown if "plant" action is valid
@@ -190,7 +178,7 @@ export function updateTileInfoPanel(config) {
     // Now iterate actions and render their buttons (handling "plant" specially)
     for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
         const isValid = evaluateCondition(tile, actionDef.condition);
-        console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:', tile);
+        // console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:', tile);
         if (isValid) {
             if (actionLabel === "harvest" && tile.plantType && !config.plants.definitions[tile.plantType]?.harvestable) {
                 continue; // skip harvest button for non-harvestable plants
