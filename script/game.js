@@ -20,14 +20,41 @@ async function loadConfig() {
 }
 
 function saveGameState() {
+    function defaultTile(config) {
+        return {
+            tile: null, // regenerated lazily if not saved
+            plant: null,
+            plantType: null,
+            growthStage: null,
+            growthProgress: 0,
+            moisture: 0,
+            fertility: 0,
+            weeds: false,
+            mulch: false,
+            readyToHarvest: false,
+            fertilized: false
+        };
+    }
+
+    const optimizedMap = {};
+    const def = defaultTile(config);
+
+    for (const [key, tile] of Object.entries(gameState.map)) {
+        // Only store if tile differs from default
+        if (Object.keys(def).some(k => tile[k] !== def[k] && tile[k] !== undefined)) {
+            optimizedMap[key] = tile;
+        }
+    }
+
     localStorage.setItem("trellisSave", JSON.stringify({
         player: gameState.player,
         selector: gameState.selector,
-        map: gameState.map,
+        map: optimizedMap,
         revealed: gameState.revealed,
         time: gameState.time
     }));
-    console.log("Game saved.");
+
+    console.log(`Game saved. Tiles stored: ${Object.keys(optimizedMap).length}`);
 }
 
 function loadGameState() {
