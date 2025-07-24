@@ -203,7 +203,7 @@ export function updateTileInfoPanel(config) {
                     // Create a new tile object for the mutation
                     const newTile = { ...tile };
                     Object.entries(actionDef.effect).forEach(([key, change]) => {
-                        if (typeof change === 'object') {
+                        if (change !== null && typeof change === 'object') {
                             if ('inc' in change) {
                                 newTile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
                             }
