@@ -8,7 +8,7 @@ export function render(config) {
     const canvas = document.getElementById('game-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const tileSize = config.tiles.size;
+    const tileSize = config.tileSize || config.tiles.size;
     // Use config.viewTileCount if present, else fallback to canvas size
     const viewSize = Math.floor(canvas.width / tileSize);
 
@@ -51,10 +51,12 @@ export function render(config) {
         ctx.drawImage(cache.player, playerScreenX, playerScreenY, tileSize, tileSize);
     } else {
         ctx.fillStyle = config.playerColor;
-        const sizeRatio = config.playerSize;
-        const playerSizePx = tileSize * sizeRatio;
-        const offset = (tileSize - playerSizePx) / 2;
+        const playerSizePx = tileSize * config.playerSize;
         ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
+
+        const selectorX = selectorOffsetX * tileSize;
+        const selectorY = selectorOffsetY * tileSize;
+        ctx.strokeRect(selectorX + 1, selectorY + 1, tileSize - 2, tileSize - 2);
     }
 
     // Draw selector

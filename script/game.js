@@ -187,7 +187,37 @@ function updateSaveSizeDisplay() {
     saveEl.textContent = `(${sizeInKB} KB${warningText})`;
 }
 
-// --- Performance optimization helper functions ---
+export function resizeCanvasAndTiles(config) {
+    const canvas = document.getElementById('game-canvas');
+    const mapWidth = config.mapWidth;
+    const mapHeight = config.mapHeight;
+
+    // Use 90% of viewport width and height
+    const maxWidth = window.innerWidth * 0.9;
+    const maxHeight = window.innerHeight * 0.9;
+
+    // Compute tile size so the whole map fits
+    const tileSizeX = Math.floor(maxWidth / mapWidth);
+    const tileSizeY = Math.floor(maxHeight / mapHeight);
+    const tileSize = Math.max(16, Math.min(tileSizeX, tileSizeY)); // ensure a minimum
+
+    config.tileSize = tileSize;
+
+    // Set CSS size
+    canvas.style.width = `${tileSize * mapWidth}px`;
+    canvas.style.height = `${tileSize * mapHeight}px`;
+
+    // Set canvas resolution
+    canvas.width = tileSize * mapWidth;
+    canvas.height = tileSize * mapHeight;
+
+    render(config); // redraw with new sizes
+}
+
+// Call on init and resize
+resizeCanvasAndTiles(config);
+window.addEventListener('resize', () => resizeCanvasAndTiles(config));
+
 function maybeUpdateTileInfoPanel(config) {
     const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
     if (currentKey !== lastSelectorKey) {
