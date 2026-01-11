@@ -20,6 +20,15 @@ export function drawPlayer(ctx, player, startX, startY, tileSize, config) {
     }
 }
 
+export function drawSelector(ctx, selector, startX, startY, tileSize, config) {
+    const selectorScreenX = (selector.x - startX) * tileSize;
+    const selectorScreenY = (selector.y - startY) * tileSize;
+
+    ctx.strokeStyle = config.selectorColor || '#00FFFF';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(selectorScreenX + 1, selectorScreenY + 1, tileSize - 2, tileSize - 2);
+}
+
 /**
  * Renders the game viewport centered on the player, with fog of war and placeholder tiles.
  * @param {Object} config - Game configuration (expects tileSize, mapWidth, mapHeight).
