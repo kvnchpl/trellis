@@ -177,13 +177,29 @@ export function updateTileInfoPanel(config) {
     let plantEnabled = evaluateCondition(tile, config.tiles.actions.plant.condition);
     if (tile.plantType) plantEnabled = false; // cannot plant if tile already has a plant
 
+    // Apply visual disabled state only
+    plantSelect.classList.toggle('disabled', !plantEnabled);
+
+    // Add click listener to handle invalid attempts
+    plantSelect.addEventListener('click', (e) => {
+        if (!plantEnabled) {
+            e.preventDefault();
+            e.stopPropagation();
+            const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
+            const message = failed.length
+                ? `Cannot perform "plant" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                : `Cannot perform "plant" on this tile.`;
+            alert(message);
+            console.log('Plant action blocked on tile:', tile, 'Failed conditions:', failed);
+            plantSelect.value = '';
+        }
+    });
+
     // Apply visual and functional disabled state
     plantSelect.classList.toggle('disabled', !plantEnabled);
     plantSelect.disabled = !plantEnabled;
 
-    // Populate options as before...
-
-    // First option: "Plant"
+    // Default option
     const defaultOpt = document.createElement('option');
     defaultOpt.value = '';
     defaultOpt.textContent = 'plant';
