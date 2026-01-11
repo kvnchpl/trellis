@@ -190,7 +190,7 @@ export function updateTileInfoPanel(config) {
 
     // Always render plant select
     const plantSelect = document.createElement('select');
-    plantSelect.className = 'plant-action-select';
+    plantSelect.className = 'action-control plant-action-select';
     plantSelect.classList.toggle('disabled', !plantEnabled); // visual cue only
     plantSelect.value = '';
 
