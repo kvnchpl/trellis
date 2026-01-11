@@ -104,6 +104,9 @@ async function initGame(loadExisting = true) {
 
     if (loadExisting && loadGameState()) {
         console.log("Loaded game from localStorage.");
+        updateFog(config);
+        render(config);
+        updateTileInfoPanel(config);
     } else {
         initState(config);
         generateMap(config);
