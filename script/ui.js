@@ -169,21 +169,33 @@ export function updateTileInfoPanel(config) {
         plantActionValid = false;
     }
 
-    // Always render plant select
-    const plantSelect = document.createElement('select');
-    plantSelect.className = 'plant-action-select';
-
-    // Determine if planting is actually valid
+    // Determine if planting is valid
     let plantEnabled = evaluateCondition(tile, config.tiles.actions.plant.condition);
     if (tile.plantType) plantEnabled = false; // cannot plant if tile already has a plant
 
-    // Apply visual disabled state only
-    plantSelect.classList.toggle('disabled', !plantEnabled);
+    // Always render plant select
+    const plantSelect = document.createElement('select');
+    plantSelect.className = 'plant-action-select';
+    plantSelect.classList.toggle('disabled', !plantEnabled); // visual cue only
+    plantSelect.value = '';
 
-    // Add click listener to handle invalid attempts
-    plantSelect.addEventListener('click', (e) => {
+    // Add default option and plant options
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = 'plant';
+    plantSelect.appendChild(defaultOpt);
+
+    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
+        const opt = document.createElement('option');
+        opt.value = plantKey;
+        opt.textContent = (plantDef.label || plantKey).toLowerCase();
+        plantSelect.appendChild(opt);
+    });
+
+    // INTERCEPT mousedown to prevent expanding when disabled
+    plantSelect.addEventListener('mousedown', (e) => {
         if (!plantEnabled) {
-            e.preventDefault();
+            e.preventDefault();  // prevents dropdown expansion
             e.stopPropagation();
             const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
             const message = failed.length
@@ -195,33 +207,9 @@ export function updateTileInfoPanel(config) {
         }
     });
 
-    // Apply visual and functional disabled state
-    plantSelect.classList.toggle('disabled', !plantEnabled);
-    plantSelect.disabled = !plantEnabled;
-
-    // Default option
-    const defaultOpt = document.createElement('option');
-    defaultOpt.value = '';
-    defaultOpt.textContent = 'plant';
-    plantSelect.appendChild(defaultOpt);
-
-    // Add all plant options
-    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
-        const opt = document.createElement('option');
-        opt.value = plantKey;
-        opt.textContent = (plantDef.label || plantKey).toLowerCase();
-        plantSelect.appendChild(opt);
-    });
-    plantSelect.value = '';
-
-    // Handle selection
-    plantSelect.onchange = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
+    // Also handle onchange for valid selections
+    plantSelect.onchange = () => {
         const choice = plantSelect.value;
-
-        // Block action if planting not enabled or invalid choice
         if (!plantEnabled || !choice || !config.plants.definitions[choice]) {
             const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
             const message = failed.length
@@ -233,16 +221,11 @@ export function updateTileInfoPanel(config) {
             return;
         }
 
-        // Perform the plant action
-        console.group(`Action: plant`);
-        console.log('Before:', JSON.stringify(tile));
         const newTile = { ...tile };
         newTile.plantType = choice;
         newTile.growthStage = config.plants.definitions[choice].growthStages[0];
         newTile.growthProgress = 0;
         gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-        console.log('After:', JSON.stringify(newTile));
-        console.groupEnd();
         finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
         plantSelect.value = '';
     };
