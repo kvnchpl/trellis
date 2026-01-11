@@ -202,7 +202,10 @@ export function updateTileInfoPanel(config) {
         btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
         btn.disabled = !isValid;
         btn.onclick = () => {
-            if (!isValid) return; // optionally prevent clicking
+            if (!isValid) {
+                alert(`Cannot perform "${actionLabel}" on this tile.`);
+                return;
+            }
             console.group(`Action: ${actionLabel}`);
             console.log('Before:', JSON.stringify(tile));
             // Apply effects with DRY helper
