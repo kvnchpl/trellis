@@ -168,7 +168,7 @@ export function updateTileInfoPanel(config) {
     if (tile.plantType) {
         plantActionValid = false;
     }
-    
+
     // Always render plant select
     const plantSelect = document.createElement('select');
     plantSelect.className = 'plant-action-select';
@@ -199,8 +199,14 @@ export function updateTileInfoPanel(config) {
     plantSelect.value = '';
 
     // Handle selection
-    plantSelect.onchange = () => {
-        if (!plantActionValid) {
+    plantSelect.onchange = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const choice = plantSelect.value;
+
+        // Block action if planting not enabled or invalid choice
+        if (!plantEnabled || !choice || !config.plants.definitions[choice]) {
             const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
             const message = failed.length
                 ? `Cannot perform "plant" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
@@ -211,12 +217,7 @@ export function updateTileInfoPanel(config) {
             return;
         }
 
-        const choice = plantSelect.value;
-        if (!choice || !config.plants.definitions[choice]) {
-            plantSelect.value = '';
-            return;
-        }
-
+        // Perform the plant action
         console.group(`Action: plant`);
         console.log('Before:', JSON.stringify(tile));
         const newTile = { ...tile };
