@@ -91,36 +91,32 @@ canvas {
 
 #tile-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* two equal columns */
-    gap: var(--spacing-small); /* spacing between buttons */
+    grid-template-columns: 1fr 1fr;
+    /* two equal columns */
+    gap: var(--spacing-small);
+    /* spacing between buttons */
+}
+
+.action-control {
+    display: block;
+    margin-top: var(--spacing-medium);
+    padding: calc(var(--spacing-medium) / 3) calc(var(--spacing-medium) * 0.75);
+    font-family: var(--font-family);
+    font-size: var(--font-small);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--control-border-radius);
+    cursor: pointer;
 }
 
 #tile-actions button {
     text-align: left;
-    display: block;
-    margin-top: var(--spacing-medium);
-    padding: calc(var(--spacing-medium) / 3) calc(var(--spacing-medium) * 0.75);
-    font-family: var(--font-family);
-    font-size: var(--font-small);
-    background-color: var(--background-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--control-border-radius);
-    cursor: pointer;
 }
 
 
 .plant-action-select {
-    display: block;
-    margin-top: var(--spacing-medium);
-    padding: calc(var(--spacing-medium) / 3) calc(var(--spacing-medium) * 0.75);
-    font-family: var(--font-family);
-    font-size: var(--font-small);
-    background-color: var(--background-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--control-border-radius);
-    cursor: pointer;
+    composes: action-control;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;

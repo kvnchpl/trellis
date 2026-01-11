@@ -266,6 +266,7 @@ export function updateTileInfoPanel(config) {
         // Create button
         const key = config.keyBindings.actions[actionLabel] || '';
         const btn = document.createElement('button');
+        btn.className = 'action-control';
         btn.textContent = `[${key}] ${actionLabel}`;
 
         // Apply visual "disabled" class if invalid
