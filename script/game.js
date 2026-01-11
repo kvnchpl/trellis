@@ -1,7 +1,7 @@
 import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
 import { gameState, initState, getTile } from './state.js';
-import { render } from './renderer.js';
+import { render, preloadImages } from './renderer.js';
 import { updateTileInfoPanel, updateTimePanel } from './ui.js';
 
 const configUrl = 'config.json';
