@@ -104,7 +104,15 @@ async function initGame(loadExisting = true) {
 
     if (loadExisting && loadGameState()) {
         console.log("Loaded game from localStorage.");
+        console.log("DEBUG: after loadGameState", {
+            player: gameState.player,
+            selector: gameState.selector,
+            revealedKeys: Object.keys(gameState.revealed || {}).length
+        });
         updateFog(config);
+        console.log("DEBUG: after updateFog", {
+            revealedKeys: Object.keys(gameState.revealed || {}).length
+        });
         render(config);
         updateTileInfoPanel(config);
 

@@ -7,10 +7,19 @@ import { gameState, getTile } from './state.js';
 export function render(config) {
     const canvas = document.getElementById('game-canvas');
     if (!canvas) return;
+    console.log("DEBUG: render() called", {
+        canvasWidth: canvas.width,
+        canvasHeight: canvas.height
+    });
     const ctx = canvas.getContext('2d');
     const tileSize = config.tiles.size;
     // Use config.viewTileCount if present, else fallback to canvas size
     const viewSize = Math.floor(canvas.width / tileSize);
+    console.log("DEBUG: viewSize calculation", {
+        tileSize,
+        canvasWidth: canvas.width,
+        viewSize
+    });
 
     // Preload images on first render
     if (!config._imageCache) {
@@ -25,6 +34,11 @@ export function render(config) {
     // Calculate top-left tile of the viewport so the player is centered
     const startX = gameState.player.x - Math.floor(viewSize / 2);
     const startY = gameState.player.y - Math.floor(viewSize / 2);
+    console.log("DEBUG: viewport origin", {
+        startX,
+        startY,
+        player: gameState.player
+    });
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -37,6 +51,14 @@ export function render(config) {
 
             // Always draw a tile, no boundaries
             const tile = getTile(mapX, mapY, config);
+            if (x === 0 && y === 0) {
+                console.log("DEBUG: first tile render", {
+                    mapX,
+                    mapY,
+                    tile,
+                    revealed: gameState.revealed[`${mapX},${mapY}`]
+                });
+            }
             drawTileOrColor(ctx, tile, config, cache, tileColors, screenX, screenY, tileSize);
             if (!gameState.revealed[`${mapX},${mapY}`]) {
                 drawFog(ctx, fogColor, screenX, screenY, tileSize);
