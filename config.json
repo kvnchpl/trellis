@@ -355,14 +355,14 @@
         "high": "High Fertility"
     },
     "keyBindings": {
-        "up": "ArrowUp",
-        "down": "ArrowDown",
-        "left": "ArrowLeft",
-        "right": "ArrowRight",
-        "selectUp": "w",
-        "selectDown": "s",
-        "selectLeft": "a",
-        "selectRight": "d",
+        "up": "w",
+        "down": "s",
+        "left": "a",
+        "right": "d",
+        "selectUp": "ArrowUp",
+        "selectDown": "ArrowDown",
+        "selectLeft": "ArrowLeft",
+        "selectRight": "ArrowRight",
         "resetSelector": "q"
     }
 }
