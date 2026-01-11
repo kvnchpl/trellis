@@ -1,5 +1,25 @@
 import { gameState, getTile } from './state.js';
 
+export function drawPlayer(ctx, player, startX, startY, tileSize, config) {
+    const playerScreenX = (player.x - startX) * tileSize;
+    const playerScreenY = (player.y - startY) * tileSize;
+    const playerSizePx = tileSize * (config.playerSize || 1);
+    const offset = (tileSize - playerSizePx) / 2;
+
+    if (config._imageCache?.player) {
+        ctx.drawImage(
+            config._imageCache.player,
+            playerScreenX + offset,
+            playerScreenY + offset,
+            playerSizePx,
+            playerSizePx
+        );
+    } else {
+        ctx.fillStyle = config.playerColor;
+        ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
+    }
+}
+
 /**
  * Renders the game viewport centered on the player, with fog of war and placeholder tiles.
  * @param {Object} config - Game configuration (expects tileSize, mapWidth, mapHeight).
