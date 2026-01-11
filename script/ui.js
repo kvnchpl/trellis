@@ -247,125 +247,48 @@ export function updateTileInfoPanel(config) {
     let plantEnabled = evaluateCondition(tile, config.tiles.actions.plant.condition);
     if (tile.plantType) plantEnabled = false; // cannot plant if tile already has a plant
 
-    // Always render plant select
-    const plantSelect = document.createElement('select');
-    plantSelect.className = 'action-control plant-action-select';
-    plantSelect.classList.toggle('disabled', !plantEnabled); // visual cue only
-    plantSelect.value = '';
-
-    // Add default option and plant options
-    const plantKey = config.keyBindings.actions['plant'] || '';
-    const defaultOpt = document.createElement('option');
-    defaultOpt.value = '';
-    defaultOpt.textContent = `[${plantKey}] plant`;
-    plantSelect.appendChild(defaultOpt);
-
-    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
-        const opt = document.createElement('option');
-        opt.value = plantKey;
-        opt.textContent = (plantDef.label || plantKey).toLowerCase();
-        plantSelect.appendChild(opt);
-    });
-
-    // INTERCEPT mousedown to prevent expanding when disabled
-    plantSelect.addEventListener('mousedown', (e) => {
-        if (!plantEnabled) {
-            e.preventDefault();  // prevents dropdown expansion
-            e.stopPropagation();
-            const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
-            const message = failed.length
-                ? `Cannot perform "plant" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
-                : `Cannot perform "plant" on this tile.`;
-            alert(message);
-            console.log('Plant action blocked on tile:', tile, 'Failed conditions:', failed);
-            plantSelect.value = '';
-        }
-    });
-
-    // Also handle onchange for valid selections
-    plantSelect.onchange = () => {
-        const choice = plantSelect.value;
-        if (!plantEnabled || !choice || !config.plants.definitions[choice]) {
-            const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
-            const message = failed.length
-                ? `Cannot perform "plant" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
-                : `Cannot perform "plant" on this tile.`;
-            alert(message);
-            console.log('Plant action blocked on tile:', tile, 'Failed conditions:', failed);
-            plantSelect.value = '';
-            return;
-        }
-
-        const newTile = { ...tile };
-        newTile.plantType = choice;
-        newTile.growthStage = config.plants.definitions[choice].growthStages[0];
-        newTile.growthProgress = 0;
-        gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-        finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
-        plantSelect.value = '';
-    };
-
-    // Append to actions container
-    actionsEl.appendChild(plantSelect);
-
-
     // Now iterate actions and render their buttons (handling "plant" specially)
     for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
-        if (actionLabel === "plant") {
-            // skip plant here since it's handled by the select dropdown above
-            continue;
-        }
-        const isValid = evaluateCondition(tile, actionDef.condition);
-        // Always render a button for every action except "plant"
-        // Optionally skip harvest for non-harvestable plants (keep old logic)
-        if (actionLabel === "harvest" && tile.plantType && !config.plants.definitions[tile.plantType]?.harvestable) {
-            continue;
-        }
+        const isPlant = actionLabel === "plant";
+        const tile = getTile(gameState.selector.x, gameState.selector.y, config);
+        const validNow = evaluateCondition(tile, actionDef.condition);
 
-        // Create button
         const key = config.keyBindings.actions[actionLabel] || '';
         const btn = document.createElement('button');
         btn.className = 'action-control';
         btn.textContent = `[${key}] ${actionLabel}`;
 
-        // Apply visual "disabled" class if invalid
-        if (!isValid) btn.classList.add('disabled');
+        if (!validNow) btn.classList.add('disabled');
 
         btn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
 
-            // Fetch the current tile at the time of click
-            const currentTile = getTile(gameState.selector.x, gameState.selector.y, config);
+            const tileNow = getTile(gameState.selector.x, gameState.selector.y, config);
+            const valid = evaluateCondition(tileNow, actionDef.condition);
 
-            // Evaluate whether the action is valid now
-            const validNow = evaluateCondition(currentTile, actionDef.condition);
-
-            if (!validNow) {
-                // Determine which conditions failed and make them human-readable
-                const failed = getFailedConditions(currentTile, actionDef.condition);
+            if (!valid) {
+                const failed = getFailedConditions(tileNow, actionDef.condition);
                 const message = failed.length
                     ? `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
                     : `Cannot perform "${actionLabel}" on this tile.`;
-
-                // Show alert to player
                 alert(message);
-
-                // Log to console for debugging
-                console.log(`Action "${actionLabel}" blocked on tile:`, currentTile, "Failed conditions:", failed);
+                console.log(`Action "${actionLabel}" blocked on tile:`, tileNow, "Failed conditions:", failed);
                 return;
-            } else {
-                showPlantSelectionModal(config, currentTile, gameState.selector.x, gameState.selector.y);
             }
 
-            // Apply the action normally
-            const newTile = applyActionEffects(currentTile, actionDef, config);
-            gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-
-            // Finalize updates: info panel, save, time, render
-            finalizeAction(actionDef, config);
+            if (isPlant) {
+                // Trigger the modal for planting
+                showPlantSelectionModal(config, tileNow, gameState.selector.x, gameState.selector.y);
+            } else {
+                const newTile = applyActionEffects(tileNow, actionDef, config);
+                gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+                finalizeAction(actionDef, config);
+            }
         };
+
         actionsEl.appendChild(btn);
+
     }
 }
 
