@@ -88,6 +88,13 @@ canvas {
     margin: var(--spacing-small) 0;
 }
 
+
+#tile-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* two equal columns */
+    gap: var(--spacing-small); /* spacing between buttons */
+}
+
 #tile-actions button {
     display: block;
     margin-top: var(--spacing-medium);
