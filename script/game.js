@@ -202,27 +202,37 @@ function updateSaveSizeDisplay() {
 
 export function resizeCanvasAndTiles(config) {
     const canvas = document.getElementById('game-canvas');
-    const mapWidth = config.mapWidth;
-    const mapHeight = config.mapHeight;
+    const container = document.getElementById('game-container');
+    const infoPanel = document.getElementById('info-panel');
 
-    // Use 90% of viewport width and height
-    const maxWidth = window.innerWidth * 0.9;
-    const maxHeight = window.innerHeight * 0.9;
+    if (!canvas || !container || !infoPanel) return;
 
-    // Compute tile size so the whole map fits
-    const tileSizeX = Math.floor(maxWidth / mapWidth);
-    const tileSizeY = Math.floor(maxHeight / mapHeight);
-    const tileSize = Math.max(16, Math.min(tileSizeX, tileSizeY)); // ensure a minimum
+    const containerRect = container.getBoundingClientRect();
+    const infoPanelRect = infoPanel.getBoundingClientRect();
+
+    const padding = 16; // safety buffer for container padding
+
+    const availableWidth =
+        containerRect.width -
+        infoPanelRect.width -
+        padding;
+
+    const availableHeight =
+        containerRect.height -
+        padding;
+
+    const tileSizeX = Math.floor(availableWidth / config.mapWidth);
+    const tileSizeY = Math.floor(availableHeight / config.mapHeight);
+
+    const tileSize = Math.max(16, Math.min(tileSizeX, tileSizeY));
 
     config.tileSize = tileSize;
 
-    // Set CSS size
-    canvas.style.width = `${tileSize * mapWidth}px`;
-    canvas.style.height = `${tileSize * mapHeight}px`;
+    canvas.width = tileSize * config.mapWidth;
+    canvas.height = tileSize * config.mapHeight;
 
-    // Set canvas resolution
-    canvas.width = tileSize * mapWidth;
-    canvas.height = tileSize * mapHeight;
+    canvas.style.width = `${canvas.width}px`;
+    canvas.style.height = `${canvas.height}px`;
 }
 
 function maybeUpdateTileInfoPanel(config) {
