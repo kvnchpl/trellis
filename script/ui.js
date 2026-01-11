@@ -98,7 +98,7 @@ function finalizeAction(actionDef, config) {
     render(config);
 }
 
-function showPlantSelectionModal(config, tile, x, y) {
+export function showPlantSelectionModal(config, tile, x, y) {
     // Create overlay
     const overlay = document.createElement('div');
     overlay.style.position = 'fixed';

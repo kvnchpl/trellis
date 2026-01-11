@@ -1,6 +1,6 @@
 import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
-import { incrementTime, updateTileInfoPanel, evaluateCondition, getFailedConditions } from './ui.js';
+import { incrementTime, updateTileInfoPanel, evaluateCondition, getFailedConditions, showPlantSelectionModal } from './ui.js';
 import { render } from './renderer.js';
 
 function applyActionEffects(tile, actionDef, config) {
