@@ -201,9 +201,12 @@ export function updateTileInfoPanel(config) {
         const btn = document.createElement('button');
         btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
         btn.disabled = !isValid;
-        btn.onclick = () => {
-            if (!isValid) {
+        btn.onclick = (e) => {
+            if (btn.disabled) {
                 alert(`Cannot perform "${actionLabel}" on this tile.`);
+                console.log(`Action "${actionLabel}" blocked by condition:`, JSON.stringify(actionDef.condition));
+                e.preventDefault();
+                e.stopPropagation();
                 return;
             }
             console.group(`Action: ${actionLabel}`);
