@@ -254,7 +254,17 @@ export function updateTileInfoPanel(config) {
     defaultOpt.textContent = `[${plantKey}] plant`;
 
     // Now iterate actions and render their buttons (handling "plant" specially)
-    for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
+    actionsEl.innerHTML = ''; // clear existing buttons
+
+    // Sort actions by their keyBindings number
+    const sortedActions = Object.entries(config.tiles.actions)
+        .sort(([aLabel], [bLabel]) => {
+            const aKey = parseInt(config.keyBindings.actions[aLabel] || 99);
+            const bKey = parseInt(config.keyBindings.actions[bLabel] || 99);
+            return aKey - bKey;
+        });
+
+    for (const [actionLabel, actionDef] of sortedActions) {
         const isPlant = actionLabel === "plant";
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
         const validNow = evaluateCondition(tile, actionDef.condition);
@@ -269,10 +279,8 @@ export function updateTileInfoPanel(config) {
         btn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
-
             const tileNow = getTile(gameState.selector.x, gameState.selector.y, config);
             const valid = evaluateCondition(tileNow, actionDef.condition);
-
             if (!valid) {
                 const failed = getFailedConditions(tileNow, actionDef.condition);
                 const message = failed.length
@@ -282,9 +290,7 @@ export function updateTileInfoPanel(config) {
                 console.log(`Action "${actionLabel}" blocked on tile:`, tileNow, "Failed conditions:", failed);
                 return;
             }
-
             if (isPlant) {
-                // Trigger the modal for planting
                 showPlantSelectionModal(config, tileNow, gameState.selector.x, gameState.selector.y);
             } else {
                 const newTile = applyActionEffects(tileNow, actionDef, config);
