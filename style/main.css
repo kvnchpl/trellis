@@ -96,6 +96,7 @@ canvas {
 }
 
 #tile-actions button {
+    text-align: left;
     display: block;
     margin-top: var(--spacing-medium);
     padding: calc(var(--spacing-medium) / 3) calc(var(--spacing-medium) * 0.75);
