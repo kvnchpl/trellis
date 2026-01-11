@@ -6,73 +6,53 @@ import { gameState, getTile } from './state.js';
  */
 export function render(config) {
     const canvas = document.getElementById('game-canvas');
-    if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const tileSize = config.tileSize || 32;
 
-    // Determine view size based on canvas resolution
-    const viewSizeX = Math.floor(canvas.width / tileSize);
-    const viewSizeY = Math.floor(canvas.height / tileSize);
+    const { tileSize, mapWidth, mapHeight } = config;
+    const { player, selector, revealed } = gameState;
 
-    // Preload images on first render
-    if (!config._imageCache) {
-        config._imageCache = preloadImages(config);
-    }
-
-    const cache = config._imageCache;
-    const tileColors = config.tiles.colors;
-    const fogColor = config.fogColor;
-
-    // Top-left tile of viewport so player is centered
-    const startX = gameState.player.x - Math.floor(viewSizeX / 2);
-    const startY = gameState.player.y - Math.floor(viewSizeY / 2);
+    if (!tileSize) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw tiles
-    for (let y = 0; y < viewSizeY; y++) {
-        for (let x = 0; x < viewSizeX; x++) {
+    // How many tiles fit on screen
+    const viewTilesX = Math.floor(canvas.width / tileSize);
+    const viewTilesY = Math.floor(canvas.height / tileSize);
+
+    const halfX = Math.floor(viewTilesX / 2);
+    const halfY = Math.floor(viewTilesY / 2);
+
+    // Camera origin centered on player
+    let startX = player.x - halfX;
+    let startY = player.y - halfY;
+
+    // Clamp camera to map bounds
+    startX = Math.max(0, Math.min(startX, mapWidth - viewTilesX));
+    startY = Math.max(0, Math.min(startY, mapHeight - viewTilesY));
+
+    for (let y = 0; y < viewTilesY; y++) {
+        for (let x = 0; x < viewTilesX; x++) {
             const mapX = startX + x;
             const mapY = startY + y;
-            const screenX = x * tileSize;
-            const screenY = y * tileSize;
 
             const tile = getTile(mapX, mapY, config);
-            drawTileOrColor(ctx, tile, config, cache, tileColors, screenX, screenY, tileSize);
+            const isRevealed = revealed[`${mapX},${mapY}`];
 
-            if (!gameState.revealed[`${mapX},${mapY}`]) {
-                drawFog(ctx, fogColor, screenX, screenY, tileSize);
-            }
+            drawTileOrColor(
+                ctx,
+                tile,
+                isRevealed,
+                x * tileSize,
+                y * tileSize,
+                tileSize,
+                config
+            );
         }
     }
 
-    // Draw selector
-    const selectorOffsetX = gameState.selector.x - startX;
-    const selectorOffsetY = gameState.selector.y - startY;
-
-    if (
-        selectorOffsetX >= 0 && selectorOffsetX < viewSizeX &&
-        selectorOffsetY >= 0 && selectorOffsetY < viewSizeY
-    ) {
-        const selectorX = selectorOffsetX * tileSize;
-        const selectorY = selectorOffsetY * tileSize;
-        ctx.strokeStyle = config.selectorColor;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(selectorX + 1, selectorY + 1, tileSize - 2, tileSize - 2);
-    }
-
-    // Draw player centered in viewport
-    const playerScreenX = Math.floor(viewSizeX / 2) * tileSize;
-    const playerScreenY = Math.floor(viewSizeY / 2) * tileSize;
-    const playerSizePx = tileSize * (config.playerSize || 1);
-    const offset = (tileSize - playerSizePx) / 2;
-
-    if (config.playerImagePath && cache.player) {
-        ctx.drawImage(cache.player, playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
-    } else {
-        ctx.fillStyle = config.playerColor;
-        ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
-    }
+    // Draw entities relative to camera
+    drawPlayer(ctx, player, startX, startY, tileSize, config);
+    drawSelector(ctx, selector, startX, startY, tileSize, config);
 }
 
 /**
