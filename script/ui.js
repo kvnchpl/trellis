@@ -99,32 +99,13 @@ function finalizeAction(actionDef, config) {
 }
 
 export function showPlantSelectionModal(config, tile, x, y) {
-    const overlay = document.createElement('div');
-    overlay.className = 'plant-modal-overlay';
+    const overlay = document.getElementById('plant-modal-overlay');
+    const modalButtonsEl = document.getElementById('plant-modal-buttons');
 
-    const modal = document.createElement('div');
-    modal.className = 'plant-modal';
+    // Clear previous buttons
+    modalButtonsEl.innerHTML = '';
 
-    // Cancel button (X) at the top-right
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'X';
-    cancelBtn.className = 'ui-button';
-    cancelBtn.style.gridColumn = '3'; // top-right in the grid
-    cancelBtn.style.justifySelf = 'end';
-    cancelBtn.onclick = () => {
-        document.body.removeChild(overlay);
-    };
-    modal.appendChild(cancelBtn);
-
-    // Title
-    const title = document.createElement('h3');
-    title.textContent = 'Select a plant';
-    title.style.gridColumn = '1 / -1';
-    title.style.textAlign = 'center';
-    title.style.color = '#fff';
-    modal.appendChild(title);
-
-    // Plant buttons
+    // Create buttons for each plant
     Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
         const btn = document.createElement('button');
         btn.textContent = plantDef.label || plantKey;
@@ -136,18 +117,12 @@ export function showPlantSelectionModal(config, tile, x, y) {
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
             finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
-            document.body.removeChild(overlay);
+            overlay.style.display = 'none';
         };
-        modal.appendChild(btn);
+        modalButtonsEl.appendChild(btn);
     });
 
-    // Close modal if clicking outside
-    overlay.onclick = (e) => {
-        if (e.target === overlay) document.body.removeChild(overlay);
-    };
-
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
+    overlay.style.display = 'flex';
 }
 
 export function updateTileInfoPanel(config) {
