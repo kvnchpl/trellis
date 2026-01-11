@@ -195,9 +195,10 @@ export function updateTileInfoPanel(config) {
     plantSelect.value = '';
 
     // Add default option and plant options
+    const plantKey = config.keyBindings.actions['plant'] || '';
     const defaultOpt = document.createElement('option');
     defaultOpt.value = '';
-    defaultOpt.textContent = 'plant';
+    defaultOpt.textContent = `[${plantKey}] plant`;
     plantSelect.appendChild(defaultOpt);
 
     Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
