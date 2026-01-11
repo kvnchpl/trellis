@@ -365,14 +365,14 @@
         "selectRight": "ArrowRight",
         "resetSelector": "q",
         "actions": {
-            "till": "1",
-            "water": "2",
-            "fertilize": "3",
-            "mulch": "4",
-            "weed": "5",
-            "harvest": "6",
-            "clear": "7",
-            "plant": "8"
+            "plant": "1",
+            "till": "2",
+            "water": "3",
+            "fertilize": "4",
+            "mulch": "5",
+            "weed": "6",
+            "harvest": "7",
+            "clear": "8"
         }
     }
 }
