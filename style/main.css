@@ -153,6 +153,9 @@ canvas {
     justify-content: flex-end;
     gap: var(--spacing-small);
     margin-bottom: var(--spacing-small);
+    /* Place day-controls in the column between canvas and info-panel */
+    width: var(--panel-width);
+    /* Align with info panel */
 }
 
 #time-display {
