@@ -132,11 +132,10 @@ async function initGame(loadExisting = true) {
         // Force initial render
         lastPlayerKey = null;
         lastSelectorKey = null;
-        requestAnimationFrame(() => {
-            render(config);
-            updateTileInfoPanel(config);
-            updateTimePanel(config);
-        });
+        await preloadImages(config);
+        render(config);
+        updateTileInfoPanel(config);
+        updateTimePanel(config);
     } else {
         initState(config);
         generateMap(config);
