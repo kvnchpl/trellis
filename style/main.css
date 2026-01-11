@@ -123,11 +123,6 @@ canvas {
     background-position: right var(--spacing-small) center;
     background-size: var(--caret-size) auto;
     padding-right: var(--caret-padding);
-    text-transform: lowercase;
-}
-
-.plant-action-select option {
-    text-transform: lowercase;
 }
 
 #tile-actions button:hover {

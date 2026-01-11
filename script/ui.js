@@ -156,7 +156,7 @@ export function updateTileInfoPanel(config) {
         Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
             const opt = document.createElement('option');
             opt.value = plantKey;
-            opt.textContent = plantDef.label || plantKey;
+            opt.textContent = (plantDef.label || plantKey).toLowerCase();
             plantSelect.appendChild(opt);
         });
         plantSelect.value = '';
