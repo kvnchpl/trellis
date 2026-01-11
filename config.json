@@ -21,7 +21,7 @@
     "outOfBoundsColor": "#111",
     "dayStartHour": 7,
     "dayEndHour": 19,
-    "actionTimeIncrement": 5,
+    "movementTimeIncrement": 1,
     "seasons": [
         "Winter",
         "Spring",
@@ -78,7 +78,8 @@
                 },
                 "effect": {
                     "tile": "tilled"
-                }
+                },
+                "timeIncrement": 5
             },
             "water": {
                 "condition": {
@@ -91,7 +92,8 @@
                     "moisture": {
                         "inc": 20
                     }
-                }
+                },
+                "timeIncrement": 3
             },
             "fertilize": {
                 "condition": {
@@ -105,7 +107,8 @@
                         "inc": 20
                     },
                     "fertilized": true
-                }
+                },
+                "timeIncrement": 4
             },
             "plant": {
                 "condition": {
@@ -116,7 +119,8 @@
                     "plantType": null,
                     "growthStage": null,
                     "growthProgress": 0
-                }
+                },
+                "timeIncrement": 6
             },
             "mulch": {
                 "condition": {
@@ -125,7 +129,8 @@
                 },
                 "effect": {
                     "mulch": true
-                }
+                },
+                "timeIncrement": 3
             },
             "weed": {
                 "condition": {
@@ -133,7 +138,8 @@
                 },
                 "effect": {
                     "weeds": false
-                }
+                },
+                "timeIncrement": 4
             },
             "harvest": {
                 "condition": {
@@ -145,7 +151,8 @@
                     "growthProgress": 0,
                     "readyToHarvest": false,
                     "moisture": 0
-                }
+                },
+                "timeIncrement": 5
             },
             "clear": {
                 "condition": {
@@ -177,7 +184,8 @@
                     "growthProgress": 0,
                     "mulch": false,
                     "weeds": false
-                }
+                },
+                "timeIncrement": 5
             }
         }
     },
