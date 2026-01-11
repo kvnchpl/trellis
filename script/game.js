@@ -114,19 +114,6 @@ async function initGame(loadExisting = true) {
             revealedKeys: Object.keys(gameState.revealed || {}).length
         });
 
-        // Also reveal all tiles in the viewport to ensure nothing is hidden initially
-        const tileSize = config.tiles.size;
-        const viewSize = Math.floor(config.canvasWidth / tileSize);
-        const startX = gameState.player.x - Math.floor(viewSize / 2);
-        const startY = gameState.player.y - Math.floor(viewSize / 2);
-
-        for (let y = 0; y < viewSize; y++) {
-            for (let x = 0; x < viewSize; x++) {
-                const key = `${startX + x},${startY + y}`;
-                gameState.revealed[key] = true;
-            }
-        }
-
         // Force initial render state
         lastPlayerKey = null;
         lastSelectorKey = null;
