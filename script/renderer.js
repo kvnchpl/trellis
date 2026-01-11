@@ -93,6 +93,7 @@ export function render(config) {
         ctx.lineWidth = 2;
         ctx.strokeRect(selectorX + 1, selectorY + 1, tileSize - 2, tileSize - 2);
     }
+    console.log("DEBUG: render() completed, player at", gameState.player, "selector at", gameState.selector);
 }
 
 /**

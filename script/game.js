@@ -1,6 +1,6 @@
 import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
-import { gameState, initState } from './state.js';
+import { gameState, initState, getTile } from './state.js';
 import { render } from './renderer.js';
 import { updateTileInfoPanel, updateTimePanel } from './ui.js';
 
@@ -113,7 +113,7 @@ async function initGame(loadExisting = true) {
         console.log("DEBUG: after updateFog", {
             revealedKeys: Object.keys(gameState.revealed || {}).length
         });
-        
+
         // Compute viewport bounds
         const tileSize = config.tiles.size;
         const viewSize = Math.floor(config.canvasWidth / tileSize);
@@ -132,9 +132,11 @@ async function initGame(loadExisting = true) {
         // Force initial render
         lastPlayerKey = null;
         lastSelectorKey = null;
-        render(config);
-        updateTileInfoPanel(config);
-        updateTimePanel(config);
+        requestAnimationFrame(() => {
+            render(config);
+            updateTileInfoPanel(config);
+            updateTimePanel(config);
+        });
     } else {
         initState(config);
         generateMap(config);
