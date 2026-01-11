@@ -2,6 +2,7 @@ import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 import { incrementTime } from './ui.js';
 import { updateTileInfoPanel } from './ui.js';
+import { render } from './renderer.js';
 
 // DRY helper for player movement
 function attemptMove(player, dx, dy, config) {
@@ -43,7 +44,7 @@ export function updatePlayer(config) {
     const player = gameState.player;
     const controls = config.keyBindings;
 
-    // Move up
+    // Move
     if (keysPressed[controls.up]) {
         attemptMove(player, 0, -1, config);
         keysPressed[controls.up] = false;
@@ -67,6 +68,7 @@ export function updatePlayer(config) {
         if (newY >= 0) gameState.selector = { x: player.x, y: newY };
         keysPressed[controls.selectUp] = false;
         updateTileInfoPanel(config);
+        render(config);
     }
 
     // Select tile below player
@@ -75,6 +77,7 @@ export function updatePlayer(config) {
         if (newY < mapHeight) gameState.selector = { x: player.x, y: newY };
         keysPressed[controls.selectDown] = false;
         updateTileInfoPanel(config);
+        render(config);
     }
 
     // Select tile left of player
@@ -83,6 +86,7 @@ export function updatePlayer(config) {
         if (newX >= 0) gameState.selector = { x: newX, y: player.y };
         keysPressed[controls.selectLeft] = false;
         updateTileInfoPanel(config);
+        render(config);
     }
 
     // Select tile right of player
@@ -91,6 +95,7 @@ export function updatePlayer(config) {
         if (newX < mapWidth) gameState.selector = { x: newX, y: player.y };
         keysPressed[controls.selectRight] = false;
         updateTileInfoPanel(config);
+        render(config);
     }
 
     // Reset selector to player position
@@ -98,5 +103,6 @@ export function updatePlayer(config) {
         gameState.selector = { x: player.x, y: player.y };
         keysPressed[controls.resetSelector] = false;
         updateTileInfoPanel(config);
+        render(config);
     }
 }

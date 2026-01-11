@@ -96,12 +96,9 @@ export function updateTileInfoPanel(config) {
             value = 'none';
         }
 
-        // Handle boolean values: show only if true, display Yes/No
+        // Handle boolean values: always display Yes or No
         if (typeof value === 'boolean') {
-            if (!value) {
-                return; // skip appending if false
-            }
-            value = 'Yes';
+            value = value ? 'Yes' : 'No';
         }
 
         // Apply labels if defined
