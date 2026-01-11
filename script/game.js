@@ -1,13 +1,12 @@
 import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
-import { gameState, initState, getTile } from './state.js';
+import { gameState, initState, advanceDay } from './state.js';
 import { render, preloadImages } from './renderer.js';
 import { updateTileInfoPanel, updateTimePanel } from './ui.js';
 
 const configUrl = 'config.json';
 let config;
 
-// --- Performance/throttling tracking variables ---
 let lastSelectorKey = null;
 let lastSaveSizeUpdate = 0;
 let lastPlayerKey = null;
@@ -24,7 +23,7 @@ async function loadConfig() {
     }
 }
 
-function saveGameState() {
+export function saveGameState() {
     function defaultTile(config) {
         return {
             tile: null,
@@ -138,11 +137,18 @@ initGame(true).catch((err) => {
     alert('Failed to start the game. Please try again later.');
 }).then(() => {
     const newGameBtn = document.getElementById('new-game');
+    const endDayBtn = document.getElementById('end-day');
     const cancelBtn = document.getElementById('plant-modal-cancel');
     const overlay = document.getElementById('plant-modal-overlay');
 
     newGameBtn.addEventListener('click', () => {
         startNewGame();
+    });
+
+    endDayBtn.addEventListener('click', () => {
+        advanceDay(config);
+        updateTimePanel(config);
+        saveGameState();
     });
 
     cancelBtn.addEventListener('click', () => {
@@ -152,18 +158,6 @@ initGame(true).catch((err) => {
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) overlay.style.display = 'none';
     });
-
-    // End Day button functionality (now inside #day-controls)
-    const endDayBtn = document.getElementById('end-day');
-    if (endDayBtn) {
-        endDayBtn.addEventListener('click', () => {
-            gameState.time.hour = config.dayStartHour;
-            gameState.time.minute = 0;
-            gameState.time.week += 1; // or handle season rollover if needed
-            updateTimePanel(config);
-            saveGameState();
-        });
-    }
 });
 
 
@@ -229,5 +223,3 @@ function fullRender(config) {
     maybeRender(config);
     refreshUI(config);
 }
-
-export { saveGameState };
