@@ -138,6 +138,23 @@ canvas {
     opacity: 0.5;
 }
 
+#top-left-buttons {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+    z-index: 100;
+}
+
+#top-right-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-small);
+    margin-bottom: var(--spacing-small);
+}
+
 #time-display {
     margin-bottom: var(--spacing-medium);
     font-size: var(--font-small);

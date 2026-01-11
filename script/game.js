@@ -152,6 +152,18 @@ initGame(true).catch((err) => {
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) overlay.style.display = 'none';
     });
+
+    // End Day button functionality
+    const endDayBtn = document.getElementById('end-day');
+    if (endDayBtn) {
+        endDayBtn.addEventListener('click', () => {
+            gameState.time.hour = config.dayStartHour;
+            gameState.time.minute = 0;
+            gameState.time.week += 1; // or handle season rollover if needed
+            updateTimePanel(config);
+            saveGameState();
+        });
+    }
 });
 
 

@@ -11,14 +11,18 @@
 </head>
 
 <body>
-    <div id="menu">
-        <button id="new-game">New Game</button>
-        <span id="save-size" style="margin-left:10px; color:#fff; font-size:12px;"></span>
+    <!-- Top-left container -->
+    <div id="top-left-buttons">
+        <button id="new-game" class="ui-button">New Game</button>
+        <span id="save-size"></span>
         <div id="save-slots"></div>
     </div>
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
         <div id="info-panel">
+            <div id="top-right-buttons">
+                <button id="end-day" class="ui-button">End Day</button>
+            </div>
             <div id="time-display"></div>
             <h2>Tile Info</h2>
             <img id="tile-image" src="" alt="Tile Image" />
