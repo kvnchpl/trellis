@@ -138,27 +138,25 @@ export function updatePlayer(config) {
     const actionKeys = config.keyBindings.actions || {};
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
         if (keysPressed[key]) {
-            keysPressed[key] = false; // prevent repeated triggers
+            keysPressed[key] = false;
             const actionDef = config.tiles.actions[actionLabel];
-            if (!actionDef) continue;
-
-            const currentTile = getTile(gameState.selector.x, gameState.selector.y, config);
-            const validNow = evaluateCondition(currentTile, actionDef.condition);
+            const tile = getTile(gameState.selector.x, gameState.selector.y, config);
+            const validNow = evaluateCondition(tile, actionDef.condition);
 
             if (!validNow) {
-                const failed = getFailedConditions(currentTile, actionDef.condition);
-                const message = failed.length
-                    ? `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
-                    : `Cannot perform "${actionLabel}" on this tile.`;
-                alert(message);
-                console.log(`Action "${actionLabel}" blocked on tile:`, currentTile, "Failed conditions:", failed);
+                const failed = getFailedConditions(tile, actionDef.condition);
+                alert(`Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`);
+                console.log(`Action "${actionLabel}" blocked:`, failed);
                 return;
             }
 
-            // Apply the action
-            const newTile = applyActionEffects(currentTile, actionDef, config);
-            gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-            finalizeAction(actionDef, config);
+            if (actionLabel === 'plant') {
+                showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
+            } else {
+                const newTile = applyActionEffects(tile, actionDef, config);
+                gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+                finalizeAction(actionDef, config);
+            }
         }
     }
 }
