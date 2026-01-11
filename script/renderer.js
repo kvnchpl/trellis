@@ -51,12 +51,16 @@ export function render(config) {
         ctx.drawImage(cache.player, playerScreenX, playerScreenY, tileSize, tileSize);
     } else {
         ctx.fillStyle = config.playerColor;
+        const sizeRatio = config.playerSize;
         const playerSizePx = tileSize * config.playerSize;
+        const offset = (tileSize - playerSizePx) / 2;
         ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
 
         const selectorX = selectorOffsetX * tileSize;
         const selectorY = selectorOffsetY * tileSize;
         ctx.strokeRect(selectorX + 1, selectorY + 1, tileSize - 2, tileSize - 2);
+
+        ctx.fillRect(playerScreenX + offset, playerScreenY + offset, playerSizePx, playerSizePx);
     }
 
     // Draw selector
