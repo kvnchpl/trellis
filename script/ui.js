@@ -99,12 +99,22 @@ function finalizeAction(actionDef, config) {
 }
 
 export function showPlantSelectionModal(config, tile, x, y) {
-    // Modal
     const overlay = document.createElement('div');
     overlay.className = 'plant-modal-overlay';
 
     const modal = document.createElement('div');
     modal.className = 'plant-modal';
+
+    // Cancel button (X) at the top-right
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'X';
+    cancelBtn.className = 'ui-button';
+    cancelBtn.style.gridColumn = '3'; // top-right in the grid
+    cancelBtn.style.justifySelf = 'end';
+    cancelBtn.onclick = () => {
+        document.body.removeChild(overlay);
+    };
+    modal.appendChild(cancelBtn);
 
     // Title
     const title = document.createElement('h3');
@@ -114,13 +124,12 @@ export function showPlantSelectionModal(config, tile, x, y) {
     title.style.color = '#fff';
     modal.appendChild(title);
 
-    // Add buttons for each plant
+    // Plant buttons
     Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
         const btn = document.createElement('button');
         btn.textContent = plantDef.label || plantKey;
         btn.classList.add('ui-button');
         btn.onclick = () => {
-            // Apply plant action
             const newTile = { ...tile };
             newTile.plantType = plantKey;
             newTile.growthStage = plantDef.growthStages[0];
@@ -132,7 +141,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
         modal.appendChild(btn);
     });
 
-    // Close modal when clicking outside
+    // Close modal if clicking outside
     overlay.onclick = (e) => {
         if (e.target === overlay) document.body.removeChild(overlay);
     };
