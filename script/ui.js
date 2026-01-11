@@ -213,8 +213,8 @@ export function updateTileInfoPanel(config) {
             const validNow = evaluateCondition(currentTile, actionDef.condition);
 
             if (!validNow) {
-                alert(`Cannot perform "${actionLabel}" on this tile.`);
-                console.log(`Action "${actionLabel}" blocked on tile:`, currentTile);
+                alert(`Cannot perform "${actionLabel}" on this tile.\nCondition: ${JSON.stringify(actionDef.condition)}`);
+                console.log(`Action "${actionLabel}" blocked on tile:`, currentTile, "Condition:", actionDef.condition);
                 return;
             }
 
