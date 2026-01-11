@@ -170,16 +170,16 @@ export function updateTileInfoPanel(config) {
     }
     // If plant action is valid, render a single select dropdown styled as a button
     if (plantActionValid) {
+        // Always render plant select
         const plantSelect = document.createElement('select');
         plantSelect.className = 'plant-action-select';
 
-        // Determine if planting is valid now
+        // Determine if planting is valid
         let plantActionValid = evaluateCondition(tile, config.tiles.actions.plant.condition);
-        // Prevent planting if tile already has a plant
-        if (tile.plantType) plantActionValid = false;
+        if (tile.plantType) plantActionValid = false; // cannot plant if tile already has a plant
 
-        // Apply visual disabled state if not valid
-        if (!plantActionValid) plantSelect.classList.add('disabled');
+        // Apply visual and functional disabled state
+        plantSelect.classList.toggle('disabled', !plantActionValid);
         plantSelect.disabled = !plantActionValid;
 
         // First option: "Plant"
@@ -188,7 +188,7 @@ export function updateTileInfoPanel(config) {
         defaultOpt.textContent = 'plant';
         plantSelect.appendChild(defaultOpt);
 
-        // Add plant options
+        // Add all plant options
         Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
             const opt = document.createElement('option');
             opt.value = plantKey;
@@ -197,12 +197,25 @@ export function updateTileInfoPanel(config) {
         });
         plantSelect.value = '';
 
+        // Handle selection
         plantSelect.onchange = () => {
+            if (!plantActionValid) {
+                const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
+                const message = failed.length
+                    ? `Cannot perform "plant" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                    : `Cannot perform "plant" on this tile.`;
+                alert(message);
+                console.log('Plant action blocked on tile:', tile, 'Failed conditions:', failed);
+                plantSelect.value = '';
+                return;
+            }
+
             const choice = plantSelect.value;
             if (!choice || !config.plants.definitions[choice]) {
                 plantSelect.value = '';
                 return;
             }
+
             console.group(`Action: plant`);
             console.log('Before:', JSON.stringify(tile));
             const newTile = { ...tile };
@@ -216,6 +229,7 @@ export function updateTileInfoPanel(config) {
             plantSelect.value = '';
         };
 
+        // Append to actions container
         actionsEl.appendChild(plantSelect);
     }
 
