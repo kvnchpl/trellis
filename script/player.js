@@ -42,7 +42,10 @@ function attemptMove(player, dx, dy, config) {
         player.y = newY;
         gameState.selector = { x: player.x, y: player.y };
         saveGameState();
-        incrementTime(1, config);
+
+        const movementCost = config.movementTimeIncrement || 1;
+        incrementTime(movementCost, config);
+
         updateTileInfoPanel(config);
     }
 }
