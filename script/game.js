@@ -69,7 +69,12 @@ function loadGameState() {
         gameState.selector = data.selector;
         gameState.map = data.map;
         gameState.revealed = data.revealed;
-        gameState.time = data.time;
+        gameState.time = {
+            hour: data.time?.hour ?? 7,
+            minute: data.time?.minute ?? 0,
+            week: data.time?.week ?? 1,
+            seasonIndex: data.time?.seasonIndex ?? 0
+        };
         console.log("Game loaded.");
         return true;
     } catch (e) {
