@@ -25,8 +25,8 @@ function applyActionEffects(tile, actionDef, config) {
 }
 
 function finalizeAction(actionDef, config) {
-    // Advance time, save, update info, re-render as needed
-    incrementTime(config.actionTimeIncrement || 5, config);
+    const timeCost = actionDef.timeIncrement || 5;
+    incrementTime(timeCost, config);
     saveGameState();
     updateTileInfoPanel(config);
     render(config);
