@@ -107,6 +107,14 @@ async function initGame(loadExisting = true) {
         updateFog(config);
         render(config);
         updateTileInfoPanel(config);
+
+        // Force initial render state
+        lastPlayerKey = null;
+        lastSelectorKey = null;
+        updateFog(config);
+        render(config);
+        updateTileInfoPanel(config);
+        updateTimePanel(config);
     } else {
         initState(config);
         generateMap(config);
