@@ -101,6 +101,9 @@ async function initGame(loadExisting = true) {
     resizeCanvasAndTiles(config);
     window.addEventListener('resize', () => resizeCanvasAndTiles(config));
 
+    // Ensure images are loaded before any render
+    await preloadImages(config);
+
     const canvas = document.getElementById('game-canvas');
     canvas.width = config.canvasWidth;
     canvas.height = config.canvasHeight;
@@ -113,7 +116,6 @@ async function initGame(loadExisting = true) {
         // Force initial render
         lastPlayerKey = null;
         lastSelectorKey = null;
-        await preloadImages(config);
         render(config);
         updateTileInfoPanel(config);
         updateTimePanel(config);
@@ -124,7 +126,6 @@ async function initGame(loadExisting = true) {
     }
 
     initPlayer(config);
-    // Use fullRender to set up initial state/UI
     fullRender(config);
     requestAnimationFrame(() => gameLoop(config));
 }
