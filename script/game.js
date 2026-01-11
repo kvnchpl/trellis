@@ -208,35 +208,25 @@ export function resizeCanvasAndTiles(config) {
     const infoPanelRect = infoPanel.getBoundingClientRect();
 
     const padding = 16;
-
-    const availableWidth =
-        containerRect.width -
-        infoPanelRect.width -
-        padding;
-
-    const availableHeight =
-        containerRect.height -
-        padding;
+    const availableWidth = containerRect.width - infoPanelRect.width - padding;
+    const availableHeight = containerRect.height - padding;
 
     const tilesX = config.mapWidth;
     const tilesY = config.mapHeight;
 
-    const tileSize = Math.floor(
-        Math.min(
-            availableWidth / tilesX,
-            availableHeight / tilesY
-        )
-    );
+    let tileSize = Math.floor(Math.min(availableWidth / tilesX, availableHeight / tilesY));
 
+    // --- DPR scaling ---
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = tileSize * tilesX * dpr;
+    canvas.height = tileSize * tilesY * dpr;
+
+    canvas.style.width = `${tileSize * tilesX}px`;
+    canvas.style.height = `${tileSize * tilesY}px`;
+
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale drawing operations
     config.tileSize = tileSize;
-
-    // Set canvas backing resolution to match visible size exactly
-    canvas.width = tileSize * tilesX;
-    canvas.height = tileSize * tilesY;
-
-    // Let CSS handle final layout sizing
-    canvas.style.width = `${canvas.width}px`;
-    canvas.style.height = `${canvas.height}px`;
 }
 
 function maybeUpdateTileInfoPanel(config) {
