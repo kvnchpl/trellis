@@ -262,8 +262,10 @@ export function updateTileInfoPanel(config) {
             continue;
         }
 
+        // Create button
+        const key = config.keyBindings.actions[actionLabel] || '';
         const btn = document.createElement('button');
-        btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
+        btn.textContent = `[${key}] ${actionLabel}`;
 
         // Apply visual "disabled" class if invalid
         if (!isValid) btn.classList.add('disabled');
