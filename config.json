@@ -115,10 +115,7 @@
                 "effect": {
                     "plantType": null,
                     "growthStage": null,
-                    "growthProgress": 0,
-                    "fertility": {
-                        "dec": 5
-                    }
+                    "growthProgress": 0
                 }
             },
             "mulch": {
@@ -135,10 +132,7 @@
                     "weeds": true
                 },
                 "effect": {
-                    "weeds": false,
-                    "fertility": {
-                        "inc": 5
-                    }
+                    "weeds": false
                 }
             },
             "harvest": {
@@ -150,9 +144,6 @@
                     "growthStage": null,
                     "growthProgress": 0,
                     "readyToHarvest": false,
-                    "fertility": {
-                        "dec": 10
-                    },
                     "moisture": 0
                 }
             },
@@ -185,10 +176,7 @@
                     "growthStage": null,
                     "growthProgress": 0,
                     "mulch": false,
-                    "weeds": false,
-                    "fertility": {
-                        "dec": 10
-                    }
+                    "weeds": false
                 }
             }
         }
