@@ -2,10 +2,8 @@ import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 import { render } from './renderer.js';
 
-// --- Growth update throttling/caching ---
 let lastGrowthUpdateWeek = null;
 
-// --- Helper functions for DRY logic ---
 function evaluateCondition(tile, condObj) {
     if (condObj.or && Array.isArray(condObj.or)) {
         return condObj.or.some(c => evaluateCondition(tile, c));
@@ -24,6 +22,33 @@ function evaluateCondition(tile, condObj) {
         }
         return true;
     });
+}
+
+function getFailedConditions(tile, condObj) {
+    const failed = [];
+
+    if (condObj.or && Array.isArray(condObj.or)) {
+        const passed = condObj.or.some(c => evaluateCondition(tile, c));
+        if (!passed) failed.push(`One of: ${condObj.or.map(c => JSON.stringify(c)).join(', ')}`);
+        return failed;
+    }
+
+    Object.entries(condObj).forEach(([key, cond]) => {
+        const current = tile[key];
+        if (cond === 'exists') {
+            if (current === null || current === undefined) failed.push(`${key} must exist`);
+        } else if (typeof cond === 'object' && cond !== null) {
+            if ('not' in cond && current === cond.not) failed.push(`${key} must not be ${cond.not}`);
+            if ('lt' in cond && !(current < cond.lt)) failed.push(`${key} must be less than ${cond.lt}`);
+            if ('gt' in cond && !(current > cond.gt)) failed.push(`${key} must be greater than ${cond.gt}`);
+            if ('lte' in cond && !(current <= cond.lte)) failed.push(`${key} must be ≤ ${cond.lte}`);
+            if ('gte' in cond && !(current >= cond.gte)) failed.push(`${key} must be ≥ ${cond.gte}`);
+        } else {
+            if (current !== cond) failed.push(`${key} must be ${cond}`);
+        }
+    });
+
+    return failed;
 }
 
 function applyActionEffects(tile, actionDef, config) {
@@ -209,18 +234,32 @@ export function updateTileInfoPanel(config) {
             e.preventDefault();
             e.stopPropagation();
 
+            // Fetch the current tile at the time of click
             const currentTile = getTile(gameState.selector.x, gameState.selector.y, config);
+
+            // Evaluate whether the action is valid now
             const validNow = evaluateCondition(currentTile, actionDef.condition);
 
             if (!validNow) {
-                alert(`Cannot perform "${actionLabel}" on this tile.\nCondition: ${JSON.stringify(actionDef.condition)}`);
-                console.log(`Action "${actionLabel}" blocked on tile:`, currentTile, "Condition:", actionDef.condition);
+                // Determine which conditions failed and make them human-readable
+                const failed = getFailedConditions(currentTile, actionDef.condition);
+                const message = failed.length
+                    ? `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                    : `Cannot perform "${actionLabel}" on this tile.`;
+
+                // Show alert to player
+                alert(message);
+
+                // Log to console for debugging
+                console.log(`Action "${actionLabel}" blocked on tile:`, currentTile, "Failed conditions:", failed);
                 return;
             }
 
-            // Apply action normally
+            // Apply the action normally
             const newTile = applyActionEffects(currentTile, actionDef, config);
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+
+            // Finalize updates: info panel, save, time, render
             finalizeAction(actionDef, config);
         };
         actionsEl.appendChild(btn);
