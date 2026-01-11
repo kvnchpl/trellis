@@ -39,7 +39,6 @@ body {
     color: var(--text-color);
 }
 
-/* Layout for canvas and info panel side by side */
 #game-container {
     display: flex;
     align-items: flex-start;
