@@ -4,7 +4,7 @@ import { render } from './renderer.js';
 
 let lastGrowthUpdateWeek = null;
 
-function evaluateCondition(tile, condObj) {
+export function evaluateCondition(tile, condObj) {
     if (condObj.or && Array.isArray(condObj.or)) {
         return condObj.or.some(c => evaluateCondition(tile, c));
     }
@@ -24,7 +24,7 @@ function evaluateCondition(tile, condObj) {
     });
 }
 
-function getFailedConditions(tile, condObj) {
+export function getFailedConditions(tile, condObj) {
     const failed = [];
 
     if (condObj.or && Array.isArray(condObj.or)) {

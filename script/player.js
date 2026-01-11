@@ -1,77 +1,7 @@
 import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
-import { incrementTime } from './ui.js';
-import { updateTileInfoPanel } from './ui.js';
+import { incrementTime, updateTileInfoPanel, evaluateCondition, getFailedConditions } from './ui.js';
 import { render } from './renderer.js';
-
-// Helpers for action key logic
-function evaluateCondition(tile, condition) {
-    // Simple recursive evaluator for AND/OR/NOT and value checks
-    if (!condition) return true;
-    if (condition.or) {
-        return condition.or.some(sub => evaluateCondition(tile, sub));
-    }
-    if (condition.and) {
-        return condition.and.every(sub => evaluateCondition(tile, sub));
-    }
-    for (const key in condition) {
-        if (key === "or" || key === "and") continue;
-        const expected = condition[key];
-        const actual = tile[key];
-        if (expected && typeof expected === "object" && !Array.isArray(expected)) {
-            // Handle operators: lt, gt, not, etc.
-            if ("lt" in expected && !(actual < expected.lt)) return false;
-            if ("gt" in expected && !(actual > expected.gt)) return false;
-            if ("not" in expected && !(actual !== expected.not)) return false;
-            // Add more operators as needed
-        } else {
-            if (actual !== expected) return false;
-        }
-    }
-    return true;
-}
-
-function getFailedConditions(tile, condition) {
-    // Returns array of failed condition descriptions for user feedback
-    const fails = [];
-    if (!condition) return fails;
-    if (condition.or) {
-        // If none pass, show all reasons
-        if (!condition.or.some(sub => evaluateCondition(tile, sub))) {
-            for (const sub of condition.or) {
-                fails.push(...getFailedConditions(tile, sub));
-            }
-        }
-        return fails;
-    }
-    if (condition.and) {
-        for (const sub of condition.and) {
-            fails.push(...getFailedConditions(tile, sub));
-        }
-        return fails;
-    }
-    for (const key in condition) {
-        if (key === "or" || key === "and") continue;
-        const expected = condition[key];
-        const actual = tile[key];
-        if (expected && typeof expected === "object" && !Array.isArray(expected)) {
-            if ("lt" in expected && !(actual < expected.lt)) {
-                fails.push(`${key} must be less than ${expected.lt}`);
-            }
-            if ("gt" in expected && !(actual > expected.gt)) {
-                fails.push(`${key} must be greater than ${expected.gt}`);
-            }
-            if ("not" in expected && !(actual !== expected.not)) {
-                fails.push(`${key} must not be ${expected.not}`);
-            }
-        } else {
-            if (actual !== expected) {
-                fails.push(`${key} must be ${expected}`);
-            }
-        }
-    }
-    return fails;
-}
 
 function applyActionEffects(tile, actionDef, config) {
     // Returns a new tile object with effects applied
