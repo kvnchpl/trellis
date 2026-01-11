@@ -153,7 +153,7 @@ initGame(true).catch((err) => {
         if (e.target === overlay) overlay.style.display = 'none';
     });
 
-    // End Day button functionality
+    // End Day button functionality (now inside #day-controls)
     const endDayBtn = document.getElementById('end-day');
     if (endDayBtn) {
         endDayBtn.addEventListener('click', () => {

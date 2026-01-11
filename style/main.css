@@ -138,7 +138,7 @@ canvas {
     opacity: 0.5;
 }
 
-#top-left-buttons {
+#game-controls {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -148,7 +148,7 @@ canvas {
     z-index: 100;
 }
 
-#top-right-buttons {
+#day-controls {
     display: flex;
     justify-content: flex-end;
     gap: var(--spacing-small);
