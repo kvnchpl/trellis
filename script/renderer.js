@@ -40,7 +40,7 @@ export function render(config) {
     const { mapWidth, mapHeight } = config;
     const { player, selector, revealed } = gameState;
 
-    const viewportSize = 9;    // 9x9 visible tiles
+    const viewportSize = 11;    // 11x11 visible tiles
     const revealRadius = 3;    // 7x7 initial reveal (radius 3)
 
     // Tile size to fit the viewport
