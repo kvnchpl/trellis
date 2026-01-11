@@ -101,7 +101,7 @@ export function render(config) {
  * @param {Object} config
  * @returns {Object} image cache
  */
-function preloadImages(config) {
+export function preloadImages(config) {
     const cache = { tiles: {}, plants: {}, player: null };
     const promises = [];
 
