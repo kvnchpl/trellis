@@ -118,7 +118,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
     Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
         const btn = document.createElement('button');
         btn.textContent = plantDef.label || plantKey;
-        btn.classList.add('action-control');
+        btn.classList.add('ui-button');
         btn.onclick = () => {
             // Apply plant action
             const newTile = { ...tile };
@@ -255,7 +255,7 @@ export function updateTileInfoPanel(config) {
 
         const key = config.keyBindings.actions[actionLabel] || '';
         const btn = document.createElement('button');
-        btn.className = 'action-control';
+        btn.className = 'ui-button';
         btn.textContent = `[${key}] ${actionLabel}`;
 
         if (!validNow) btn.classList.add('disabled');
