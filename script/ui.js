@@ -99,28 +99,12 @@ function finalizeAction(actionDef, config) {
 }
 
 export function showPlantSelectionModal(config, tile, x, y) {
-    // Create overlay
+    // Modal
     const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = 0;
-    overlay.style.left = 0;
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = 1000;
+    overlay.className = 'plant-modal-overlay';
 
-    // Create modal box
     const modal = document.createElement('div');
-    modal.style.backgroundColor = '#1a1a1a';
-    modal.style.border = '1px solid #fff';
-    modal.style.padding = '20px';
-    modal.style.borderRadius = '5px';
-    modal.style.display = 'grid';
-    modal.style.gridTemplateColumns = '1fr 1fr 1fr';
-    modal.style.gap = '10px';
+    modal.className = 'plant-modal';
 
     // Title
     const title = document.createElement('h3');
@@ -134,7 +118,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
     Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
         const btn = document.createElement('button');
         btn.textContent = plantDef.label || plantKey;
-        btn.className = 'action-control';
+        btn.classList.add('action-control');
         btn.onclick = () => {
             // Apply plant action
             const newTile = { ...tile };
