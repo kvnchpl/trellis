@@ -136,6 +136,17 @@ function gameLoop(config) {
 initGame(true).catch((err) => {
     console.error('Error initializing game:', err);
     alert('Failed to start the game. Please try again later.');
+}).then(() => {
+    const overlay = document.getElementById('plant-modal-overlay');
+    const cancelBtn = document.getElementById('plant-modal-cancel');
+
+    cancelBtn.addEventListener('click', () => {
+        overlay.style.display = 'none';
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.style.display = 'none';
+    });
 });
 
 document.getElementById('new-game').addEventListener('click', () => {
