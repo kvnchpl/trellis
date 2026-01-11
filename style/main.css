@@ -36,6 +36,7 @@ body {
     align-items: center;
     min-height: 100vh;
     font-family: var(--font-family);
+    color: var(--text-color);
 }
 
 /* Layout for canvas and info panel side by side */
