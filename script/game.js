@@ -211,21 +211,27 @@ export function resizeCanvasAndTiles(config) {
     const availableWidth = containerRect.width - infoPanelRect.width - padding;
     const availableHeight = containerRect.height - padding;
 
-    const tilesX = config.mapWidth;
-    const tilesY = config.mapHeight;
+    const viewportTiles = 9; // the viewport is 9x9 tiles
 
-    let tileSize = Math.floor(Math.min(availableWidth / tilesX, availableHeight / tilesY));
+    // Compute tile size in CSS pixels to fit viewport
+    const tileSize = Math.floor(Math.min(availableWidth / viewportTiles, availableHeight / viewportTiles));
 
-    // --- DPR scaling ---
+    // Device Pixel Ratio for high-DPI
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = tileSize * tilesX * dpr;
-    canvas.height = tileSize * tilesY * dpr;
 
-    canvas.style.width = `${tileSize * tilesX}px`;
-    canvas.style.height = `${tileSize * tilesY}px`;
+    // Set canvas internal resolution
+    canvas.width = tileSize * viewportTiles * dpr;
+    canvas.height = tileSize * viewportTiles * dpr;
 
+    // Set CSS size (remains same as original pixel dimensions)
+    canvas.style.width = `${tileSize * viewportTiles}px`;
+    canvas.style.height = `${tileSize * viewportTiles}px`;
+
+    // Scale the drawing context for DPR
     const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale drawing operations
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Store tile size in config (CSS pixels)
     config.tileSize = tileSize;
 }
 
