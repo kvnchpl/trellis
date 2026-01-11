@@ -207,8 +207,6 @@ export function updateTileInfoPanel(config) {
             if (!validNow) {
                 alert(`Cannot perform "${actionLabel}" on this tile.`);
                 console.log(`Action "${actionLabel}" blocked by condition:`, JSON.stringify(actionDef.condition));
-                e.preventDefault();
-                e.stopPropagation();
                 return;
             }
 
