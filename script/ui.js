@@ -29,18 +29,33 @@ function getFailedConditions(tile, condObj) {
 
     if (condObj.or && Array.isArray(condObj.or)) {
         const passed = condObj.or.some(c => evaluateCondition(tile, c));
-        if (!passed) failed.push(`One of: ${condObj.or.map(c => JSON.stringify(c)).join(', ')}`);
+        if (!passed) {
+            // Convert each OR alternative into a human-friendly description
+            const readable = condObj.or.map(c => {
+                const key = Object.keys(c)[0];
+                const val = c[key];
+                if (typeof val === 'object' && val.not !== undefined) return `${key} must not be ${val.not}`;
+                if (typeof val === 'object' && val.lt !== undefined) return `${key} must be less than ${val.lt}`;
+                if (typeof val === 'object' && val.gt !== undefined) return `${key} must be greater than ${val.gt}`;
+                if (typeof val === 'object' && val.lte !== undefined) return `${key} must be ≤ ${val.lte}`;
+                if (typeof val === 'object' && val.gte !== undefined) return `${key} must be ≥ ${val.gte}`;
+                if (val === 'exists') return `${key} must exist`;
+                return `${key} must be ${val}`;
+            });
+            failed.push(`One of: ${readable.join(', ')}`);
+        }
         return failed;
     }
 
+    // Handle single conditions as before
     Object.entries(condObj).forEach(([key, cond]) => {
         const current = tile[key];
         if (cond === 'exists') {
             if (current === null || current === undefined) failed.push(`${key} must exist`);
         } else if (typeof cond === 'object' && cond !== null) {
             if ('not' in cond && current === cond.not) failed.push(`${key} must not be ${cond.not}`);
-            if ('lt' in cond && !(current < cond.lt)) failed.push(`${key} must be less than ${cond.lt}`);
-            if ('gt' in cond && !(current > cond.gt)) failed.push(`${key} must be greater than ${cond.gt}`);
+            if ('lt' in cond && !(current < cond.lt)) failed.push(`${key} must be < ${cond.lt}`);
+            if ('gt' in cond && !(current > cond.gt)) failed.push(`${key} must be > ${cond.gt}`);
             if ('lte' in cond && !(current <= cond.lte)) failed.push(`${key} must be ≤ ${cond.lte}`);
             if ('gte' in cond && !(current >= cond.gte)) failed.push(`${key} must be ≥ ${cond.gte}`);
         } else {
