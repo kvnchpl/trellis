@@ -181,13 +181,15 @@ export function updateTileInfoPanel(config) {
         const plantSelect = document.createElement('select');
         plantSelect.className = 'plant-action-select';
 
-        // Determine if planting is valid
-        let plantActionValid = evaluateCondition(tile, config.tiles.actions.plant.condition);
-        if (tile.plantType) plantActionValid = false; // cannot plant if tile already has a plant
+        // Determine if planting is actually valid
+        let plantEnabled = evaluateCondition(tile, config.tiles.actions.plant.condition);
+        if (tile.plantType) plantEnabled = false; // cannot plant if tile already has a plant
 
         // Apply visual and functional disabled state
-        plantSelect.classList.toggle('disabled', !plantActionValid);
-        plantSelect.disabled = !plantActionValid;
+        plantSelect.classList.toggle('disabled', !plantEnabled);
+        plantSelect.disabled = !plantEnabled;
+
+        // Populate options as before...
 
         // First option: "Plant"
         const defaultOpt = document.createElement('option');
