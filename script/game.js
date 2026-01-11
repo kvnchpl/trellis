@@ -137,8 +137,13 @@ initGame(true).catch((err) => {
     console.error('Error initializing game:', err);
     alert('Failed to start the game. Please try again later.');
 }).then(() => {
-    const overlay = document.getElementById('plant-modal-overlay');
+    const newGameBtn = document.getElementById('new-game');
     const cancelBtn = document.getElementById('plant-modal-cancel');
+    const overlay = document.getElementById('plant-modal-overlay');
+
+    newGameBtn.addEventListener('click', () => {
+        startNewGame();
+    });
 
     cancelBtn.addEventListener('click', () => {
         overlay.style.display = 'none';
@@ -149,9 +154,7 @@ initGame(true).catch((err) => {
     });
 });
 
-document.getElementById('new-game').addEventListener('click', () => {
-    startNewGame();
-});
+
 
 // Display save size and warning/critical status
 function updateSaveSizeDisplay() {
