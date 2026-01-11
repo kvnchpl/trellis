@@ -98,6 +98,65 @@ function finalizeAction(actionDef, config) {
     render(config);
 }
 
+function showPlantSelectionModal(config, tile, x, y) {
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = 0;
+    overlay.style.left = 0;
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = 1000;
+
+    // Create modal box
+    const modal = document.createElement('div');
+    modal.style.backgroundColor = '#1a1a1a';
+    modal.style.border = '1px solid #fff';
+    modal.style.padding = '20px';
+    modal.style.borderRadius = '5px';
+    modal.style.display = 'grid';
+    modal.style.gridTemplateColumns = '1fr 1fr 1fr';
+    modal.style.gap = '10px';
+
+    // Title
+    const title = document.createElement('h3');
+    title.textContent = 'Select a plant';
+    title.style.gridColumn = '1 / -1';
+    title.style.textAlign = 'center';
+    title.style.color = '#fff';
+    modal.appendChild(title);
+
+    // Add buttons for each plant
+    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
+        const btn = document.createElement('button');
+        btn.textContent = plantDef.label || plantKey;
+        btn.className = 'action-control';
+        btn.onclick = () => {
+            // Apply plant action
+            const newTile = { ...tile };
+            newTile.plantType = plantKey;
+            newTile.growthStage = plantDef.growthStages[0];
+            newTile.growthProgress = 0;
+            gameState.map[`${x},${y}`] = newTile;
+            finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
+            document.body.removeChild(overlay);
+        };
+        modal.appendChild(btn);
+    });
+
+    // Close modal when clicking outside
+    overlay.onclick = (e) => {
+        if (e.target === overlay) document.body.removeChild(overlay);
+    };
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+}
+
 export function updateTileInfoPanel(config) {
     const tile = getTile(gameState.selector.x, gameState.selector.y, config);
     const detailsEl = document.getElementById('tile-details');
@@ -295,6 +354,8 @@ export function updateTileInfoPanel(config) {
                 // Log to console for debugging
                 console.log(`Action "${actionLabel}" blocked on tile:`, currentTile, "Failed conditions:", failed);
                 return;
+            } else {
+                showPlantSelectionModal(config, currentTile, gameState.selector.x, gameState.selector.y);
             }
 
             // Apply the action normally
