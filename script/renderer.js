@@ -45,6 +45,7 @@ export function render(config) {
                 x * tileSize,
                 y * tileSize,
                 tileSize,
+                config._imageCache,
                 config
             );
         }
@@ -101,23 +102,31 @@ export function preloadImages(config) {
 }
 
 // --- Helper functions for drawing tiles and fog (DRY) ---
-function drawTileOrColor(ctx, tile, config, cache, tileColors, x, y, size) {
+function drawTileOrColor(ctx, tile, revealed, x, y, size, cache, config) {
+    if (!revealed) {
+        ctx.fillStyle = config.fogColor;
+        ctx.fillRect(x, y, size, size);
+        return;
+    }
+
     // Prefer plant sprite if present
-    if (tile.plantType && cache.plants[tile.plantType]) {
-        const stageIndex = config.plants.definitions[tile.plantType].growthStages.indexOf(tile.growthStage);
+    if (tile.plantType && cache?.plants?.[tile.plantType]) {
+        const def = config.plants.definitions[tile.plantType];
+        const stageIndex = def.growthStages.indexOf(tile.growthStage);
         const stageImg = cache.plants[tile.plantType][stageIndex];
         if (stageImg) {
             ctx.drawImage(stageImg, x, y, size, size);
             return;
         }
     }
+
     // Otherwise draw tile sprite or fallback color
-    if (tile.tile && cache.tiles[tile.tile]) {
+    if (tile.tile && cache?.tiles?.[tile.tile]) {
         ctx.drawImage(cache.tiles[tile.tile], x, y, size, size);
     } else {
-        const color = tileColors && tile.tile && tileColors[tile.tile]
-            ? tileColors[tile.tile]
-            : tileColors && tileColors.default;
+        const color =
+            config.tiles.colors[tile.tile] ??
+            config.tiles.colors.default;
         ctx.fillStyle = color;
         ctx.fillRect(x, y, size, size);
     }
