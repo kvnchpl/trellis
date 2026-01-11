@@ -8,6 +8,10 @@
     --font-family: monospace;
     --text-color: #fff;
     --hover-bg: #444;
+    --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+    --modal-bg: var(--background-color);
+    --modal-border: var(--border-color);
+    --modal-radius: 5px;
     --font-base: 14px;
     --font-small: calc(var(--font-base) * 0.85);
     --font-medium: var(--font-base);
@@ -17,6 +21,8 @@
     --spacing-small: calc(var(--spacing-base) * 0.5);
     --spacing-medium: var(--spacing-base);
     --spacing-large: calc(var(--spacing-base) * 2);
+    --modal-padding: var(--spacing-large);
+    --modal-gap: var(--spacing-medium);
     --control-border-radius: 3px;
     --caret-size: 10px;
     --caret-padding: calc(var(--spacing-small) * 3);
@@ -46,7 +52,6 @@ body {
     gap: var(--spacing-medium);
     padding: var(--spacing-medium);
     background-color: var(--background-color);
-    border: none;
     image-rendering: pixelated;
     margin: var(--spacing-medium) auto 0 auto;
     width: 90dvw;
@@ -58,6 +63,8 @@ canvas {
     background-color: var(--canvas-background);
     image-rendering: pixelated;
     height: var(--canvas-height);
+    width: var(--canvas-height);
+    max-width: 100%;
 }
 
 #info-panel {
@@ -67,7 +74,7 @@ canvas {
     color: var(--text-color);
     font-size: var(--font-medium);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: var(--control-border-radius);
     font-family: var(--font-family);
     height: var(--canvas-height);
     overflow-y: auto;
@@ -98,18 +105,24 @@ canvas {
     gap: var(--spacing-small);
 }
 
+.ui-button,
+.plant-modal button,
+.plant-action-select {
+    font-family: var(--font-family);
+    font-size: var(--font-small);
+    border-radius: var(--control-border-radius);
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: var(--spacing-small) var(--spacing-medium);
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
 .ui-button {
     text-align: left;
     display: block;
     margin-top: var(--spacing-medium);
-    padding: calc(var(--spacing-medium) / 3) calc(var(--spacing-medium) * 0.75);
-    font-family: var(--font-family);
-    font-size: var(--font-small);
-    background-color: var(--background-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--control-border-radius);
-    cursor: pointer;
 }
 
 .plant-action-select {
@@ -125,18 +138,17 @@ canvas {
     padding-right: var(--caret-padding);
 }
 
-.ui-button:hover {
+.ui-button:hover,
+.plant-modal button:hover,
+.plant-action-select:hover {
     background-color: var(--hover-bg);
 }
 
-.ui-button.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
+.ui-button.disabled,
+.plant-modal button.disabled,
 .plant-action-select.disabled {
-    cursor: not-allowed;
     opacity: 0.5;
+    cursor: not-allowed;
 }
 
 #top-button-bar {
@@ -181,7 +193,7 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--modal-overlay-bg);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -189,20 +201,22 @@ canvas {
 }
 
 .plant-modal {
-    background-color: #1a1a1a;
-    border: 1px solid #fff;
-    padding: 20px;
-    border-radius: 5px;
+    background-color: var(--modal-bg);
+    border: 1px solid var(--modal-border);
+    padding: var(--modal-padding);
+    border-radius: var(--modal-radius);
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
+    gap: var(--modal-gap);
 }
 
 .plant-modal h3 {
     grid-column: 1 / -1;
     text-align: center;
-    color: #fff;
-    margin-bottom: 10px;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-medium);
+    font-size: var(--font-large);
+    font-family: var(--font-family);
 }
 
 @keyframes valueFlash {
