@@ -172,11 +172,22 @@ export function updateTileInfoPanel(config) {
     if (plantActionValid) {
         const plantSelect = document.createElement('select');
         plantSelect.className = 'plant-action-select';
+
+        // Determine if planting is valid now
+        let plantActionValid = evaluateCondition(tile, config.tiles.actions.plant.condition);
+        // Prevent planting if tile already has a plant
+        if (tile.plantType) plantActionValid = false;
+
+        // Apply visual disabled state if not valid
+        if (!plantActionValid) plantSelect.classList.add('disabled');
+        plantSelect.disabled = !plantActionValid;
+
         // First option: "Plant"
         const defaultOpt = document.createElement('option');
         defaultOpt.value = '';
         defaultOpt.textContent = 'plant';
         plantSelect.appendChild(defaultOpt);
+
         // Add plant options
         Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
             const opt = document.createElement('option');
@@ -185,17 +196,15 @@ export function updateTileInfoPanel(config) {
             plantSelect.appendChild(opt);
         });
         plantSelect.value = '';
+
         plantSelect.onchange = () => {
             const choice = plantSelect.value;
             if (!choice || !config.plants.definitions[choice]) {
-                // reset select if invalid
                 plantSelect.value = '';
                 return;
             }
-            // Perform the plant action logic
             console.group(`Action: plant`);
             console.log('Before:', JSON.stringify(tile));
-            // Create a new tile object for the mutation
             const newTile = { ...tile };
             newTile.plantType = choice;
             newTile.growthStage = config.plants.definitions[choice].growthStages[0];
@@ -203,11 +212,10 @@ export function updateTileInfoPanel(config) {
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
             console.log('After:', JSON.stringify(newTile));
             console.groupEnd();
-            // Use finalizeAction to DRY the update/highlight/save/time logic (simulate an actionDef)
             finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
-            // Reset select after planting
             plantSelect.value = '';
         };
+
         actionsEl.appendChild(plantSelect);
     }
 
