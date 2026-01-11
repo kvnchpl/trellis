@@ -37,30 +37,32 @@ export function render(config) {
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
 
-    const { tileSize, mapWidth, mapHeight } = config;
+    const { mapWidth, mapHeight } = config;
     const { player, selector, revealed } = gameState;
 
-    if (!tileSize) return;
+    const viewportSize = 7; // 7x7 visible tiles
+    const paddingRatio = 0.125; // 12.5% padding on each side, total ~75% map coverage
+
+    const usableWidth = canvas.width * (1 - paddingRatio * 2);
+    const usableHeight = canvas.height * (1 - paddingRatio * 2);
+    const tileSize = Math.floor(Math.min(usableWidth / viewportSize, usableHeight / viewportSize));
+
+    const halfViewport = Math.floor(viewportSize / 2);
+    let startX = player.x - halfViewport;
+    let startY = player.y - halfViewport;
+
+    // Clamp to map bounds
+    startX = Math.max(0, Math.min(startX, mapWidth - viewportSize));
+    startY = Math.max(0, Math.min(startY, mapHeight - viewportSize));
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // How many tiles fit on screen
-    const viewTilesX = Math.floor(canvas.width / tileSize);
-    const viewTilesY = Math.floor(canvas.height / tileSize);
+    // Offset for centering viewport in canvas
+    const offsetX = Math.floor((canvas.width - tileSize * viewportSize) / 2);
+    const offsetY = Math.floor((canvas.height - tileSize * viewportSize) / 2);
 
-    const halfX = Math.floor(viewTilesX / 2);
-    const halfY = Math.floor(viewTilesY / 2);
-
-    // Camera origin centered on player
-    let startX = player.x - halfX;
-    let startY = player.y - halfY;
-
-    // Clamp camera to map bounds
-    startX = Math.max(0, Math.min(startX, mapWidth - viewTilesX));
-    startY = Math.max(0, Math.min(startY, mapHeight - viewTilesY));
-
-    for (let y = 0; y < viewTilesY; y++) {
-        for (let x = 0; x < viewTilesX; x++) {
+    for (let y = 0; y < viewportSize; y++) {
+        for (let x = 0; x < viewportSize; x++) {
             const mapX = startX + x;
             const mapY = startY + y;
 
@@ -71,8 +73,8 @@ export function render(config) {
                 ctx,
                 tile,
                 isRevealed,
-                x * tileSize,
-                y * tileSize,
+                offsetX + x * tileSize,
+                offsetY + y * tileSize,
                 tileSize,
                 config._imageCache,
                 config
@@ -80,7 +82,7 @@ export function render(config) {
         }
     }
 
-    // Draw entities relative to camera
+    // Draw player and selector relative to viewport
     drawPlayer(ctx, player, startX, startY, tileSize, config);
     drawSelector(ctx, selector, startX, startY, tileSize, config);
 }
