@@ -103,7 +103,6 @@ function startNewGame() {
 async function initGame(loadExisting = true) {
     await loadConfig();
 
-    resizeCanvasAndTiles(config);
     window.addEventListener('resize', () => {
         resizeCanvasAndTiles(config);
         render(config);
@@ -111,10 +110,8 @@ async function initGame(loadExisting = true) {
 
     // Ensure images are loaded before any render
     await preloadImages(config);
-
-    const canvas = document.getElementById('game-canvas');
-    canvas.width = config.canvasWidth;
-    canvas.height = config.canvasHeight;
+    resizeCanvasAndTiles(config);
+    render(config);
 
     if (loadExisting && loadGameState()) {
         console.log("Loaded game from localStorage.");
@@ -210,7 +207,7 @@ export function resizeCanvasAndTiles(config) {
     const containerRect = container.getBoundingClientRect();
     const infoPanelRect = infoPanel.getBoundingClientRect();
 
-    const padding = 16; // safety buffer for container padding
+    const padding = 16;
 
     const availableWidth =
         containerRect.width -
@@ -221,16 +218,23 @@ export function resizeCanvasAndTiles(config) {
         containerRect.height -
         padding;
 
-    const tileSizeX = Math.floor(availableWidth / config.mapWidth);
-    const tileSizeY = Math.floor(availableHeight / config.mapHeight);
+    const tilesX = config.mapWidth;
+    const tilesY = config.mapHeight;
 
-    const tileSize = Math.max(16, Math.min(tileSizeX, tileSizeY));
+    const tileSize = Math.floor(
+        Math.min(
+            availableWidth / tilesX,
+            availableHeight / tilesY
+        )
+    );
 
     config.tileSize = tileSize;
 
-    canvas.width = tileSize * config.mapWidth;
-    canvas.height = tileSize * config.mapHeight;
+    // Set canvas backing resolution to match visible size exactly
+    canvas.width = tileSize * tilesX;
+    canvas.height = tileSize * tilesY;
 
+    // Let CSS handle final layout sizing
     canvas.style.width = `${canvas.width}px`;
     canvas.style.height = `${canvas.height}px`;
 }
