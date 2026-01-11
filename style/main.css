@@ -141,6 +141,11 @@ canvas {
     cursor: not-allowed;
 }
 
+.plant-action-select.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
 #time-display {
     margin-bottom: var(--spacing-medium);
     font-size: var(--font-small);
