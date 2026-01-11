@@ -113,11 +113,25 @@ async function initGame(loadExisting = true) {
         console.log("DEBUG: after updateFog", {
             revealedKeys: Object.keys(gameState.revealed || {}).length
         });
+        
+        // Compute viewport bounds
+        const tileSize = config.tiles.size;
+        const viewSize = Math.floor(config.canvasWidth / tileSize);
+        const startX = gameState.player.x - Math.floor(viewSize / 2);
+        const startY = gameState.player.y - Math.floor(viewSize / 2);
 
-        // Force initial render state
+        // Reveal all tiles in the viewport immediately
+        for (let y = 0; y < viewSize; y++) {
+            for (let x = 0; x < viewSize; x++) {
+                const key = `${startX + x},${startY + y}`;
+                getTile(startX + x, startY + y, config); // ensure tile exists
+                gameState.revealed[key] = true;
+            }
+        }
+
+        // Force initial render
         lastPlayerKey = null;
         lastSelectorKey = null;
-        updateFog(config);
         render(config);
         updateTileInfoPanel(config);
         updateTimePanel(config);
