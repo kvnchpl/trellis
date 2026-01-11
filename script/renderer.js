@@ -102,40 +102,43 @@ export function render(config) {
  * @returns {Object} image cache
  */
 function preloadImages(config) {
-    const cache = {
-        tiles: {},
-        plants: {},
-        player: null
-    };
+    const cache = { tiles: {}, plants: {}, player: null };
+    const promises = [];
 
     // Tile images
     if (config.tiles.images) {
         for (const [tileType, path] of Object.entries(config.tiles.images)) {
-            const img = new window.Image();
+            const img = new Image();
             img.src = path;
             cache.tiles[tileType] = img;
+            promises.push(new Promise(res => img.onload = res));
         }
     }
 
-    // Plant images (arrays by index mapped to growthStages)
+    // Plant images
     if (config.plants.images) {
         for (const [plantType, paths] of Object.entries(config.plants.images)) {
             cache.plants[plantType] = [];
             paths.forEach((path, index) => {
-                const img = new window.Image();
+                const img = new Image();
                 img.src = path;
                 cache.plants[plantType][index] = img;
+                promises.push(new Promise(res => img.onload = res));
             });
         }
     }
 
     // Player image
     if (config.playerImagePath) {
-        const img = new window.Image();
+        const img = new Image();
         img.src = config.playerImagePath;
         cache.player = img;
+        promises.push(new Promise(res => img.onload = res));
     }
-    return cache;
+
+    config._imageCache = cache;
+
+    return Promise.all(promises);
 }
 
 // --- Helper functions for drawing tiles and fog (DRY) ---
