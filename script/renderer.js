@@ -8,7 +8,7 @@ export function render(config) {
     const canvas = document.getElementById('game-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const tileSize = config.tileSize || config.tiles.size;
+    const tileSize = config.tileSize || 32;
 
     // Determine view size based on canvas resolution
     const viewSizeX = Math.floor(canvas.width / tileSize);
