@@ -202,20 +202,26 @@ export function updateTileInfoPanel(config) {
         btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
         btn.disabled = !isValid;
         btn.onclick = (e) => {
-            if (btn.disabled) {
+            const currentTile = getTile(gameState.selector.x, gameState.selector.y, config);
+            const validNow = evaluateCondition(currentTile, actionDef.condition);
+            if (!validNow) {
                 alert(`Cannot perform "${actionLabel}" on this tile.`);
                 console.log(`Action "${actionLabel}" blocked by condition:`, JSON.stringify(actionDef.condition));
                 e.preventDefault();
                 e.stopPropagation();
                 return;
             }
+
             console.group(`Action: ${actionLabel}`);
-            console.log('Before:', JSON.stringify(tile));
+            console.log('Before:', JSON.stringify(currentTile));
+
             // Apply effects with DRY helper
-            const newTile = applyActionEffects(tile, actionDef, config);
+            const newTile = applyActionEffects(currentTile, actionDef, config);
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+
             console.log('After:', JSON.stringify(newTile));
             console.groupEnd();
+
             finalizeAction(actionDef, config);
         };
         actionsEl.appendChild(btn);
