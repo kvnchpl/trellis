@@ -41,6 +41,7 @@ body {
 
 #game-container {
     display: flex;
+    justify-content: space-between;
     align-items: flex-start;
     gap: var(--spacing-medium);
     padding: var(--spacing-medium);
@@ -49,6 +50,7 @@ body {
     image-rendering: pixelated;
     margin: var(--spacing-medium) auto 0 auto;
     width: 90dvw;
+    box-sizing: border-box;
 }
 
 canvas {
@@ -93,9 +95,7 @@ canvas {
 #tile-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* two equal columns */
     gap: var(--spacing-small);
-    /* spacing between buttons */
 }
 
 .ui-button {
@@ -142,27 +142,26 @@ canvas {
 #top-button-bar {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: var(--spacing-small);
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
-    z-index: 100;
     width: 90dvw;
     margin: 0 auto;
     box-sizing: border-box;
+    z-index: 100;
 }
 
 #game-controls {
     display: flex;
     align-items: center;
     gap: var(--spacing-small);
+    justify-content: flex-start;
 }
 
 #day-controls {
     display: flex;
     align-items: center;
     gap: var(--spacing-small);
+    justify-content: flex-end;
 }
 
 #time-display {
@@ -205,8 +204,6 @@ canvas {
     color: #fff;
     margin-bottom: 10px;
 }
-
-/* .plant-modal .ui-button:hover handled above */
 
 @keyframes valueFlash {
     0% {
