@@ -188,31 +188,31 @@ export function updateTileInfoPanel(config) {
 
     // Now iterate actions and render their buttons (handling "plant" specially)
     for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
-        const isValid = evaluateCondition(tile, actionDef.condition);
-        // console.log(`Action "${actionLabel}" is`, isValid ? 'available' : 'not available', 'for tile:', tile);
-        if (isValid) {
-            if (actionLabel === "harvest" && tile.plantType && !config.plants.definitions[tile.plantType]?.harvestable) {
-                continue; // skip harvest button for non-harvestable plants
-            }
-            if (actionLabel === "plant") {
-                // "Plant" action is handled by the select above; do not render a button here.
-                continue;
-            } else {
-                const btn = document.createElement('button');
-                btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
-                btn.onclick = () => {
-                    console.group(`Action: ${actionLabel}`);
-                    console.log('Before:', JSON.stringify(tile));
-                    // Apply effects with DRY helper
-                    const newTile = applyActionEffects(tile, actionDef, config);
-                    gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-                    console.log('After:', JSON.stringify(newTile));
-                    console.groupEnd();
-                    finalizeAction(actionDef, config);
-                };
-                actionsEl.appendChild(btn);
-            }
+        if (actionLabel === "plant") {
+            // skip plant here since it's handled by the select dropdown above
+            continue;
         }
+        const isValid = evaluateCondition(tile, actionDef.condition);
+        // Always render a button for every action except "plant"
+        // Optionally skip harvest for non-harvestable plants (keep old logic)
+        if (actionLabel === "harvest" && tile.plantType && !config.plants.definitions[tile.plantType]?.harvestable) {
+            continue;
+        }
+        const btn = document.createElement('button');
+        btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
+        btn.disabled = !isValid;
+        btn.onclick = () => {
+            if (!isValid) return; // optionally prevent clicking
+            console.group(`Action: ${actionLabel}`);
+            console.log('Before:', JSON.stringify(tile));
+            // Apply effects with DRY helper
+            const newTile = applyActionEffects(tile, actionDef, config);
+            gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+            console.log('After:', JSON.stringify(newTile));
+            console.groupEnd();
+            finalizeAction(actionDef, config);
+        };
+        actionsEl.appendChild(btn);
     }
 }
 
