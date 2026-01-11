@@ -4,6 +4,104 @@ import { incrementTime } from './ui.js';
 import { updateTileInfoPanel } from './ui.js';
 import { render } from './renderer.js';
 
+// Helpers for action key logic
+function evaluateCondition(tile, condition) {
+    // Simple recursive evaluator for AND/OR/NOT and value checks
+    if (!condition) return true;
+    if (condition.or) {
+        return condition.or.some(sub => evaluateCondition(tile, sub));
+    }
+    if (condition.and) {
+        return condition.and.every(sub => evaluateCondition(tile, sub));
+    }
+    for (const key in condition) {
+        if (key === "or" || key === "and") continue;
+        const expected = condition[key];
+        const actual = tile[key];
+        if (expected && typeof expected === "object" && !Array.isArray(expected)) {
+            // Handle operators: lt, gt, not, etc.
+            if ("lt" in expected && !(actual < expected.lt)) return false;
+            if ("gt" in expected && !(actual > expected.gt)) return false;
+            if ("not" in expected && !(actual !== expected.not)) return false;
+            // Add more operators as needed
+        } else {
+            if (actual !== expected) return false;
+        }
+    }
+    return true;
+}
+
+function getFailedConditions(tile, condition) {
+    // Returns array of failed condition descriptions for user feedback
+    const fails = [];
+    if (!condition) return fails;
+    if (condition.or) {
+        // If none pass, show all reasons
+        if (!condition.or.some(sub => evaluateCondition(tile, sub))) {
+            for (const sub of condition.or) {
+                fails.push(...getFailedConditions(tile, sub));
+            }
+        }
+        return fails;
+    }
+    if (condition.and) {
+        for (const sub of condition.and) {
+            fails.push(...getFailedConditions(tile, sub));
+        }
+        return fails;
+    }
+    for (const key in condition) {
+        if (key === "or" || key === "and") continue;
+        const expected = condition[key];
+        const actual = tile[key];
+        if (expected && typeof expected === "object" && !Array.isArray(expected)) {
+            if ("lt" in expected && !(actual < expected.lt)) {
+                fails.push(`${key} must be less than ${expected.lt}`);
+            }
+            if ("gt" in expected && !(actual > expected.gt)) {
+                fails.push(`${key} must be greater than ${expected.gt}`);
+            }
+            if ("not" in expected && !(actual !== expected.not)) {
+                fails.push(`${key} must not be ${expected.not}`);
+            }
+        } else {
+            if (actual !== expected) {
+                fails.push(`${key} must be ${expected}`);
+            }
+        }
+    }
+    return fails;
+}
+
+function applyActionEffects(tile, actionDef, config) {
+    // Returns a new tile object with effects applied
+    const effect = actionDef.effect || {};
+    const newTile = { ...tile };
+    for (const key in effect) {
+        const val = effect[key];
+        if (val && typeof val === "object" && !Array.isArray(val)) {
+            if ("inc" in val) {
+                newTile[key] = (newTile[key] || 0) + val.inc;
+            } else if ("dec" in val) {
+                newTile[key] = (newTile[key] || 0) - val.dec;
+            } else {
+                newTile[key] = val;
+            }
+        } else {
+            newTile[key] = val;
+        }
+    }
+    return newTile;
+}
+
+function finalizeAction(actionDef, config) {
+    // Advance time, save, update info, re-render as needed
+    incrementTime(config.actionTimeIncrement || 5, config);
+    saveGameState();
+    updateTileInfoPanel(config);
+    render(config);
+}
+
 // DRY helper for player movement
 function attemptMove(player, dx, dy, config) {
     const newX = player.x + dx;
@@ -104,5 +202,33 @@ export function updatePlayer(config) {
         keysPressed[controls.resetSelector] = false;
         updateTileInfoPanel(config);
         render(config);
+    }
+
+    // Handle number keys for actions based on config.keyBindings.actions
+    const actionKeys = config.keyBindings.actions || {};
+    for (const [actionLabel, key] of Object.entries(actionKeys)) {
+        if (keysPressed[key]) {
+            keysPressed[key] = false; // prevent repeated triggers
+            const actionDef = config.tiles.actions[actionLabel];
+            if (!actionDef) continue;
+
+            const currentTile = getTile(gameState.selector.x, gameState.selector.y, config);
+            const validNow = evaluateCondition(currentTile, actionDef.condition);
+
+            if (!validNow) {
+                const failed = getFailedConditions(currentTile, actionDef.condition);
+                const message = failed.length
+                    ? `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                    : `Cannot perform "${actionLabel}" on this tile.`;
+                alert(message);
+                console.log(`Action "${actionLabel}" blocked on tile:`, currentTile, "Failed conditions:", failed);
+                return;
+            }
+
+            // Apply the action
+            const newTile = applyActionEffects(currentTile, actionDef, config);
+            gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+            finalizeAction(actionDef, config);
+        }
     }
 }
