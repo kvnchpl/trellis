@@ -247,6 +247,20 @@ export function updateTileInfoPanel(config) {
     let plantEnabled = evaluateCondition(tile, config.tiles.actions.plant.condition);
     if (tile.plantType) plantEnabled = false; // cannot plant if tile already has a plant
 
+    // Add default option and plant options
+    const plantKey = config.keyBindings.actions['plant'] || '';
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = `[${plantKey}] plant`;
+    plantSelect.appendChild(defaultOpt);
+
+    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
+        const opt = document.createElement('option');
+        opt.value = plantKey;
+        opt.textContent = (plantDef.label || plantKey).toLowerCase();
+        plantSelect.appendChild(opt);
+    });
+
     // Now iterate actions and render their buttons (handling "plant" specially)
     for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
         const isPlant = actionLabel === "plant";
@@ -288,7 +302,6 @@ export function updateTileInfoPanel(config) {
         };
 
         actionsEl.appendChild(btn);
-
     }
 }
 
