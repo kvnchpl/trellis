@@ -1,5 +1,6 @@
 import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
+import { render } from './renderer.js';
 
 // --- Growth update throttling/caching ---
 let lastGrowthUpdateWeek = null;
@@ -54,6 +55,7 @@ function finalizeAction(actionDef, config) {
     });
     saveGameState();
     incrementTime(config.actionTimeIncrement, config);
+    render(config);
 }
 
 export function updateTileInfoPanel(config) {
