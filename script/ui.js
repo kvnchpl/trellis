@@ -202,24 +202,33 @@ export function updateTileInfoPanel(config) {
         btn.textContent = actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1);
         btn.disabled = !isValid;
         btn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Fetch the current tile at the time of click
             const currentTile = getTile(gameState.selector.x, gameState.selector.y, config);
+
+            // Re-evaluate validity dynamically
             const validNow = evaluateCondition(currentTile, actionDef.condition);
+
             if (!validNow) {
+                // Alert and log immediately if action cannot be performed
                 alert(`Cannot perform "${actionLabel}" on this tile.`);
-                console.log(`Action "${actionLabel}" blocked by condition:`, JSON.stringify(actionDef.condition));
+                console.log(`Action "${actionLabel}" blocked on tile:`, currentTile);
                 return;
             }
 
             console.group(`Action: ${actionLabel}`);
             console.log('Before:', JSON.stringify(currentTile));
 
-            // Apply effects with DRY helper
+            // Apply the action effects
             const newTile = applyActionEffects(currentTile, actionDef, config);
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
 
             console.log('After:', JSON.stringify(newTile));
             console.groupEnd();
 
+            // Update UI and save state
             finalizeAction(actionDef, config);
         };
         actionsEl.appendChild(btn);
