@@ -168,79 +168,71 @@ export function updateTileInfoPanel(config) {
     if (tile.plantType) {
         plantActionValid = false;
     }
+    
+    // Always render plant select
+    const plantSelect = document.createElement('select');
+    plantSelect.className = 'plant-action-select';
 
-    // Debugging plant dropdown creation
-    console.log("DEBUG: Preparing plant select dropdown");
-    console.log("DEBUG: Current tile at selector", tile);
-    console.log("DEBUG: plantActionValid before rendering", plantActionValid);
+    // Determine if planting is actually valid
+    let plantEnabled = evaluateCondition(tile, config.tiles.actions.plant.condition);
+    if (tile.plantType) plantEnabled = false; // cannot plant if tile already has a plant
 
-    // If plant action is valid, render a single select dropdown styled as a button
-    if (plantActionValid) {
+    // Apply visual and functional disabled state
+    plantSelect.classList.toggle('disabled', !plantEnabled);
+    plantSelect.disabled = !plantEnabled;
 
-        // Always render plant select
-        const plantSelect = document.createElement('select');
-        plantSelect.className = 'plant-action-select';
+    // Populate options as before...
 
-        // Determine if planting is actually valid
-        let plantEnabled = evaluateCondition(tile, config.tiles.actions.plant.condition);
-        if (tile.plantType) plantEnabled = false; // cannot plant if tile already has a plant
+    // First option: "Plant"
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = 'plant';
+    plantSelect.appendChild(defaultOpt);
 
-        // Apply visual and functional disabled state
-        plantSelect.classList.toggle('disabled', !plantEnabled);
-        plantSelect.disabled = !plantEnabled;
+    // Add all plant options
+    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
+        const opt = document.createElement('option');
+        opt.value = plantKey;
+        opt.textContent = (plantDef.label || plantKey).toLowerCase();
+        plantSelect.appendChild(opt);
+    });
+    plantSelect.value = '';
 
-        // Populate options as before...
-
-        // First option: "Plant"
-        const defaultOpt = document.createElement('option');
-        defaultOpt.value = '';
-        defaultOpt.textContent = 'plant';
-        plantSelect.appendChild(defaultOpt);
-
-        // Add all plant options
-        Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
-            const opt = document.createElement('option');
-            opt.value = plantKey;
-            opt.textContent = (plantDef.label || plantKey).toLowerCase();
-            plantSelect.appendChild(opt);
-        });
-        plantSelect.value = '';
-
-        // Handle selection
-        plantSelect.onchange = () => {
-            if (!plantActionValid) {
-                const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
-                const message = failed.length
-                    ? `Cannot perform "plant" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
-                    : `Cannot perform "plant" on this tile.`;
-                alert(message);
-                console.log('Plant action blocked on tile:', tile, 'Failed conditions:', failed);
-                plantSelect.value = '';
-                return;
-            }
-
-            const choice = plantSelect.value;
-            if (!choice || !config.plants.definitions[choice]) {
-                plantSelect.value = '';
-                return;
-            }
-
-            console.group(`Action: plant`);
-            console.log('Before:', JSON.stringify(tile));
-            const newTile = { ...tile };
-            newTile.plantType = choice;
-            newTile.growthStage = config.plants.definitions[choice].growthStages[0];
-            newTile.growthProgress = 0;
-            gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-            console.log('After:', JSON.stringify(newTile));
-            console.groupEnd();
-            finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
+    // Handle selection
+    plantSelect.onchange = () => {
+        if (!plantActionValid) {
+            const failed = getFailedConditions(tile, config.tiles.actions.plant.condition);
+            const message = failed.length
+                ? `Cannot perform "plant" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                : `Cannot perform "plant" on this tile.`;
+            alert(message);
+            console.log('Plant action blocked on tile:', tile, 'Failed conditions:', failed);
             plantSelect.value = '';
-        };
+            return;
+        }
 
-        // Append to actions container
-        actionsEl.appendChild(plantSelect);
-    }
+        const choice = plantSelect.value;
+        if (!choice || !config.plants.definitions[choice]) {
+            plantSelect.value = '';
+            return;
+        }
+
+        console.group(`Action: plant`);
+        console.log('Before:', JSON.stringify(tile));
+        const newTile = { ...tile };
+        newTile.plantType = choice;
+        newTile.growthStage = config.plants.definitions[choice].growthStages[0];
+        newTile.growthProgress = 0;
+        gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+        console.log('After:', JSON.stringify(newTile));
+        console.groupEnd();
+        finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
+        plantSelect.value = '';
+    };
+
+    // Append to actions container
+    actionsEl.appendChild(plantSelect);
+
 
     // Now iterate actions and render their buttons (handling "plant" specially)
     for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
