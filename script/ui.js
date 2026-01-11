@@ -282,7 +282,7 @@ export function updateTimePanel(config) {
     el.textContent = `${season} - WEEK ${week} - ${displayHour}:${paddedMinute} ${period}`;
 }
 
-function incrementTime(minutes, config) {
+export function incrementTime(minutes, config) {
     const time = gameState.time;
     time.minute += minutes;
     while (time.minute >= 60) {
@@ -332,5 +332,3 @@ function updateGrowth(config) {
     // This call is only made once per day rollover due to incrementTime throttling.
     updateTileInfoPanel(config);
 }
-
-export { incrementTime };
