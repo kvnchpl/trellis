@@ -104,15 +104,8 @@ async function initGame(loadExisting = true) {
 
     if (loadExisting && loadGameState()) {
         console.log("Loaded game from localStorage.");
-        console.log("DEBUG: after loadGameState", {
-            player: gameState.player,
-            selector: gameState.selector,
-            revealedKeys: Object.keys(gameState.revealed || {}).length
-        });
+        gameState.selector = { ...gameState.player };
         updateFog(config);
-        console.log("DEBUG: after updateFog", {
-            revealedKeys: Object.keys(gameState.revealed || {}).length
-        });
 
         // Force initial render
         lastPlayerKey = null;
