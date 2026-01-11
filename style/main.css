@@ -116,7 +116,6 @@ canvas {
 
 
 .plant-action-select {
-    composes: action-control;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
