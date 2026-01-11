@@ -168,8 +168,15 @@ export function updateTileInfoPanel(config) {
     if (tile.plantType) {
         plantActionValid = false;
     }
+
+    // Debugging plant dropdown creation
+    console.log("DEBUG: Preparing plant select dropdown");
+    console.log("DEBUG: Current tile at selector", tile);
+    console.log("DEBUG: plantActionValid before rendering", plantActionValid);
+
     // If plant action is valid, render a single select dropdown styled as a button
     if (plantActionValid) {
+
         // Always render plant select
         const plantSelect = document.createElement('select');
         plantSelect.className = 'plant-action-select';
