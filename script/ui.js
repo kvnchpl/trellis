@@ -150,7 +150,7 @@ export function updateTileInfoPanel(config) {
         // First option: "Plant"
         const defaultOpt = document.createElement('option');
         defaultOpt.value = '';
-        defaultOpt.textContent = 'Plant';
+        defaultOpt.textContent = 'plant';
         plantSelect.appendChild(defaultOpt);
         // Add plant options
         Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
