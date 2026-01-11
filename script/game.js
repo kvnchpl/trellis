@@ -97,6 +97,10 @@ function startNewGame() {
 
 async function initGame(loadExisting = true) {
     await loadConfig();
+
+    resizeCanvasAndTiles(config);
+    window.addEventListener('resize', () => resizeCanvasAndTiles(config));
+
     const canvas = document.getElementById('game-canvas');
     canvas.width = config.canvasWidth;
     canvas.height = config.canvasHeight;
@@ -213,10 +217,6 @@ export function resizeCanvasAndTiles(config) {
 
     render(config); // redraw with new sizes
 }
-
-// Call on init and resize
-resizeCanvasAndTiles(config);
-window.addEventListener('resize', () => resizeCanvasAndTiles(config));
 
 function maybeUpdateTileInfoPanel(config) {
     const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
