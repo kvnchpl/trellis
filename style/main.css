@@ -97,7 +97,8 @@ canvas {
     /* spacing between buttons */
 }
 
-.action-control {
+.ui-button {
+    text-align: left;
     display: block;
     margin-top: var(--spacing-medium);
     padding: calc(var(--spacing-medium) / 3) calc(var(--spacing-medium) * 0.75);
@@ -109,11 +110,6 @@ canvas {
     border-radius: var(--control-border-radius);
     cursor: pointer;
 }
-
-#tile-actions button {
-    text-align: left;
-}
-
 
 .plant-action-select {
     appearance: none;
@@ -128,11 +124,11 @@ canvas {
     padding-right: var(--caret-padding);
 }
 
-#tile-actions button:hover {
+.ui-button:hover {
     background-color: var(--hover-bg);
 }
 
-#tile-actions button.disabled {
+.ui-button.disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
@@ -183,9 +179,7 @@ canvas {
     margin-bottom: 10px;
 }
 
-.plant-modal button:hover {
-    background-color: var(--hover-bg);
-}
+/* .plant-modal .ui-button:hover handled above */
 
 @keyframes valueFlash {
     0% {
