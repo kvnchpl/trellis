@@ -40,24 +40,24 @@ export function render(config) {
     const { mapWidth, mapHeight } = config;
     const { player, selector, revealed } = gameState;
 
-    const viewportSize = 7; // 7x7 visible tiles
-    const paddingRatio = 0.125; // 12.5% padding on each side, total ~75% map coverage
+    const viewportSize = 9;    // 9x9 visible tiles
+    const revealRadius = 3;    // 7x7 initial reveal (radius 3)
 
-    const usableWidth = canvas.width * (1 - paddingRatio * 2);
-    const usableHeight = canvas.height * (1 - paddingRatio * 2);
-    const tileSize = Math.floor(Math.min(usableWidth / viewportSize, usableHeight / viewportSize));
+    // Tile size to fit the viewport
+    const tileSize = Math.floor(Math.min(canvas.width / viewportSize, canvas.height / viewportSize));
 
+    // Camera origin: center on player
     const halfViewport = Math.floor(viewportSize / 2);
     let startX = player.x - halfViewport;
     let startY = player.y - halfViewport;
 
-    // Clamp to map bounds
+    // Clamp viewport to map edges
     startX = Math.max(0, Math.min(startX, mapWidth - viewportSize));
     startY = Math.max(0, Math.min(startY, mapHeight - viewportSize));
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Offset for centering viewport in canvas
+    // Offset to center the viewport in canvas
     const offsetX = Math.floor((canvas.width - tileSize * viewportSize) / 2);
     const offsetY = Math.floor((canvas.height - tileSize * viewportSize) / 2);
 
@@ -65,6 +65,13 @@ export function render(config) {
         for (let x = 0; x < viewportSize; x++) {
             const mapX = startX + x;
             const mapY = startY + y;
+
+            // Reveal only 7x7 area around player
+            const dx = Math.abs(mapX - player.x);
+            const dy = Math.abs(mapY - player.y);
+            if (dx <= revealRadius && dy <= revealRadius) {
+                revealed[`${mapX},${mapY}`] = true;
+            }
 
             const tile = getTile(mapX, mapY, config);
             const isRevealed = revealed[`${mapX},${mapY}`];
@@ -82,7 +89,7 @@ export function render(config) {
         }
     }
 
-    // Draw player and selector relative to viewport
+    // Draw player and selector centered
     drawPlayer(ctx, player, startX, startY, tileSize, config);
     drawSelector(ctx, selector, startX, startY, tileSize, config);
 }
