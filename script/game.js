@@ -99,7 +99,10 @@ async function initGame(loadExisting = true) {
     await loadConfig();
 
     resizeCanvasAndTiles(config);
-    window.addEventListener('resize', () => resizeCanvasAndTiles(config));
+    window.addEventListener('resize', () => {
+        resizeCanvasAndTiles(config);
+        render(config);
+    });
 
     // Ensure images are loaded before any render
     await preloadImages(config);
@@ -215,8 +218,6 @@ export function resizeCanvasAndTiles(config) {
     // Set canvas resolution
     canvas.width = tileSize * mapWidth;
     canvas.height = tileSize * mapHeight;
-
-    render(config); // redraw with new sizes
 }
 
 function maybeUpdateTileInfoPanel(config) {
