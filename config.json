@@ -240,6 +240,7 @@
                 ],
                 "growthTime": 2,
                 "harvestable": true,
+                "label": "Strawberry",
                 "yield": "Strawberries",
                 "moistureUse": 5,
                 "fertilityUse": 2
@@ -252,6 +253,7 @@
                 ],
                 "growthTime": 6,
                 "harvestable": true,
+                "label": "Apple",
                 "yield": "Apples",
                 "moistureUse": 8,
                 "fertilityUse": 5
@@ -264,6 +266,7 @@
                 ],
                 "growthTime": 4,
                 "harvestable": true,
+                "label": "Pumpkin",
                 "yield": "Pumpkins",
                 "moistureUse": 6,
                 "fertilityUse": 3
@@ -276,6 +279,7 @@
                 ],
                 "growthTime": 2,
                 "harvestable": true,
+                "label": "Beans",
                 "yield": "Bean Pods",
                 "moistureUse": 4,
                 "fertilityUse": 2
@@ -288,6 +292,7 @@
                 ],
                 "growthTime": 3,
                 "harvestable": true,
+                "label": "Corn",
                 "yield": "Corn Cobs",
                 "moistureUse": 6,
                 "fertilityUse": 3
@@ -299,6 +304,8 @@
                 ],
                 "growthTime": 10,
                 "harvestable": false,
+                "label": "Walnut",
+                "yield": "Walnuts",
                 "moistureUse": 5,
                 "fertilityUse": 4
             },
@@ -309,6 +316,8 @@
                 ],
                 "growthTime": 12,
                 "harvestable": false,
+                "label": "Sugar Maple",
+                "yield": "Maple Syrup",
                 "moistureUse": 4,
                 "fertilityUse": 4
             },
@@ -319,6 +328,8 @@
                 ],
                 "growthTime": 3,
                 "harvestable": false,
+                "label": "Milkweed",
+                "yield": "Milkweed Pods",
                 "moistureUse": 2,
                 "fertilityUse": 1
             }
