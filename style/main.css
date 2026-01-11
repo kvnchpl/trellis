@@ -47,8 +47,8 @@ body {
     background-color: var(--background-color);
     border: none;
     image-rendering: pixelated;
-    margin-top: 60px;
-    /* space for top bar */
+    margin: var(--spacing-medium) auto 0 auto;
+    width: 90dvw;
 }
 
 canvas {
@@ -58,7 +58,6 @@ canvas {
     height: var(--canvas-height);
 }
 
-/* Info panel styles for clarity and accessibility */
 #info-panel {
     width: var(--panel-width);
     padding: var(--spacing-large);
@@ -144,12 +143,13 @@ canvas {
     display: flex;
     justify-content: space-between;
     padding: var(--spacing-small);
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
     z-index: 100;
-    width: max-content;
+    width: 90dvw;
+    margin: 0 auto;
     box-sizing: border-box;
 }
 
