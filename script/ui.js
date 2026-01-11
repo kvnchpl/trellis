@@ -252,14 +252,6 @@ export function updateTileInfoPanel(config) {
     const defaultOpt = document.createElement('option');
     defaultOpt.value = '';
     defaultOpt.textContent = `[${plantKey}] plant`;
-    plantSelect.appendChild(defaultOpt);
-
-    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
-        const opt = document.createElement('option');
-        opt.value = plantKey;
-        opt.textContent = (plantDef.label || plantKey).toLowerCase();
-        plantSelect.appendChild(opt);
-    });
 
     // Now iterate actions and render their buttons (handling "plant" specially)
     for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
