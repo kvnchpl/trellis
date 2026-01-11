@@ -363,6 +363,16 @@
         "selectDown": "ArrowDown",
         "selectLeft": "ArrowLeft",
         "selectRight": "ArrowRight",
-        "resetSelector": "q"
+        "resetSelector": "q",
+        "actions": {
+            "till": "1",
+            "water": "2",
+            "fertilize": "3",
+            "mulch": "4",
+            "weed": "5",
+            "harvest": "6",
+            "clear": "7",
+            "plant": "8"
+        }
     }
 }
