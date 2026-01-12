@@ -1,6 +1,6 @@
 import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
-import { incrementTime, updateTileInfoPanel, evaluateCondition, getFailedConditions, showPlantSelectionModal } from './ui.js';
+import { incrementTime, updateTileInfoPanel, evaluateCondition, getFailedConditions, showPlantSelectionModal, plantModalOpen } from './ui.js';
 import { render } from './renderer.js';
 
 function applyActionEffects(tile, actionDef, config) {
@@ -71,6 +71,8 @@ export function initPlayer(config) {
  * @param {Object} config - Game configuration (expects mapWidth, mapHeight)
  */
 export function updatePlayer(config) {
+    if (plantModalOpen) return;
+
     const { mapWidth, mapHeight } = config;
     const player = gameState.player;
     const controls = config.keyBindings;

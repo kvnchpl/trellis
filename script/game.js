@@ -2,7 +2,7 @@ import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
 import { gameState, initState, advanceDay } from './state.js';
 import { render, preloadImages } from './renderer.js';
-import { updateTileInfoPanel, updateTimePanel } from './ui.js';
+import { updateTileInfoPanel, updateTimePanel, plantModalOpen } from './ui.js';
 
 const configUrl = 'config.json';
 let config;

@@ -2,7 +2,7 @@ import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 import { render } from './renderer.js';
 
-let plantModalOpen = false;
+export let plantModalOpen = false;
 let plantModalButtons = [];
 let plantModalFocusIndex = 0;
 let lastGrowthUpdateWeek = null;
