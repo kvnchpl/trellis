@@ -166,25 +166,20 @@ export function showPlantSelectionModal(config, tile, x, y) {
         btn.tabIndex = 0;
 
         btn.onclick = () => {
-            const newTile = {
-                ...tile
-            };
+            const newTile = { ...tile };
             newTile.plantType = plantKey;
             newTile.growthStage = plantDef.growthStages[0];
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
 
-            // Finalize action using an "effect" placeholder
-            finalizeAction({
-                effect: {
-                    plantType: null,
-                    growthStage: null,
-                    growthProgress: 0
-                }
-            }, config);
+            finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
 
             console.log("DEBUG: Closing plant modal, modalState before =", modalState);
             modalState.plantModalOpen = false;
+
+            // Clear all keys pressed inside the modal
+            Object.keys(keysPressed).forEach(k => keysPressed[k] = false);
+
             plantModalButtons = [];
             plantModalFocusIndex = 0;
             overlay.style.display = 'none';
@@ -556,8 +551,10 @@ document.addEventListener('keydown', (e) => {
             console.log("DEBUG: Closing plant modal, modalState before =", modalState);
             document.getElementById('plant-modal-overlay').style.display = 'none';
             modalState.plantModalOpen = false;
-            // Clear all pressed keys
+
+            // Clear all keys pressed inside the modal
             Object.keys(keysPressed).forEach(k => keysPressed[k] = false);
+
             e.preventDefault();
             return;
         default:
