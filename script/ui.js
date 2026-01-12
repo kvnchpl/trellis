@@ -448,7 +448,7 @@ document.addEventListener('keydown', (e) => {
     // ----- NAVIGATION (arrows + WASD) -----
     switch (e.key) {
         case 'ArrowRight':
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + 1,
                 plantModalButtons.length - 1
@@ -457,7 +457,7 @@ document.addEventListener('keydown', (e) => {
             break;
         case 'd':
         case 'D':
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + 1,
                 plantModalButtons.length - 1
@@ -465,7 +465,7 @@ document.addEventListener('keydown', (e) => {
             handled = true;
             break;
         case 'ArrowLeft':
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - 1,
                 0
@@ -474,7 +474,7 @@ document.addEventListener('keydown', (e) => {
             break;
         case 'a':
         case 'A':
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - 1,
                 0
@@ -482,7 +482,7 @@ document.addEventListener('keydown', (e) => {
             handled = true;
             break;
         case 'ArrowDown':
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + columns,
                 plantModalButtons.length - 1
@@ -491,7 +491,7 @@ document.addEventListener('keydown', (e) => {
             break;
         case 's':
         case 'S':
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + columns,
                 plantModalButtons.length - 1
@@ -499,7 +499,7 @@ document.addEventListener('keydown', (e) => {
             handled = true;
             break;
         case 'ArrowUp':
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - columns,
                 0
@@ -508,7 +508,7 @@ document.addEventListener('keydown', (e) => {
             break;
         case 'w':
         case 'W':
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - columns,
                 0
@@ -533,7 +533,7 @@ document.addEventListener('keydown', (e) => {
         case '9': {
             // Only handle modal selection if modalState.plantModalOpen
             if (!modalState.plantModalOpen) break;
-            keysPressed[e.key] = false;
+            keysPressed[e.key] = false; // prevent global actions
             const index = Number(e.key) - 1;
             if (plantModalButtons[index]) {
                 plantModalButtons[index].click();
@@ -551,6 +551,8 @@ document.addEventListener('keydown', (e) => {
             e.preventDefault();
             return;
         default:
+            // Always consume/clear the key if inside the modal to prevent global actions
+            keysPressed[e.key] = false;
             return;
     }
 
