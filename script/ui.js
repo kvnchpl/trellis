@@ -36,7 +36,7 @@ export function showGameMessageModal(message) {
 
     inputState.modalOpen = true;
     overlay.style.display = 'flex';
-    btn.focus();
+    btn.focus(); // Focus continue button for easy Enter key usage
 
     // Remove any previous click handlers to avoid stacking
     btn.onclick = () => {
