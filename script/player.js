@@ -71,6 +71,7 @@ export function initPlayer(config) {
  * @param {Object} config - Game configuration (expects mapWidth, mapHeight)
  */
 export function updatePlayer(config) {
+    console.log("DEBUG: plantModalOpen =", plantModalOpen);
     if (plantModalOpen) return;
 
     const { mapWidth, mapHeight } = config;
@@ -143,6 +144,13 @@ export function updatePlayer(config) {
     const actionKeys = config.keyBindings.actions || {};
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
         if (keysPressed[key]) {
+            // Debug log for key press
+            console.log(`DEBUG: Key pressed for action "${actionLabel}"`);
+            // Extra modal check before executing action
+            if (plantModalOpen) {
+                console.log(`DEBUG: Skipping action "${actionLabel}" because plantModalOpen is true`);
+                return;
+            }
             keysPressed[key] = false;
             const actionDef = config.tiles.actions[actionLabel];
             const tile = getTile(gameState.selector.x, gameState.selector.y, config);
