@@ -10,7 +10,10 @@ import {
     gameState,
     initState
 } from './state.js';
-import { incrementTime } from './ui.js';
+import {
+    incrementTime,
+    showDayCompleteModal
+} from './ui.js';
 import {
     render,
     preloadImages
