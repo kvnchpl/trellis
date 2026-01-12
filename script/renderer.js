@@ -37,61 +37,42 @@ export function render(config) {
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
 
-    const { mapWidth, mapHeight } = config;
-    const { player, selector, revealed } = gameState;
-
-    const viewportSize = 11;    // 11x11 visible tiles
-    const revealRadius = 3;    // 7x7 initial reveal (radius 3)
-
-    // Tile size to fit the viewport
-    const tileSize = Math.floor(Math.min(canvas.width / viewportSize, canvas.height / viewportSize));
-
-    // Camera origin: center on player
-    const halfViewport = Math.floor(viewportSize / 2);
-    let startX = player.x - halfViewport;
-    let startY = player.y - halfViewport;
-
-    // Clamp viewport to map edges
-    startX = Math.max(0, Math.min(startX, mapWidth - viewportSize));
-    startY = Math.max(0, Math.min(startY, mapHeight - viewportSize));
+    const tileSize = config.tileSize;
+    const VIEWPORT_TILES = 9;
+    const HALF = Math.floor(VIEWPORT_TILES / 2);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Offset to center the viewport in canvas
-    const offsetX = Math.floor((canvas.width - tileSize * viewportSize) / 2);
-    const offsetY = Math.floor((canvas.height - tileSize * viewportSize) / 2);
+    const camX = gameState.player.x - HALF;
+    const camY = gameState.player.y - HALF;
 
-    for (let y = 0; y < viewportSize; y++) {
-        for (let x = 0; x < viewportSize; x++) {
-            const mapX = startX + x;
-            const mapY = startY + y;
+    for (let sy = 0; sy < VIEWPORT_TILES; sy++) {
+        for (let sx = 0; sx < VIEWPORT_TILES; sx++) {
 
-            // Reveal only 7x7 area around player
-            const dx = Math.abs(mapX - player.x);
-            const dy = Math.abs(mapY - player.y);
-            if (dx <= revealRadius && dy <= revealRadius) {
-                revealed[`${mapX},${mapY}`] = true;
+            const wx = camX + sx;
+            const wy = camY + sy;
+
+            const px = sx * tileSize;
+            const py = sy * tileSize;
+
+            const key = `${wx},${wy}`;
+            const revealed = gameState.revealed[key];
+
+            if (!revealed) {
+                ctx.fillStyle = config.fogColor;
+                ctx.globalAlpha = config.fogOpacity;
+                ctx.fillRect(px, py, tileSize, tileSize);
+                ctx.globalAlpha = 1;
+                continue;
             }
 
-            const tile = getTile(mapX, mapY, config);
-            const isRevealed = revealed[`${mapX},${mapY}`];
-
-            drawTileOrColor(
-                ctx,
-                tile,
-                isRevealed,
-                offsetX + x * tileSize,
-                offsetY + y * tileSize,
-                tileSize,
-                config._imageCache,
-                config
-            );
+            const tile = getTile(wx, wy, config);
+            drawTileOrColor(ctx, tile, px, py, tileSize, config);
         }
     }
 
-    // Draw player and selector centered
-    drawPlayer(ctx, player, startX, startY, tileSize, config);
-    drawSelector(ctx, selector, startX, startY, tileSize, config);
+    drawPlayer(ctx, HALF * tileSize, HALF * tileSize, tileSize, config);
+    drawSelector(ctx, gameState.selector, camX, camY, tileSize, config);
 }
 
 /**
