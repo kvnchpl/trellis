@@ -16,12 +16,12 @@
     "selectorColor": "#00FFFF",
     "tileInfoPanel": true,
     "viewport": {
-      "tiles": 9,
-      "initialRevealRadius": 3
+        "tiles": 11,
+        "initialRevealRadius": 3
     },
     "fog": {
-      "color": "#000000",
-      "opacity": 0.8
+        "color": "#000000",
+        "opacity": 0.8
     },
     "outOfBoundsColor": "#111",
     "dayStartHour": 7,
