@@ -144,18 +144,22 @@ export function updatePlayer(config) {
     const actionKeys = config.keyBindings.actions || {};
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
         if (keysPressed[key]) {
-            // Debug log for key press
-            console.log(`DEBUG: Key pressed for action "${actionLabel}"`);
-            // Extra modal check before executing action
+            keysPressed[key] = false;  // consume key immediately
+
+            if (actionLabel === 'plant') {
+                showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
+                console.log(`DEBUG: Plant modal opened, exiting updatePlayer to block other actions`);
+                return; // exit immediately to prevent any other actions from firing
+            }
+
+            // Extra safety: block all other actions if modal already open
             if (modalState.plantModalOpen) {
-                console.log(`DEBUG: Skipping action "${actionLabel}" because modalState.plantModalOpen is true`);
+                console.log(`DEBUG: Skipping action "${actionLabel}" because modal is open`);
                 return;
             }
-            keysPressed[key] = false;
-            const actionDef = config.tiles.actions[actionLabel];
-            const tile = getTile(gameState.selector.x, gameState.selector.y, config);
-            const validNow = evaluateCondition(tile, actionDef.condition);
 
+            const actionDef = config.tiles.actions[actionLabel];
+            const validNow = evaluateCondition(tile, actionDef.condition);
             if (!validNow) {
                 const failed = getFailedConditions(tile, actionDef.condition);
                 alert(`Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`);
@@ -163,15 +167,9 @@ export function updatePlayer(config) {
                 return;
             }
 
-            if (actionLabel === 'plant') {
-                showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
-                keysPressed[key] = false;
-                return;
-            } else {
-                const newTile = applyActionEffects(tile, actionDef, config);
-                gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-                finalizeAction(actionDef, config);
-            }
+            const newTile = applyActionEffects(tile, actionDef, config);
+            gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+            finalizeAction(actionDef, config);
         }
     }
 }
