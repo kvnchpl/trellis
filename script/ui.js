@@ -30,13 +30,14 @@ export function showGameMessageModal(message) {
     const titleEl = document.getElementById('game-message-title');
     const contentEl = document.getElementById('game-message-content');
     const btn = document.getElementById('game-message-continue');
+    btn.tabIndex = 0;
 
     titleEl.textContent = 'MESSAGE';
     contentEl.innerHTML = `<div>${message}</div>`;
 
     inputState.modalOpen = true;
     overlay.style.display = 'flex';
-    btn.focus(); // Focus continue button for easy Enter key usage
+    btn.focus();
 
     // Remove any previous click handlers to avoid stacking
     btn.onclick = () => {
