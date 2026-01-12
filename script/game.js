@@ -104,8 +104,27 @@ function loadGameState() {
 
 function startNewGame() {
     if (localStorage.getItem("trellisSave")) {
-        const confirmNew = confirm("start a new game? this will overwrite your current progress.");
-        if (!confirmNew) return;
+        // Show confirmation modal instead of confirm dialog
+        showGameMessageModal("Start a new game? This will overwrite your current progress.");
+        const btn = document.getElementById('game-message-continue');
+        btn.onclick = () => {
+            // Hide modal
+            const overlay = document.getElementById('game-message-overlay');
+            overlay.style.display = 'none';
+            inputState.modalOpen = false;
+
+            // Proceed with starting a new game
+            localStorage.removeItem("trellisSave");
+            initState(config);
+            generateMap(config);
+            initPlayer(config);
+            updateFog(config);
+            updateTimePanel(config);
+            render(config);
+            updateTileInfoPanel(config);
+            saveGameState();
+        };
+        return;
     }
     localStorage.removeItem("trellisSave");
     initState(config);

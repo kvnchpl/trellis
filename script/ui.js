@@ -38,6 +38,7 @@ export function showGameMessageModal(message) {
     overlay.style.display = 'flex';
     btn.focus();
 
+    // Remove any previous click handlers to avoid stacking
     btn.onclick = () => {
         overlay.style.display = 'none';
         inputState.modalOpen = false;
