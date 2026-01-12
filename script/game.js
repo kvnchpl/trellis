@@ -8,9 +8,9 @@ import {
 } from './map.js';
 import {
     gameState,
-    initState,
-    advanceDay
+    initState
 } from './state.js';
+import { incrementTime } from './ui.js';
 import {
     render,
     preloadImages
@@ -173,8 +173,13 @@ initGame(true).catch((err) => {
     });
 
     endDayBtn.addEventListener('click', () => {
-        advanceDay(config);
-        updateTimePanel(config);
+        // Force time to pass until end-of-day logic triggers
+        const minutesUntilEnd =
+            (config.dayEndHour - gameState.time.hour) * 60 - gameState.time.minute;
+
+        if (minutesUntilEnd > 0) {
+            incrementTime(minutesUntilEnd, config);
+        }
         saveGameState();
     });
 
