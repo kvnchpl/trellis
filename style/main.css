@@ -46,12 +46,12 @@ body {
 }
 
 #game-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-small);
     width: 90dvw;
     height: 90dvh;
-    display: flex;
-    align-items: stretch;
-    gap: var(--spacing-medium);
-    padding: var(--spacing-medium);
     background-color: var(--background-color);
     image-rendering: pixelated;
     margin: var(--spacing-medium) auto 0 auto;
