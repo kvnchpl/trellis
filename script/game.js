@@ -73,7 +73,6 @@ export function saveGameState() {
         time: gameState.time
     }));
 
-    console.log(`Game saved. Tiles stored: ${Object.keys(optimizedMap).length}`);
     updateSaveSizeDisplay();
 }
 
@@ -92,7 +91,7 @@ function loadGameState() {
             week: data.time?.week ?? 1,
             seasonIndex: data.time?.seasonIndex ?? 0
         };
-        console.log("Game loaded.");
+        // Game loaded successfully
         return true;
     } catch (e) {
         console.warn("Corrupted save data. Starting new game.");
@@ -114,7 +113,7 @@ function startNewGame() {
     render(config);
     updateTileInfoPanel(config);
     saveGameState();
-    console.log("Started a new game.");
+    // New game started
 }
 
 async function initGame(loadExisting = true) {

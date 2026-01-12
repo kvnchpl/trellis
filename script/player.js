@@ -17,8 +17,14 @@ import {
     render
 } from './renderer.js';
 
+/**
+ * Applies the effects of an action to a tile and returns the new tile object.
+ * @param {Object} tile - The current tile object.
+ * @param {Object} actionDef - The action definition.
+ * @param {Object} config - Game configuration.
+ * @returns {Object} The new tile object after applying effects.
+ */
 function applyActionEffects(tile, actionDef, config) {
-    // Returns a new tile object with effects applied
     const effect = actionDef.effect || {};
     const newTile = {
         ...tile
@@ -40,6 +46,11 @@ function applyActionEffects(tile, actionDef, config) {
     return newTile;
 }
 
+/**
+ * Finalizes an action by updating time, saving, updating UI, and rendering.
+ * @param {Object} actionDef - The action definition.
+ * @param {Object} config - Game configuration.
+ */
 function finalizeAction(actionDef, config) {
     const timeCost = actionDef.timeIncrement || 5;
     incrementTime(timeCost, config);
@@ -48,7 +59,13 @@ function finalizeAction(actionDef, config) {
     render(config);
 }
 
-// DRY helper for player movement
+/**
+ * Attempts to move the player by (dx, dy) if the target tile is not rock and has no plant.
+ * @param {Object} player - The player object.
+ * @param {number} dx - Delta x.
+ * @param {number} dy - Delta y.
+ * @param {Object} config - Game configuration.
+ */
 function attemptMove(player, dx, dy, config) {
     const newX = player.x + dx;
     const newY = player.y + dy;
@@ -61,10 +78,8 @@ function attemptMove(player, dx, dy, config) {
             y: player.y
         };
         saveGameState();
-
         const movementCost = config.movementTimeIncrement || 1;
         incrementTime(movementCost, config);
-
         updateTileInfoPanel(config);
     }
 }
@@ -75,8 +90,6 @@ function attemptMove(player, dx, dy, config) {
  */
 export function initPlayer(config) {
     window.addEventListener('keydown', (e) => {
-        console.log(`DEBUG: keydown captured: ${e.key}, inputState.modalOpen =`, inputState.modalOpen);
-
         if (inputState.modalOpen) {
             e.preventDefault();
             e.stopPropagation();
@@ -84,32 +97,24 @@ export function initPlayer(config) {
             inputState.blockedKeys.add(e.key);
             return;
         }
-
         if (inputState.blockedKeys.has(e.key)) {
             inputState.keysPressed[e.key] = false; // ignore keys pressed during modal
             return;
         }
-
         inputState.keysPressed[e.key] = true;
     });
 }
 
 /**
- * Updates the player position based on input, with map boundary checking.
+ * Updates the player position and handles player actions based on input.
+ * Handles map boundary checking and action key handling.
  * @param {Object} config - Game configuration (expects mapWidth, mapHeight)
  */
 export function updatePlayer(config) {
-    const frameTime = performance.now();
-    console.log(`DEBUG: frame ${frameTime.toFixed(2)}, inputState =`, inputState.modalOpen);
-    console.log("DEBUG: keysPressed at start of updatePlayer:", inputState.keysPressed);
-
     if (inputState.modalOpen) {
-        console.log("DEBUG: updatePlayer early exit because modal is open");
         Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
         return;
     }
-
-    console.log("DEBUG: inputState.modalOpen =", inputState.modalOpen);
 
     const {
         mapWidth,
@@ -118,7 +123,7 @@ export function updatePlayer(config) {
     const player = gameState.player;
     const controls = config.keyBindings;
 
-    // Move
+    // Movement
     if (inputState.keysPressed[controls.up]) {
         attemptMove(player, 0, -1, config);
         inputState.keysPressed[controls.up] = false;
@@ -144,7 +149,6 @@ export function updatePlayer(config) {
         updateTileInfoPanel(config);
         render(config);
     }
-
     // Select tile below player
     else if (inputState.keysPressed[controls.selectDown]) {
         const newY = player.y + 1;
@@ -156,7 +160,6 @@ export function updatePlayer(config) {
         updateTileInfoPanel(config);
         render(config);
     }
-
     // Select tile left of player
     else if (inputState.keysPressed[controls.selectLeft]) {
         const newX = player.x - 1;
@@ -168,7 +171,6 @@ export function updatePlayer(config) {
         updateTileInfoPanel(config);
         render(config);
     }
-
     // Select tile right of player
     else if (inputState.keysPressed[controls.selectRight]) {
         const newX = player.x + 1;
@@ -180,7 +182,6 @@ export function updatePlayer(config) {
         updateTileInfoPanel(config);
         render(config);
     }
-
     // Reset selector to player position
     else if (inputState.keysPressed[controls.resetSelector]) {
         gameState.selector = {
@@ -196,24 +197,18 @@ export function updatePlayer(config) {
     const actionKeys = config.keyBindings.actions || {};
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
-
-        console.log(`DEBUG: Checking action key '${key}' for '${actionLabel}' on tile at (${gameState.selector.x},${gameState.selector.y}), inputState =`, inputState.modalOpen);
-
         if (inputState.keysPressed[key]) {
             inputState.keysPressed[key] = false; // consume the key
-            console.log(`DEBUG: Consumed key '${key}' for action '${actionLabel}' at frame ${frameTime.toFixed(2)}`);
             if (actionLabel === 'plant') {
                 // Consume all other action keys too
                 for (const k of Object.values(config.keyBindings.actions)) {
                     inputState.keysPressed[k] = false;
                 }
                 showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
-                console.log(`DEBUG: Plant modal opened, exiting updatePlayer to block other actions`);
                 return;
             }
             // Extra safety: block all other actions if modal already open
             if (inputState.modalOpen) {
-                console.log(`DEBUG: Skipping action "${actionLabel}" because modal is open`);
                 return;
             }
             inputState.keysPressed[key] = false; // consume key immediately for non-plant actions
@@ -222,7 +217,6 @@ export function updatePlayer(config) {
             if (!validNow) {
                 const failed = getFailedConditions(tile, actionDef.condition);
                 alert(`Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`);
-                console.log(`Action "${actionLabel}" blocked:`, failed);
                 return;
             }
             const newTile = applyActionEffects(tile, actionDef, config);

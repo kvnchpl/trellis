@@ -25,6 +25,12 @@ let lastGrowthUpdateWeek = null;
  * @param {*} condObj 
  * @returns 
  */
+/**
+ * Evaluates if a tile meets the specified conditions.
+ * @param {*} tile - The tile object.
+ * @param {*} condObj - The condition object.
+ * @returns {boolean} True if the condition is met, false otherwise.
+ */
 export function evaluateCondition(tile, condObj) {
     if (condObj.or && Array.isArray(condObj.or)) {
         return condObj.or.some(c => evaluateCondition(tile, c));
@@ -50,6 +56,12 @@ export function evaluateCondition(tile, condObj) {
  * @param {*} tile 
  * @param {*} condObj 
  * @returns {string[]}
+ */
+/**
+ * Returns an array of human-readable strings describing which conditions failed.
+ * @param {*} tile - The tile object.
+ * @param {*} condObj - The condition object.
+ * @returns {string[]} Array of failed condition descriptions.
  */
 export function getFailedConditions(tile, condObj) {
     const failed = [];
@@ -100,6 +112,13 @@ export function getFailedConditions(tile, condObj) {
  * @param {Object} config
  * @returns {Object} new tile object
  */
+/**
+ * Applies the effects of an action to a tile and returns the new tile object.
+ * @param {Object} tile - The current tile object.
+ * @param {Object} actionDef - The action definition.
+ * @param {Object} config - Game configuration.
+ * @returns {Object} The new tile object after applying effects.
+ */
 function applyActionEffects(tile, actionDef, config) {
     const newTile = {
         ...tile
@@ -124,6 +143,11 @@ function applyActionEffects(tile, actionDef, config) {
  * @param {Object} actionDef 
  * @param {Object} config 
  */
+/**
+ * Finalizes an action by updating the UI, saving the game, incrementing time, and rendering.
+ * @param {Object} actionDef - The action definition.
+ * @param {Object} config - Game configuration.
+ */
 function finalizeAction(actionDef, config) {
     updateTileInfoPanel(config);
     Object.entries(actionDef.effect).forEach(([key]) => {
@@ -146,8 +170,14 @@ function finalizeAction(actionDef, config) {
  * @param {number} x
  * @param {number} y
  */
+/**
+ * Displays the plant selection modal for planting a crop.
+ * @param {Object} config - Game configuration.
+ * @param {Object} tile - The tile object.
+ * @param {number} x - X coordinate.
+ * @param {number} y - Y coordinate.
+ */
 export function showPlantSelectionModal(config, tile, x, y) {
-    console.log("DEBUG: showPlantSelectionModal called. inputState before =", inputState);
     const overlay = document.getElementById('plant-modal-overlay');
     const modalButtonsEl = document.getElementById('plant-modal-buttons');
 
@@ -157,51 +187,38 @@ export function showPlantSelectionModal(config, tile, x, y) {
     // Create buttons for each plant
     Object.entries(config.plants.definitions).forEach(([plantKey, plantDef], idx) => {
         const btn = document.createElement('button');
-
         // Assign number key for selection (1-indexed)
         const numberKey = (idx + 1).toString();
-
         btn.textContent = `[${numberKey}] ${plantDef.label || plantKey}`;
         btn.classList.add('ui-button');
         btn.tabIndex = 0;
-
         btn.onclick = () => {
             const newTile = { ...tile };
             newTile.plantType = plantKey;
             newTile.growthStage = plantDef.growthStages[0];
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
-
             finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
-
-            console.log("DEBUG: Closing plant modal, inputState before =", inputState);
-            // Close modal
+            // Close modal and reset modal-related state
             inputState.modalOpen = false;
-
             // Clear all keys pressed inside the modal
             Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-
             // Clear blockedKeys to allow normal input again
             inputState.blockedKeys.clear();
-
             plantModalButtons = [];
             plantModalFocusIndex = 0;
             overlay.style.display = 'none';
         };
-
         modalButtonsEl.appendChild(btn);
     });
 
     overlay.style.display = 'flex';
     inputState.modalOpen = true;
-    console.log("DEBUG: inputState after setting modalOpen =", inputState);
 
     plantModalButtons = Array.from(
         document.querySelectorAll('#plant-modal-buttons .ui-button:not(.disabled)')
     );
-
     plantModalFocusIndex = 0;
-
     if (plantModalButtons.length > 0) {
         plantModalButtons[0].focus();
     }
@@ -209,6 +226,10 @@ export function showPlantSelectionModal(config, tile, x, y) {
 /**
  * Updates the tile information panel based on the currently selected tile.
  * @param {Object} config
+ */
+/**
+ * Updates the tile information panel based on the currently selected tile.
+ * @param {Object} config - Game configuration.
  */
 export function updateTileInfoPanel(config) {
     const tile = getTile(gameState.selector.x, gameState.selector.y, config);
@@ -359,6 +380,10 @@ export function updateTileInfoPanel(config) {
 /** Updates the time panel display.
  * @param {Object} config
  */
+/**
+ * Updates the time panel display.
+ * @param {Object} config - Game configuration.
+ */
 export function updateTimePanel(config) {
     const el = document.getElementById('time-display');
     if (!el) return;
@@ -379,6 +404,12 @@ export function updateTimePanel(config) {
  * Handles day and season transitions, and updates growth weekly.
  * @param {number} minutes 
  * @param {Object} config 
+ */
+/**
+ * Increments the in-game time by the specified number of minutes.
+ * Handles day and season transitions, and updates growth weekly.
+ * @param {number} minutes - Minutes to increment.
+ * @param {Object} config - Game configuration.
  */
 export function incrementTime(minutes, config) {
     const time = gameState.time;
@@ -406,8 +437,9 @@ export function incrementTime(minutes, config) {
     updateTimePanel(config);
 }
 
-/** Updates plant growth for all tiles based on their growth time and conditions.
- * @param {Object} config 
+/**
+ * Updates plant growth for all tiles based on their growth time and conditions.
+ * @param {Object} config - Game configuration.
  */
 function updateGrowth(config) {
     for (const tile of Object.values(gameState.map)) {

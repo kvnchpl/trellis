@@ -3,6 +3,15 @@ import {
     getTile
 } from './state.js';
 
+/**
+ * Draws the player on the canvas.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context.
+ * @param {Object} player - The player object.
+ * @param {number} startX - The camera's top-left tile x.
+ * @param {number} startY - The camera's top-left tile y.
+ * @param {number} tileSize - Size of each tile in pixels.
+ * @param {Object} config - Game configuration.
+ */
 export function drawPlayer(ctx, player, startX, startY, tileSize, config) {
     const playerScreenX = (player.x - startX) * tileSize;
     const playerScreenY = (player.y - startY) * tileSize;
@@ -23,6 +32,15 @@ export function drawPlayer(ctx, player, startX, startY, tileSize, config) {
     }
 }
 
+/**
+ * Draws the selector box on the canvas.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context.
+ * @param {Object} selector - The selector object.
+ * @param {number} startX - The camera's top-left tile x.
+ * @param {number} startY - The camera's top-left tile y.
+ * @param {number} tileSize - Size of each tile in pixels.
+ * @param {Object} config - Game configuration.
+ */
 export function drawSelector(ctx, selector, startX, startY, tileSize, config) {
     const selectorScreenX = (selector.x - startX) * tileSize;
     const selectorScreenY = (selector.y - startY) * tileSize;
@@ -79,9 +97,9 @@ export function render(config) {
 }
 
 /**
- * Preload all tile, plant, and player images and return a cache object.
- * @param {Object} config
- * @returns {Object} image cache
+ * Preloads all tile, plant, and player images and returns a cache object.
+ * @param {Object} config - Game configuration.
+ * @returns {Promise<Object>} Resolves to the image cache.
  */
 export function preloadImages(config) {
     const cache = {
@@ -127,7 +145,15 @@ export function preloadImages(config) {
     return Promise.all(promises);
 }
 
-// --- Helper functions for drawing tiles and fog (DRY) ---
+/**
+ * Draws a tile or its color at the given position.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context.
+ * @param {Object} tile - The tile object.
+ * @param {number} x - X position in pixels.
+ * @param {number} y - Y position in pixels.
+ * @param {number} size - Size of the tile in pixels.
+ * @param {Object} config - Game configuration.
+ */
 function drawTileOrColor(ctx, tile, x, y, size, config) {
     const cache = config._imageCache;
 
@@ -154,6 +180,7 @@ function drawTileOrColor(ctx, tile, x, y, size, config) {
     }
 }
 
+// Only used for fog tiles if needed in future
 function drawFog(ctx, color, x, y, size) {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, size, size);
