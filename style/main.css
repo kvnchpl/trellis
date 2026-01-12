@@ -50,6 +50,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-small);
+    gap: var(--spacing-small);
     width: 90dvw;
     height: 90dvh;
     background-color: var(--background-color);
@@ -155,6 +156,7 @@ canvas {
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-small);
+    gap: var(--spacing-small);
     width: 90dvw;
     margin: 0 auto;
     box-sizing: border-box;
