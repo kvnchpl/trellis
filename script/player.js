@@ -11,7 +11,8 @@ import {
     evaluateCondition,
     getFailedConditions,
     showPlantSelectionModal,
-    modalState
+    modalState,
+    keysPressed
 } from './ui.js';
 import {
     render
@@ -68,9 +69,6 @@ function attemptMove(player, dx, dy, config) {
         updateTileInfoPanel(config);
     }
 }
-
-// Tracks which keys are currently pressed
-let keysPressed = {};
 
 /**
  * Initializes player input event listeners.

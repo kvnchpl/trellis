@@ -13,6 +13,8 @@ export const modalState = {
     plantModalOpen: false
 };
 
+export const keysPressed = {};
+
 let plantModalButtons = [];
 let plantModalFocusIndex = 0;
 let lastGrowthUpdateWeek = null;
