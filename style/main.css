@@ -220,6 +220,10 @@ canvas {
     font-family: var(--font-family);
 }
 
+#plant-modal-cancel {
+    width: fit-content;
+}
+
 @keyframes valueFlash {
     0% {
         color: yellow;
