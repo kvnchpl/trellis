@@ -1,8 +1,25 @@
-import { initPlayer, updatePlayer } from './player.js';
-import { generateMap, updateFog } from './map.js';
-import { gameState, initState, advanceDay } from './state.js';
-import { render, preloadImages } from './renderer.js';
-import { updateTileInfoPanel, updateTimePanel, modalState } from './ui.js';
+import {
+    initPlayer,
+    updatePlayer
+} from './player.js';
+import {
+    generateMap,
+    updateFog
+} from './map.js';
+import {
+    gameState,
+    initState,
+    advanceDay
+} from './state.js';
+import {
+    render,
+    preloadImages
+} from './renderer.js';
+import {
+    updateTileInfoPanel,
+    updateTimePanel,
+    modalState
+} from './ui.js';
 
 const configUrl = 'config.json';
 let config;
@@ -115,7 +132,9 @@ async function initGame(loadExisting = true) {
 
     if (loadExisting && loadGameState()) {
         console.log("Loaded game from localStorage.");
-        gameState.selector = { ...gameState.player };
+        gameState.selector = {
+            ...gameState.player
+        };
         updateFog(config);
 
         // Force initial render

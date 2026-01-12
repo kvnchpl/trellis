@@ -1,4 +1,7 @@
-import { gameState, getTile } from './state.js';
+import {
+    gameState,
+    getTile
+} from './state.js';
 
 /**
  * Generates the map terrain.
@@ -17,7 +20,9 @@ export function generateMap(config) {
  */
 export function updateFog(config) {
     const fogRevealRadius = config.viewport.initialRevealRadius;
-    const { player } = gameState;
+    const {
+        player
+    } = gameState;
 
     for (let dy = -fogRevealRadius; dy <= fogRevealRadius; dy++) {
         for (let dx = -fogRevealRadius; dx <= fogRevealRadius; dx++) {

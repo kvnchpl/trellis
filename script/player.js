@@ -1,12 +1,28 @@
-import { gameState, getTile } from './state.js';
-import { saveGameState } from './game.js';
-import { incrementTime, updateTileInfoPanel, evaluateCondition, getFailedConditions, showPlantSelectionModal, modalState } from './ui.js';
-import { render } from './renderer.js';
+import {
+    gameState,
+    getTile
+} from './state.js';
+import {
+    saveGameState
+} from './game.js';
+import {
+    incrementTime,
+    updateTileInfoPanel,
+    evaluateCondition,
+    getFailedConditions,
+    showPlantSelectionModal,
+    modalState
+} from './ui.js';
+import {
+    render
+} from './renderer.js';
 
 function applyActionEffects(tile, actionDef, config) {
     // Returns a new tile object with effects applied
     const effect = actionDef.effect || {};
-    const newTile = { ...tile };
+    const newTile = {
+        ...tile
+    };
     for (const key in effect) {
         const val = effect[key];
         if (val && typeof val === "object" && !Array.isArray(val)) {
@@ -40,7 +56,10 @@ function attemptMove(player, dx, dy, config) {
     if (targetTile.tile !== 'rock' && !targetTile.plantType) {
         player.x = newX;
         player.y = newY;
-        gameState.selector = { x: player.x, y: player.y };
+        gameState.selector = {
+            x: player.x,
+            y: player.y
+        };
         saveGameState();
 
         const movementCost = config.movementTimeIncrement || 1;
@@ -78,7 +97,10 @@ export function updatePlayer(config) {
     }
     console.log("DEBUG: modalState.plantModalOpen =", modalState.plantModalOpen);
 
-    const { mapWidth, mapHeight } = config;
+    const {
+        mapWidth,
+        mapHeight
+    } = config;
     const player = gameState.player;
     const controls = config.keyBindings;
 
@@ -86,16 +108,13 @@ export function updatePlayer(config) {
     if (keysPressed[controls.up]) {
         attemptMove(player, 0, -1, config);
         keysPressed[controls.up] = false;
-    }
-    else if (keysPressed[controls.down]) {
+    } else if (keysPressed[controls.down]) {
         attemptMove(player, 0, 1, config);
         keysPressed[controls.down] = false;
-    }
-    else if (keysPressed[controls.left]) {
+    } else if (keysPressed[controls.left]) {
         attemptMove(player, -1, 0, config);
         keysPressed[controls.left] = false;
-    }
-    else if (keysPressed[controls.right]) {
+    } else if (keysPressed[controls.right]) {
         attemptMove(player, 1, 0, config);
         keysPressed[controls.right] = false;
     }
@@ -103,7 +122,10 @@ export function updatePlayer(config) {
     // Select tile above player
     else if (keysPressed[controls.selectUp]) {
         const newY = player.y - 1;
-        if (newY >= 0) gameState.selector = { x: player.x, y: newY };
+        if (newY >= 0) gameState.selector = {
+            x: player.x,
+            y: newY
+        };
         keysPressed[controls.selectUp] = false;
         updateTileInfoPanel(config);
         render(config);
@@ -112,7 +134,10 @@ export function updatePlayer(config) {
     // Select tile below player
     else if (keysPressed[controls.selectDown]) {
         const newY = player.y + 1;
-        if (newY < mapHeight) gameState.selector = { x: player.x, y: newY };
+        if (newY < mapHeight) gameState.selector = {
+            x: player.x,
+            y: newY
+        };
         keysPressed[controls.selectDown] = false;
         updateTileInfoPanel(config);
         render(config);
@@ -121,7 +146,10 @@ export function updatePlayer(config) {
     // Select tile left of player
     else if (keysPressed[controls.selectLeft]) {
         const newX = player.x - 1;
-        if (newX >= 0) gameState.selector = { x: newX, y: player.y };
+        if (newX >= 0) gameState.selector = {
+            x: newX,
+            y: player.y
+        };
         keysPressed[controls.selectLeft] = false;
         updateTileInfoPanel(config);
         render(config);
@@ -130,7 +158,10 @@ export function updatePlayer(config) {
     // Select tile right of player
     else if (keysPressed[controls.selectRight]) {
         const newX = player.x + 1;
-        if (newX < mapWidth) gameState.selector = { x: newX, y: player.y };
+        if (newX < mapWidth) gameState.selector = {
+            x: newX,
+            y: player.y
+        };
         keysPressed[controls.selectRight] = false;
         updateTileInfoPanel(config);
         render(config);
@@ -138,7 +169,10 @@ export function updatePlayer(config) {
 
     // Reset selector to player position
     else if (keysPressed[controls.resetSelector]) {
-        gameState.selector = { x: player.x, y: player.y };
+        gameState.selector = {
+            x: player.x,
+            y: player.y
+        };
         keysPressed[controls.resetSelector] = false;
         updateTileInfoPanel(config);
         render(config);
@@ -150,7 +184,7 @@ export function updatePlayer(config) {
         // Always get the currently selected tile at the start of the loop
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
         if (keysPressed[key]) {
-            keysPressed[key] = false;  // consume key immediately
+            keysPressed[key] = false; // consume key immediately
             if (actionLabel === 'plant') {
                 showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
                 console.log(`DEBUG: Plant modal opened, exiting updatePlayer to block other actions`);

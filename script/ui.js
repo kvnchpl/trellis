@@ -1,6 +1,13 @@
-import { gameState, getTile } from './state.js';
-import { saveGameState } from './game.js';
-import { render } from './renderer.js';
+import {
+    gameState,
+    getTile
+} from './state.js';
+import {
+    saveGameState
+} from './game.js';
+import {
+    render
+} from './renderer.js';
 
 export const modalState = {
     plantModalOpen: false
@@ -92,7 +99,9 @@ export function getFailedConditions(tile, condObj) {
  * @returns {Object} new tile object
  */
 function applyActionEffects(tile, actionDef, config) {
-    const newTile = { ...tile };
+    const newTile = {
+        ...tile
+    };
     Object.entries(actionDef.effect).forEach(([key, change]) => {
         if (change !== null && typeof change === 'object') {
             if ('inc' in change) {
@@ -154,14 +163,22 @@ export function showPlantSelectionModal(config, tile, x, y) {
         btn.tabIndex = 0;
 
         btn.onclick = () => {
-            const newTile = { ...tile };
+            const newTile = {
+                ...tile
+            };
             newTile.plantType = plantKey;
             newTile.growthStage = plantDef.growthStages[0];
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
 
             // Finalize action using an "effect" placeholder
-            finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
+            finalizeAction({
+                effect: {
+                    plantType: null,
+                    growthStage: null,
+                    growthProgress: 0
+                }
+            }, config);
 
             modalState.plantModalOpen = false;
             plantModalButtons = [];
@@ -254,9 +271,9 @@ export function updateTileInfoPanel(config) {
         }
 
         // Apply custom labels for these keys if defined
-        const label = (config.tiles.labels && config.tiles.labels[key])
-            ? config.tiles.labels[key]
-            : key;
+        const label = (config.tiles.labels && config.tiles.labels[key]) ?
+            config.tiles.labels[key] :
+            key;
         p.innerHTML = `<strong>${label}:</strong> <span id="tile-value-${key}">${value}</span>`;
         detailsEl.appendChild(p);
     });
@@ -316,9 +333,9 @@ export function updateTileInfoPanel(config) {
             const valid = evaluateCondition(tileNow, actionDef.condition);
             if (!valid) {
                 const failed = getFailedConditions(tileNow, actionDef.condition);
-                const message = failed.length
-                    ? `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
-                    : `Cannot perform "${actionLabel}" on this tile.`;
+                const message = failed.length ?
+                    `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}` :
+                    `Cannot perform "${actionLabel}" on this tile.`;
                 alert(message);
                 console.log(`Action "${actionLabel}" blocked on tile:`, tileNow, "Failed conditions:", failed);
                 return;
@@ -342,7 +359,12 @@ export function updateTileInfoPanel(config) {
 export function updateTimePanel(config) {
     const el = document.getElementById('time-display');
     if (!el) return;
-    const { hour, minute, week, seasonIndex } = gameState.time;
+    const {
+        hour,
+        minute,
+        week,
+        seasonIndex
+    } = gameState.time;
     const period = hour < 12 ? 'AM' : 'PM';
     const displayHour = ((hour - 1) % 12 + 1);
     const paddedMinute = minute.toString().padStart(2, '0');

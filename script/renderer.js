@@ -1,4 +1,7 @@
-import { gameState, getTile } from './state.js';
+import {
+    gameState,
+    getTile
+} from './state.js';
 
 export function drawPlayer(ctx, player, startX, startY, tileSize, config) {
     const playerScreenX = (player.x - startX) * tileSize;
@@ -81,7 +84,11 @@ export function render(config) {
  * @returns {Object} image cache
  */
 export function preloadImages(config) {
-    const cache = { tiles: {}, plants: {}, player: null };
+    const cache = {
+        tiles: {},
+        plants: {},
+        player: null
+    };
     const promises = [];
 
     // Tile images

@@ -1,8 +1,14 @@
 export const gameState = {
-    player: { x: 0, y: 0 },
+    player: {
+        x: 0,
+        y: 0
+    },
     map: {},
     revealed: {},
-    selector: { x: 0, y: 0 },
+    selector: {
+        x: 0,
+        y: 0
+    },
     time: {
         hour: 7,
         minute: 0,
@@ -16,7 +22,10 @@ export const gameState = {
  * @param {Object} config - Game configuration (expects mapWidth, mapHeight).
  */
 export function initState(config) {
-    const { mapWidth, mapHeight } = config;
+    const {
+        mapWidth,
+        mapHeight
+    } = config;
 
     // Set up the map: now an empty object for lazy tile generation
     gameState.map = {};
