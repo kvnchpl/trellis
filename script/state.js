@@ -14,6 +14,14 @@ export const gameState = {
         minute: 0,
         week: 1,
         seasonIndex: 0
+    },
+    dailyStats: {
+        steps: 0,
+        planted: 0,
+        tilled: 0,
+        watered: 0,
+        fertilized: 0,
+        harvested: 0
     }
 };
 
@@ -131,4 +139,15 @@ export function advanceDay(config) {
         gameState.time.week = 1;
         gameState.time.seasonIndex = (gameState.time.seasonIndex + 1) % config.seasons.length;
     }
+}
+
+export function resetDailyStats() {
+    gameState.dailyStats = {
+        steps: 0,
+        planted: 0,
+        tilled: 0,
+        watered: 0,
+        fertilized: 0,
+        harvested: 0
+    };
 }

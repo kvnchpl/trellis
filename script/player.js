@@ -77,6 +77,7 @@ function attemptMove(player, dx, dy, config) {
             x: player.x,
             y: player.y
         };
+        gameState.dailyStats.steps++;
         saveGameState();
         const movementCost = config.movementTimeIncrement || 1;
         incrementTime(movementCost, config);
@@ -221,6 +222,12 @@ export function updatePlayer(config) {
             }
             const newTile = applyActionEffects(tile, actionDef, config);
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
+            // increment daily stats for each action label
+            if (actionLabel === 'plant') gameState.dailyStats.planted++;
+            if (actionLabel === 'till') gameState.dailyStats.tilled++;
+            if (actionLabel === 'water') gameState.dailyStats.watered++;
+            if (actionLabel === 'fertilize') gameState.dailyStats.fertilized++;
+            if (actionLabel === 'harvest') gameState.dailyStats.harvested++;
             finalizeAction(actionDef, config);
         }
     }

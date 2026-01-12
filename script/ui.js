@@ -1,6 +1,7 @@
 import {
     gameState,
-    getTile
+    getTile,
+    resetDailyStats
 } from './state.js';
 import {
     saveGameState
@@ -8,6 +9,33 @@ import {
 import {
     render
 } from './renderer.js';
+
+import { showDayCompleteModal } from './ui.js';
+export function showDayCompleteModal(stats) {
+    const overlay = document.getElementById('game-message-overlay');
+    const titleEl = document.getElementById('game-message-title');
+    const contentEl = document.getElementById('game-message-content');
+    const btn = document.getElementById('game-message-continue');
+
+    titleEl.textContent = 'DAY COMPLETE';
+    contentEl.innerHTML = `
+        <div>Steps walked: ${stats.steps}</div>
+        <div>Crops planted: ${stats.planted}</div>
+        <div>Tiles tilled: ${stats.tilled}</div>
+        <div>Tiles watered: ${stats.watered}</div>
+        <div>Tiles fertilized: ${stats.fertilized}</div>
+        <div>Crops harvested: ${stats.harvested}</div>
+    `;
+
+    inputState.modalOpen = true;
+    overlay.style.display = 'flex';
+    btn.focus();
+
+    btn.onclick = () => {
+        overlay.style.display = 'none';
+        inputState.modalOpen = false;
+    };
+}
 
 export const inputState = {
     modalOpen: false,
@@ -383,7 +411,8 @@ export function incrementTime(minutes, config) {
     }
 
     if (time.hour >= config.dayEndHour) {
-        alert('A new day is starting.');
+        showDayCompleteModal({ ...gameState.dailyStats });
+        resetDailyStats();
         time.hour = config.dayStartHour;
         time.minute = 0;
         time.week++;
