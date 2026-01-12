@@ -198,7 +198,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
             newTile.growthStage = plantDef.growthStages[0];
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
-            finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
+            finalizeAction(config.tiles.actions.plant, config);
             // Close modal and reset modal-related state
             inputState.modalOpen = false;
             // Clear all keys pressed inside the modal
