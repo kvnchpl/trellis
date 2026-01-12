@@ -71,8 +71,12 @@ export function initPlayer(config) {
  * @param {Object} config - Game configuration (expects mapWidth, mapHeight)
  */
 export function updatePlayer(config) {
+    if (modalState.plantModalOpen) {
+        console.log("DEBUG: updatePlayer early exit because modal is open");
+        Object.keys(keysPressed).forEach(k => keysPressed[k] = false);
+        return;
+    }
     console.log("DEBUG: modalState.plantModalOpen =", modalState.plantModalOpen);
-    if (modalState.plantModalOpen) return;
 
     const { mapWidth, mapHeight } = config;
     const player = gameState.player;
@@ -147,19 +151,16 @@ export function updatePlayer(config) {
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
         if (keysPressed[key]) {
             keysPressed[key] = false;  // consume key immediately
-
             if (actionLabel === 'plant') {
                 showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
                 console.log(`DEBUG: Plant modal opened, exiting updatePlayer to block other actions`);
                 return; // exit immediately to prevent any other actions from firing
             }
-
             // Extra safety: block all other actions if modal already open
             if (modalState.plantModalOpen) {
                 console.log(`DEBUG: Skipping action "${actionLabel}" because modal is open`);
                 return;
             }
-
             const actionDef = config.tiles.actions[actionLabel];
             const validNow = evaluateCondition(tile, actionDef.condition);
             if (!validNow) {
@@ -168,7 +169,6 @@ export function updatePlayer(config) {
                 console.log(`Action "${actionLabel}" blocked:`, failed);
                 return;
             }
-
             const newTile = applyActionEffects(tile, actionDef, config);
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
             finalizeAction(actionDef, config);
