@@ -206,8 +206,8 @@ canvas {
     border: 1px solid var(--modal-border);
     padding: var(--modal-padding);
     border-radius: var(--modal-radius);
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: var(--modal-gap);
 }
 
@@ -218,6 +218,12 @@ canvas {
     margin-bottom: var(--spacing-medium);
     font-size: var(--font-large);
     font-family: var(--font-family);
+}
+
+#plant-modal-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-small);
 }
 
 #plant-modal-cancel {
