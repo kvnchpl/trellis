@@ -90,11 +90,16 @@ export function initPlayer(config) {
  * @param {Object} config - Game configuration (expects mapWidth, mapHeight)
  */
 export function updatePlayer(config) {
+    const frameTime = performance.now();
+    console.log(`DEBUG: frame ${frameTime.toFixed(2)}, modalState =`, modalState.plantModalOpen);
+    console.log("DEBUG: keysPressed at start of updatePlayer:", keysPressed);
+
     if (modalState.plantModalOpen) {
         console.log("DEBUG: updatePlayer early exit because modal is open");
         Object.keys(keysPressed).forEach(k => keysPressed[k] = false);
         return;
     }
+
     console.log("DEBUG: modalState.plantModalOpen =", modalState.plantModalOpen);
 
     const {
@@ -184,16 +189,16 @@ export function updatePlayer(config) {
         // Always get the currently selected tile at the start of the loop
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
         if (keysPressed[key]) {
+            keysPressed[key] = false; // consume the key
+            console.log(`DEBUG: Consumed key '${key}' for action '${actionLabel}'`);
             if (actionLabel === 'plant') {
-                // Consume the plant key immediately
-                keysPressed[key] = false;
-                // Consume all other action keys immediately
+                // Consume all other action keys too
                 for (const k of Object.values(config.keyBindings.actions)) {
                     keysPressed[k] = false;
                 }
                 showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
                 console.log(`DEBUG: Plant modal opened, exiting updatePlayer to block other actions`);
-                return; // exit immediately to prevent any other actions from firing
+                return;
             }
             // Extra safety: block all other actions if modal already open
             if (modalState.plantModalOpen) {
