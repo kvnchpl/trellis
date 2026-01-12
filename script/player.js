@@ -11,9 +11,7 @@ import {
     evaluateCondition,
     getFailedConditions,
     showPlantSelectionModal,
-    modalState,
-    keysPressed,
-    modalPressedKeys
+    inputState
 } from './ui.js';
 import {
     render
@@ -77,20 +75,20 @@ function attemptMove(player, dx, dy, config) {
  */
 export function initPlayer(config) {
     window.addEventListener('keydown', (e) => {
-        console.log(`DEBUG: keydown captured: ${e.key}, modalState =`, modalState.plantModalOpen);
+        console.log(`DEBUG: keydown captured: ${e.key}, inputState =`, inputState.modalOpen);
 
-        if (modalState.plantModalOpen) {
-            keysPressed[e.key] = false;
-            modalPressedKeys.add(e.key); // track keys pressed during modal
+        if (inputState.modalOpen) {
+            inputState.keysPressed[e.key] = false;
+            inputState.blockedKeys.add(e.key); // track keys pressed during modal
             return;
         }
 
-        if (modalPressedKeys.has(e.key)) {
-            keysPressed[e.key] = false; // ignore keys pressed during modal
+        if (inputState.blockedKeys.has(e.key)) {
+            inputState.keysPressed[e.key] = false; // ignore keys pressed during modal
             return;
         }
 
-        keysPressed[e.key] = true;
+        inputState.keysPressed[e.key] = true;
     });
 }
 
@@ -100,16 +98,16 @@ export function initPlayer(config) {
  */
 export function updatePlayer(config) {
     const frameTime = performance.now();
-    console.log(`DEBUG: frame ${frameTime.toFixed(2)}, modalState =`, modalState.plantModalOpen);
-    console.log("DEBUG: keysPressed at start of updatePlayer:", keysPressed);
+    console.log(`DEBUG: frame ${frameTime.toFixed(2)}, inputState =`, inputState.modalOpen);
+    console.log("DEBUG: keysPressed at start of updatePlayer:", inputState.keysPressed);
 
-    if (modalState.plantModalOpen) {
+    if (inputState.modalOpen) {
         console.log("DEBUG: updatePlayer early exit because modal is open");
-        Object.keys(keysPressed).forEach(k => keysPressed[k] = false);
+        Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
         return;
     }
 
-    console.log("DEBUG: modalState.plantModalOpen =", modalState.plantModalOpen);
+    console.log("DEBUG: inputState.modalOpen =", inputState.modalOpen);
 
     const {
         mapWidth,
@@ -119,75 +117,75 @@ export function updatePlayer(config) {
     const controls = config.keyBindings;
 
     // Move
-    if (keysPressed[controls.up]) {
+    if (inputState.keysPressed[controls.up]) {
         attemptMove(player, 0, -1, config);
-        keysPressed[controls.up] = false;
-    } else if (keysPressed[controls.down]) {
+        inputState.keysPressed[controls.up] = false;
+    } else if (inputState.keysPressed[controls.down]) {
         attemptMove(player, 0, 1, config);
-        keysPressed[controls.down] = false;
-    } else if (keysPressed[controls.left]) {
+        inputState.keysPressed[controls.down] = false;
+    } else if (inputState.keysPressed[controls.left]) {
         attemptMove(player, -1, 0, config);
-        keysPressed[controls.left] = false;
-    } else if (keysPressed[controls.right]) {
+        inputState.keysPressed[controls.left] = false;
+    } else if (inputState.keysPressed[controls.right]) {
         attemptMove(player, 1, 0, config);
-        keysPressed[controls.right] = false;
+        inputState.keysPressed[controls.right] = false;
     }
 
     // Select tile above player
-    else if (keysPressed[controls.selectUp]) {
+    else if (inputState.keysPressed[controls.selectUp]) {
         const newY = player.y - 1;
         if (newY >= 0) gameState.selector = {
             x: player.x,
             y: newY
         };
-        keysPressed[controls.selectUp] = false;
+        inputState.keysPressed[controls.selectUp] = false;
         updateTileInfoPanel(config);
         render(config);
     }
 
     // Select tile below player
-    else if (keysPressed[controls.selectDown]) {
+    else if (inputState.keysPressed[controls.selectDown]) {
         const newY = player.y + 1;
         if (newY < mapHeight) gameState.selector = {
             x: player.x,
             y: newY
         };
-        keysPressed[controls.selectDown] = false;
+        inputState.keysPressed[controls.selectDown] = false;
         updateTileInfoPanel(config);
         render(config);
     }
 
     // Select tile left of player
-    else if (keysPressed[controls.selectLeft]) {
+    else if (inputState.keysPressed[controls.selectLeft]) {
         const newX = player.x - 1;
         if (newX >= 0) gameState.selector = {
             x: newX,
             y: player.y
         };
-        keysPressed[controls.selectLeft] = false;
+        inputState.keysPressed[controls.selectLeft] = false;
         updateTileInfoPanel(config);
         render(config);
     }
 
     // Select tile right of player
-    else if (keysPressed[controls.selectRight]) {
+    else if (inputState.keysPressed[controls.selectRight]) {
         const newX = player.x + 1;
         if (newX < mapWidth) gameState.selector = {
             x: newX,
             y: player.y
         };
-        keysPressed[controls.selectRight] = false;
+        inputState.keysPressed[controls.selectRight] = false;
         updateTileInfoPanel(config);
         render(config);
     }
 
     // Reset selector to player position
-    else if (keysPressed[controls.resetSelector]) {
+    else if (inputState.keysPressed[controls.resetSelector]) {
         gameState.selector = {
             x: player.x,
             y: player.y
         };
-        keysPressed[controls.resetSelector] = false;
+        inputState.keysPressed[controls.resetSelector] = false;
         updateTileInfoPanel(config);
         render(config);
     }
@@ -197,26 +195,26 @@ export function updatePlayer(config) {
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
 
-        console.log(`DEBUG: Checking action key '${key}' for '${actionLabel}' on tile at (${gameState.selector.x},${gameState.selector.y}), modalState =`, modalState.plantModalOpen);
+        console.log(`DEBUG: Checking action key '${key}' for '${actionLabel}' on tile at (${gameState.selector.x},${gameState.selector.y}), inputState =`, inputState.modalOpen);
 
-        if (keysPressed[key]) {
-            keysPressed[key] = false; // consume the key
+        if (inputState.keysPressed[key]) {
+            inputState.keysPressed[key] = false; // consume the key
             console.log(`DEBUG: Consumed key '${key}' for action '${actionLabel}' at frame ${frameTime.toFixed(2)}`);
             if (actionLabel === 'plant') {
                 // Consume all other action keys too
                 for (const k of Object.values(config.keyBindings.actions)) {
-                    keysPressed[k] = false;
+                    inputState.keysPressed[k] = false;
                 }
                 showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
                 console.log(`DEBUG: Plant modal opened, exiting updatePlayer to block other actions`);
                 return;
             }
             // Extra safety: block all other actions if modal already open
-            if (modalState.plantModalOpen) {
+            if (inputState.modalOpen) {
                 console.log(`DEBUG: Skipping action "${actionLabel}" because modal is open`);
                 return;
             }
-            keysPressed[key] = false; // consume key immediately for non-plant actions
+            inputState.keysPressed[key] = false; // consume key immediately for non-plant actions
             const actionDef = config.tiles.actions[actionLabel];
             const validNow = evaluateCondition(tile, actionDef.condition);
             if (!validNow) {
