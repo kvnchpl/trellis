@@ -21,12 +21,6 @@ let lastGrowthUpdateWeek = null;
 
 /**
  * Evaluates if a tile meets the specified conditions.
- * @param {*} tile 
- * @param {*} condObj 
- * @returns 
- */
-/**
- * Evaluates if a tile meets the specified conditions.
  * @param {*} tile - The tile object.
  * @param {*} condObj - The condition object.
  * @returns {boolean} True if the condition is met, false otherwise.
@@ -51,12 +45,6 @@ export function evaluateCondition(tile, condObj) {
     });
 }
 
-/**
- * Returns an array of human-readable strings describing which conditions failed.
- * @param {*} tile 
- * @param {*} condObj 
- * @returns {string[]}
- */
 /**
  * Returns an array of human-readable strings describing which conditions failed.
  * @param {*} tile - The tile object.
@@ -107,13 +95,6 @@ export function getFailedConditions(tile, condObj) {
 
 /**
  * Applies the effects of an action to a tile and returns the new tile object.
- * @param {Object} tile 
- * @param {Object} actionDef
- * @param {Object} config
- * @returns {Object} new tile object
- */
-/**
- * Applies the effects of an action to a tile and returns the new tile object.
  * @param {Object} tile - The current tile object.
  * @param {Object} actionDef - The action definition.
  * @param {Object} config - Game configuration.
@@ -140,36 +121,31 @@ function applyActionEffects(tile, actionDef, config) {
 
 /**
  * Finalizes an action by updating the UI, saving the game, incrementing time, and rendering.
- * @param {Object} actionDef 
- * @param {Object} config 
- */
-/**
- * Finalizes an action by updating the UI, saving the game, incrementing time, and rendering.
  * @param {Object} actionDef - The action definition.
  * @param {Object} config - Game configuration.
  */
 function finalizeAction(actionDef, config) {
     updateTileInfoPanel(config);
+
+    // Animate changed values
     Object.entries(actionDef.effect).forEach(([key]) => {
         const el = document.getElementById(`tile-value-${key}`);
         if (el) {
             el.classList.remove('value-changed');
-            void el.offsetWidth;
+            void el.offsetWidth; // force reflow
             el.classList.add('value-changed');
         }
     });
+
     saveGameState();
-    incrementTime(config.actionTimeIncrement, config);
+
+    // Use per-action timeIncrement
+    const timeInc = actionDef.timeIncrement ?? 1; // fallback to 1 if missing
+    incrementTime(timeInc, config);
+
     render(config);
 }
 
-/**
- * Displays the plant selection modal for planting a crop.
- * @param {Object} config
- * @param {Object} tile
- * @param {number} x
- * @param {number} y
- */
 /**
  * Displays the plant selection modal for planting a crop.
  * @param {Object} config - Game configuration.
@@ -223,10 +199,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
         plantModalButtons[0].focus();
     }
 }
-/**
- * Updates the tile information panel based on the currently selected tile.
- * @param {Object} config
- */
+
 /**
  * Updates the tile information panel based on the currently selected tile.
  * @param {Object} config - Game configuration.
@@ -377,9 +350,6 @@ export function updateTileInfoPanel(config) {
     }
 }
 
-/** Updates the time panel display.
- * @param {Object} config
- */
 /**
  * Updates the time panel display.
  * @param {Object} config - Game configuration.
@@ -400,11 +370,6 @@ export function updateTimePanel(config) {
     el.textContent = `${season} - WEEK ${week} - ${displayHour}:${paddedMinute} ${period}`;
 }
 
-/** Increments the in-game time by the specified number of minutes.
- * Handles day and season transitions, and updates growth weekly.
- * @param {number} minutes 
- * @param {Object} config 
- */
 /**
  * Increments the in-game time by the specified number of minutes.
  * Handles day and season transitions, and updates growth weekly.
