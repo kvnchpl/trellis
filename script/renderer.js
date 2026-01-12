@@ -71,7 +71,7 @@ export function render(config) {
         }
     }
 
-    drawPlayer(ctx, HALF * tileSize, HALF * tileSize, tileSize, config);
+    drawPlayer(ctx, gameState.player, camX, camY, tileSize, config);
     drawSelector(ctx, gameState.selector, camX, camY, tileSize, config);
 }
 
@@ -121,12 +121,8 @@ export function preloadImages(config) {
 }
 
 // --- Helper functions for drawing tiles and fog (DRY) ---
-function drawTileOrColor(ctx, tile, revealed, x, y, size, cache, config) {
-    if (!revealed) {
-        ctx.fillStyle = config.fogColor;
-        ctx.fillRect(x, y, size, size);
-        return;
-    }
+function drawTileOrColor(ctx, tile, x, y, size, config) {
+    const cache = config._imageCache;
 
     // Prefer plant sprite if present
     if (tile.plantType && cache?.plants?.[tile.plantType]) {
