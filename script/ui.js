@@ -10,33 +10,6 @@ import {
     render
 } from './renderer.js';
 
-import { showDayCompleteModal } from './ui.js';
-export function showDayCompleteModal(stats) {
-    const overlay = document.getElementById('game-message-overlay');
-    const titleEl = document.getElementById('game-message-title');
-    const contentEl = document.getElementById('game-message-content');
-    const btn = document.getElementById('game-message-continue');
-
-    titleEl.textContent = 'DAY COMPLETE';
-    contentEl.innerHTML = `
-        <div>Steps walked: ${stats.steps}</div>
-        <div>Crops planted: ${stats.planted}</div>
-        <div>Tiles tilled: ${stats.tilled}</div>
-        <div>Tiles watered: ${stats.watered}</div>
-        <div>Tiles fertilized: ${stats.fertilized}</div>
-        <div>Crops harvested: ${stats.harvested}</div>
-    `;
-
-    inputState.modalOpen = true;
-    overlay.style.display = 'flex';
-    btn.focus();
-
-    btn.onclick = () => {
-        overlay.style.display = 'none';
-        inputState.modalOpen = false;
-    };
-}
-
 export const inputState = {
     modalOpen: false,
     keysPressed: {},
@@ -224,6 +197,35 @@ export function showPlantSelectionModal(config, tile, x, y) {
     if (plantModalButtons.length > 0) {
         plantModalButtons[0].focus();
     }
+}
+/**
+ * Displays the day complete modal with statistics.
+ * @param {Object} stats - Daily statistics.
+ */
+function showDayCompleteModal(stats) {
+    const overlay = document.getElementById('game-message-overlay');
+    const titleEl = document.getElementById('game-message-title');
+    const contentEl = document.getElementById('game-message-content');
+    const btn = document.getElementById('game-message-continue');
+
+    titleEl.textContent = 'DAY COMPLETE';
+    contentEl.innerHTML = `
+        <div>Steps walked: ${stats.steps}</div>
+        <div>Crops planted: ${stats.planted}</div>
+        <div>Tiles tilled: ${stats.tilled}</div>
+        <div>Tiles watered: ${stats.watered}</div>
+        <div>Tiles fertilized: ${stats.fertilized}</div>
+        <div>Crops harvested: ${stats.harvested}</div>
+    `;
+
+    inputState.modalOpen = true;
+    overlay.style.display = 'flex';
+    btn.focus();
+
+    btn.onclick = () => {
+        overlay.style.display = 'none';
+        inputState.modalOpen = false;
+    };
 }
 
 /**
