@@ -16,7 +16,7 @@ export function generateMap(config) {
  * @param {Object} config - Game configuration (expects mapWidth, mapHeight, fogRevealRadius).
  */
 export function updateFog(config) {
-    const { fogRevealRadius } = config;
+    const fogRevealRadius = config.viewport.initialRevealRadius;
     const { player } = gameState;
 
     for (let dy = -fogRevealRadius; dy <= fogRevealRadius; dy++) {

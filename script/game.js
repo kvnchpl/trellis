@@ -211,7 +211,7 @@ export function resizeCanvasAndTiles(config) {
     const availableWidth = containerRect.width - infoPanelRect.width - padding;
     const availableHeight = containerRect.height - padding;
 
-    const viewportTiles = 9; // the viewport is 9x9 tiles
+    const viewportTiles = config.viewport.tiles;
 
     // Compute tile size in CSS pixels to fit viewport
     const tileSize = Math.floor(Math.min(availableWidth / viewportTiles, availableHeight / viewportTiles));

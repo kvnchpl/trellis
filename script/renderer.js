@@ -38,7 +38,7 @@ export function render(config) {
     const ctx = canvas.getContext('2d');
 
     const tileSize = config.tileSize;
-    const VIEWPORT_TILES = 9;
+    const VIEWPORT_TILES = config.viewport.tiles;
     const HALF = Math.floor(VIEWPORT_TILES / 2);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -59,8 +59,8 @@ export function render(config) {
             const revealed = gameState.revealed[key];
 
             if (!revealed) {
-                ctx.fillStyle = config.fogColor;
-                ctx.globalAlpha = config.fogOpacity;
+                ctx.fillStyle = config.fog.color;
+                ctx.globalAlpha = config.fog.opacity;
                 ctx.fillRect(px, py, tileSize, tileSize);
                 ctx.globalAlpha = 1;
                 continue;

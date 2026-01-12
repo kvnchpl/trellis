@@ -15,9 +15,17 @@
     "playerSize": 0.6,
     "selectorColor": "#00FFFF",
     "tileInfoPanel": true,
-    "fogRevealRadius": 3,
-    "fogColor": "#000000",
-    "fogOpacity": 0.8,
+    "viewport": {
+      "tiles": 9,
+      "initialRevealRadius": 3
+    },
+    "fog": {
+      "color": "#000000",
+      "opacity": 0.8
+    },
+    "ui": {
+      "viewportTiles": 9
+    },
     "outOfBoundsColor": "#111",
     "dayStartHour": 7,
     "dayEndHour": 19,
