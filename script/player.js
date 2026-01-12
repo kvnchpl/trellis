@@ -165,6 +165,8 @@ export function updatePlayer(config) {
 
             if (actionLabel === 'plant') {
                 showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
+                keysPressed[key] = false;
+                return;
             } else {
                 const newTile = applyActionEffects(tile, actionDef, config);
                 gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
