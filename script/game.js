@@ -18,7 +18,7 @@ import {
 import {
     updateTileInfoPanel,
     updateTimePanel,
-    modalState
+    inputState
 } from './ui.js';
 
 const configUrl = 'config.json';
@@ -155,7 +155,7 @@ async function initGame(loadExisting = true) {
 }
 
 function gameLoop(config) {
-    if (!modalState.plantModalOpen) updatePlayer(config); // player input blocked when modal open
+    if (!inputState.modalOpen) updatePlayer(config); // player input blocked when modal open
     fullRender(config);
     requestAnimationFrame(() => gameLoop(config));
 }
