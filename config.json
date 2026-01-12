@@ -23,9 +23,6 @@
       "color": "#000000",
       "opacity": 0.8
     },
-    "ui": {
-      "viewportTiles": 9
-    },
     "outOfBoundsColor": "#111",
     "dayStartHour": 7,
     "dayEndHour": 19,
