@@ -1,6 +1,6 @@
 import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
-import { incrementTime, updateTileInfoPanel, evaluateCondition, getFailedConditions, showPlantSelectionModal, plantModalOpen } from './ui.js';
+import { incrementTime, updateTileInfoPanel, evaluateCondition, getFailedConditions, showPlantSelectionModal, modalState } from './ui.js';
 import { render } from './renderer.js';
 
 function applyActionEffects(tile, actionDef, config) {
@@ -71,8 +71,8 @@ export function initPlayer(config) {
  * @param {Object} config - Game configuration (expects mapWidth, mapHeight)
  */
 export function updatePlayer(config) {
-    console.log("DEBUG: plantModalOpen =", plantModalOpen);
-    if (plantModalOpen) return;
+    console.log("DEBUG: modalState.plantModalOpen =", modalState.plantModalOpen);
+    if (modalState.plantModalOpen) return;
 
     const { mapWidth, mapHeight } = config;
     const player = gameState.player;
@@ -147,8 +147,8 @@ export function updatePlayer(config) {
             // Debug log for key press
             console.log(`DEBUG: Key pressed for action "${actionLabel}"`);
             // Extra modal check before executing action
-            if (plantModalOpen) {
-                console.log(`DEBUG: Skipping action "${actionLabel}" because plantModalOpen is true`);
+            if (modalState.plantModalOpen) {
+                console.log(`DEBUG: Skipping action "${actionLabel}" because modalState.plantModalOpen is true`);
                 return;
             }
             keysPressed[key] = false;

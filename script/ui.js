@@ -2,7 +2,10 @@ import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 import { render } from './renderer.js';
 
-export let plantModalOpen = false;
+export const modalState = {
+    plantModalOpen: false
+};
+
 let plantModalButtons = [];
 let plantModalFocusIndex = 0;
 let lastGrowthUpdateWeek = null;
@@ -160,7 +163,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
             // Finalize action using an "effect" placeholder
             finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
 
-            plantModalOpen = false;
+            modalState.plantModalOpen = false;
             plantModalButtons = [];
             plantModalFocusIndex = 0;
             overlay.style.display = 'none';
@@ -171,7 +174,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
 
     overlay.style.display = 'flex';
 
-    plantModalOpen = true;
+    modalState.plantModalOpen = true;
 
     plantModalButtons = Array.from(
         document.querySelectorAll('#plant-modal-buttons .ui-button:not(.disabled)')
@@ -408,7 +411,7 @@ function updateGrowth(config) {
 
 // Handles keyboard navigation and selection within the plant selection modal.
 document.addEventListener('keydown', (e) => {
-    if (!plantModalOpen) return;
+    if (!modalState.plantModalOpen) return;
 
     const columns = 2;
 
@@ -467,8 +470,8 @@ document.addEventListener('keydown', (e) => {
         case '7':
         case '8':
         case '9': {
-            // Only handle modal selection if plantModalOpen
-            if (!plantModalOpen) break;
+            // Only handle modal selection if modalState.plantModalOpen
+            if (!modalState.plantModalOpen) break;
             const index = Number(e.key) - 1;
             if (plantModalButtons[index]) {
                 plantModalButtons[index].click();
@@ -480,7 +483,7 @@ document.addEventListener('keydown', (e) => {
         // ----- EXIT -----
         case 'Escape':
             document.getElementById('plant-modal-overlay').style.display = 'none';
-            plantModalOpen = false;
+            modalState.plantModalOpen = false;
             return;
 
         default:

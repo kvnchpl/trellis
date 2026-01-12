@@ -2,7 +2,7 @@ import { initPlayer, updatePlayer } from './player.js';
 import { generateMap, updateFog } from './map.js';
 import { gameState, initState, advanceDay } from './state.js';
 import { render, preloadImages } from './renderer.js';
-import { updateTileInfoPanel, updateTimePanel, plantModalOpen } from './ui.js';
+import { updateTileInfoPanel, updateTimePanel, modalState } from './ui.js';
 
 const configUrl = 'config.json';
 let config;
@@ -136,7 +136,7 @@ async function initGame(loadExisting = true) {
 }
 
 function gameLoop(config) {
-    if (!plantModalOpen) updatePlayer(config); // player input blocked when modal open
+    if (!modalState.plantModalOpen) updatePlayer(config); // player input blocked when modal open
     fullRender(config);
     requestAnimationFrame(() => gameLoop(config));
 }
