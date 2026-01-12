@@ -76,14 +76,16 @@ function attemptMove(player, dx, dy, config) {
  */
 export function initPlayer(config) {
     window.addEventListener('keydown', (e) => {
+        console.log(`DEBUG: keydown captured: ${e.key}, modalState =`, modalState.plantModalOpen);
         if (modalState.plantModalOpen) {
-            // Prevent any key from registering globally while modal is open
             keysPressed[e.key] = false;
             return;
         }
         keysPressed[e.key] = true;
     });
+
     window.addEventListener('keyup', (e) => {
+        console.log(`DEBUG: keyup captured: ${e.key}`);
         keysPressed[e.key] = false;
     });
 }
@@ -189,11 +191,13 @@ export function updatePlayer(config) {
     // Handle number keys for actions based on config.keyBindings.actions
     const actionKeys = config.keyBindings.actions || {};
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
-        // Always get the currently selected tile at the start of the loop
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
+
+        console.log(`DEBUG: Checking action key '${key}' for '${actionLabel}' on tile at (${gameState.selector.x},${gameState.selector.y}), modalState =`, modalState.plantModalOpen);
+
         if (keysPressed[key]) {
             keysPressed[key] = false; // consume the key
-            console.log(`DEBUG: Consumed key '${key}' for action '${actionLabel}'`);
+            console.log(`DEBUG: Consumed key '${key}' for action '${actionLabel}' at frame ${frameTime.toFixed(2)}`);
             if (actionLabel === 'plant') {
                 // Consume all other action keys too
                 for (const k of Object.values(config.keyBindings.actions)) {
