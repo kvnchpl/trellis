@@ -357,8 +357,11 @@ document.addEventListener('keydown', (e) => {
 
     const columns = 2;
 
+    // ----- NAVIGATION (arrows + WASD) -----
     switch (e.key) {
         case 'ArrowRight':
+        case 'd':
+        case 'D':
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + 1,
                 plantModalButtons.length - 1
@@ -366,6 +369,8 @@ document.addEventListener('keydown', (e) => {
             break;
 
         case 'ArrowLeft':
+        case 'a':
+        case 'A':
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - 1,
                 0
@@ -373,6 +378,8 @@ document.addEventListener('keydown', (e) => {
             break;
 
         case 'ArrowDown':
+        case 's':
+        case 'S':
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + columns,
                 plantModalButtons.length - 1
@@ -380,18 +387,40 @@ document.addEventListener('keydown', (e) => {
             break;
 
         case 'ArrowUp':
+        case 'w':
+        case 'W':
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - columns,
                 0
             );
             break;
 
+        // ----- CONFIRM -----
         case 'Enter':
         case ' ':
             plantModalButtons[plantModalFocusIndex]?.click();
             e.preventDefault();
             return;
 
+        // ----- NUMBER SHORTCUTS -----
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9': {
+            const index = Number(e.key) - 1;
+            if (plantModalButtons[index]) {
+                plantModalButtons[index].click();
+            }
+            e.preventDefault();
+            return;
+        }
+
+        // ----- EXIT -----
         case 'Escape':
             document.getElementById('plant-modal-overlay').style.display = 'none';
             plantModalOpen = false;
