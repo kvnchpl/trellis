@@ -174,12 +174,10 @@ export function showPlantSelectionModal(config, tile, x, y) {
             newTile.growthStage = plantDef.growthStages[0];
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
-            finalizeAction(config.tiles.actions.plant, config);
-            // Close modal and reset modal-related state
+            const plantActionDef = config.tiles.actions.plant;
+            finalizeAction(plantActionDef, config);
             inputState.modalOpen = false;
-            // Clear all keys pressed inside the modal
             Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-            // Clear blockedKeys to allow normal input again
             inputState.blockedKeys.clear();
             plantModalButtons = [];
             plantModalFocusIndex = 0;
