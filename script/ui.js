@@ -202,7 +202,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
  * Displays the day complete modal with statistics.
  * @param {Object} stats - Daily statistics.
  */
-function showDayCompleteModal(stats) {
+function showDayCompleteModal(stats, config) {
     const overlay = document.getElementById('game-message-overlay');
     const titleEl = document.getElementById('game-message-title');
     const contentEl = document.getElementById('game-message-content');
@@ -225,6 +225,27 @@ function showDayCompleteModal(stats) {
     btn.onclick = () => {
         overlay.style.display = 'none';
         inputState.modalOpen = false;
+
+        // Advance to next day ONLY after confirmation
+        gameState.time.hour = config.dayStartHour;
+        gameState.time.minute = 0;
+        gameState.time.week++;
+
+        if (gameState.time.week > config.weeksPerSeason) {
+            gameState.time.week = 1;
+            gameState.time.seasonIndex =
+                (gameState.time.seasonIndex + 1) % config.seasons.length;
+        }
+
+        resetDailyStats();
+
+        if (gameState.time.week !== lastGrowthUpdateWeek) {
+            updateGrowth(config);
+            lastGrowthUpdateWeek = gameState.time.week;
+        }
+
+        updateTimePanel(config);
+        saveGameState();
     };
 }
 
@@ -413,20 +434,10 @@ export function incrementTime(minutes, config) {
     }
 
     if (time.hour >= config.dayEndHour) {
-        showDayCompleteModal({ ...gameState.dailyStats });
-        resetDailyStats();
-        time.hour = config.dayStartHour;
+        // Clamp time and wait for player confirmation
+        time.hour = config.dayEndHour;
         time.minute = 0;
-        time.week++;
-        if (time.week > config.weeksPerSeason) {
-            time.week = 1;
-            time.seasonIndex = (time.seasonIndex + 1) % config.seasons.length;
-        }
-        // Only update growth if not already updated for this week
-        if (time.week !== lastGrowthUpdateWeek) {
-            updateGrowth(config);
-            lastGrowthUpdateWeek = time.week;
-        }
+        showDayCompleteModal({ ...gameState.dailyStats }, config);
     }
     updateTimePanel(config);
 }
