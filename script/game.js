@@ -12,7 +12,8 @@ import {
 } from './state.js';
 import {
     incrementTime,
-    showDayCompleteModal
+    showDayCompleteModal,
+    showGameMessageModal
 } from './ui.js';
 import {
     render,
