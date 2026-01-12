@@ -7,6 +7,12 @@ let plantModalButtons = [];
 let plantModalFocusIndex = 0;
 let lastGrowthUpdateWeek = null;
 
+/**
+ * Evaluates if a tile meets the specified conditions.
+ * @param {*} tile 
+ * @param {*} condObj 
+ * @returns 
+ */
 export function evaluateCondition(tile, condObj) {
     if (condObj.or && Array.isArray(condObj.or)) {
         return condObj.or.some(c => evaluateCondition(tile, c));
@@ -27,6 +33,12 @@ export function evaluateCondition(tile, condObj) {
     });
 }
 
+/**
+ * Returns an array of human-readable strings describing which conditions failed.
+ * @param {*} tile 
+ * @param {*} condObj 
+ * @returns {string[]}
+ */
 export function getFailedConditions(tile, condObj) {
     const failed = [];
 
@@ -69,6 +81,13 @@ export function getFailedConditions(tile, condObj) {
     return failed;
 }
 
+/**
+ * Applies the effects of an action to a tile and returns the new tile object.
+ * @param {Object} tile 
+ * @param {Object} actionDef
+ * @param {Object} config
+ * @returns {Object} new tile object
+ */
 function applyActionEffects(tile, actionDef, config) {
     const newTile = { ...tile };
     Object.entries(actionDef.effect).forEach(([key, change]) => {
@@ -86,6 +105,11 @@ function applyActionEffects(tile, actionDef, config) {
     return newTile;
 }
 
+/**
+ * Finalizes an action by updating the UI, saving the game, incrementing time, and rendering.
+ * @param {Object} actionDef 
+ * @param {Object} config 
+ */
 function finalizeAction(actionDef, config) {
     updateTileInfoPanel(config);
     Object.entries(actionDef.effect).forEach(([key]) => {
@@ -101,6 +125,13 @@ function finalizeAction(actionDef, config) {
     render(config);
 }
 
+/**
+ * Displays the plant selection modal for planting a crop.
+ * @param {Object} config
+ * @param {Object} tile
+ * @param {number} x
+ * @param {number} y
+ */
 export function showPlantSelectionModal(config, tile, x, y) {
     const overlay = document.getElementById('plant-modal-overlay');
     const modalButtonsEl = document.getElementById('plant-modal-buttons');
@@ -109,23 +140,32 @@ export function showPlantSelectionModal(config, tile, x, y) {
     modalButtonsEl.innerHTML = '';
 
     // Create buttons for each plant
-    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef]) => {
+    Object.entries(config.plants.definitions).forEach(([plantKey, plantDef], idx) => {
         const btn = document.createElement('button');
-        btn.textContent = plantDef.label || plantKey;
+
+        // Assign number key for selection (1-indexed)
+        const numberKey = (idx + 1).toString();
+
+        btn.textContent = `[${numberKey}] ${plantDef.label || plantKey}`;
         btn.classList.add('ui-button');
         btn.tabIndex = 0;
+
         btn.onclick = () => {
             const newTile = { ...tile };
             newTile.plantType = plantKey;
             newTile.growthStage = plantDef.growthStages[0];
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
+
+            // Finalize action using an "effect" placeholder
             finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
+
             plantModalOpen = false;
             plantModalButtons = [];
             plantModalFocusIndex = 0;
             overlay.style.display = 'none';
         };
+
         modalButtonsEl.appendChild(btn);
     });
 
@@ -143,7 +183,10 @@ export function showPlantSelectionModal(config, tile, x, y) {
         plantModalButtons[0].focus();
     }
 }
-
+/**
+ * Updates the tile information panel based on the currently selected tile.
+ * @param {Object} config
+ */
 export function updateTileInfoPanel(config) {
     const tile = getTile(gameState.selector.x, gameState.selector.y, config);
     const detailsEl = document.getElementById('tile-details');
@@ -290,6 +333,9 @@ export function updateTileInfoPanel(config) {
     }
 }
 
+/** Updates the time panel display.
+ * @param {Object} config
+ */
 export function updateTimePanel(config) {
     const el = document.getElementById('time-display');
     if (!el) return;
@@ -301,6 +347,11 @@ export function updateTimePanel(config) {
     el.textContent = `${season} - WEEK ${week} - ${displayHour}:${paddedMinute} ${period}`;
 }
 
+/** Increments the in-game time by the specified number of minutes.
+ * Handles day and season transitions, and updates growth weekly.
+ * @param {number} minutes 
+ * @param {Object} config 
+ */
 export function incrementTime(minutes, config) {
     const time = gameState.time;
     time.minute += minutes;
@@ -327,6 +378,9 @@ export function incrementTime(minutes, config) {
     updateTimePanel(config);
 }
 
+/** Updates plant growth for all tiles based on their growth time and conditions.
+ * @param {Object} config 
+ */
 function updateGrowth(config) {
     for (const tile of Object.values(gameState.map)) {
         if (!tile.plantType) continue;
@@ -352,6 +406,7 @@ function updateGrowth(config) {
     updateTileInfoPanel(config);
 }
 
+// Handles keyboard navigation and selection within the plant selection modal.
 document.addEventListener('keydown', (e) => {
     if (!plantModalOpen) return;
 

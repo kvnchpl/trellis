@@ -136,8 +136,7 @@ async function initGame(loadExisting = true) {
 }
 
 function gameLoop(config) {
-    updatePlayer(config); // handle input + position
-    // Use fullRender for conditional, throttled updates
+    if (!plantModalOpen) updatePlayer(config); // player input blocked when modal open
     fullRender(config);
     requestAnimationFrame(() => gameLoop(config));
 }
