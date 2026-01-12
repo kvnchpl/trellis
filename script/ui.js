@@ -202,7 +202,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
  * Displays the day complete modal with statistics.
  * @param {Object} stats - Daily statistics.
  */
-function showDayCompleteModal(stats, config) {
+export function showDayCompleteModal(stats, config) {
     const overlay = document.getElementById('game-message-overlay');
     const titleEl = document.getElementById('game-message-title');
     const contentEl = document.getElementById('game-message-content');
