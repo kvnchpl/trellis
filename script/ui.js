@@ -438,7 +438,6 @@ function updateGrowth(config) {
 
 // Handles keyboard navigation and selection within the plant selection modal.
 // This also consumes keys so they do not trigger global actions.
-let keysPressed = {}; // will be shadowed by player.js, but needed here for modal key consumption
 document.addEventListener('keydown', (e) => {
     if (!modalState.plantModalOpen) return;
 
