@@ -78,8 +78,10 @@ export function initPlayer(config) {
         console.log(`DEBUG: keydown captured: ${e.key}, inputState.modalOpen =`, inputState.modalOpen);
 
         if (inputState.modalOpen) {
+            e.preventDefault();
+            e.stopPropagation();
             inputState.keysPressed[e.key] = false;
-            inputState.blockedKeys.add(e.key); // track keys pressed during modal
+            inputState.blockedKeys.add(e.key);
             return;
         }
 

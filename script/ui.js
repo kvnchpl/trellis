@@ -439,18 +439,20 @@ function updateGrowth(config) {
 document.addEventListener('keydown', (e) => {
     if (!inputState.modalOpen) return;
 
-    console.log(`DEBUG: keydown event in modal: ${e.key}, inputState =`, inputState);
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Always clear keysPressed and blockedKeys for safety
+    Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
+    inputState.blockedKeys.clear();
 
     const columns = 2;
     let handled = false;
 
-    // ----- NAVIGATION (arrows + WASD) -----
     switch (e.key) {
         case 'ArrowRight':
         case 'd':
         case 'D':
-            console.log(`DEBUG: keydown in modal: ${e.key}, inputState =`, inputState.modalOpen);
-            inputState.keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + 1,
                 plantModalButtons.length - 1
@@ -460,8 +462,6 @@ document.addEventListener('keydown', (e) => {
         case 'ArrowLeft':
         case 'a':
         case 'A':
-            console.log(`DEBUG: keydown in modal: ${e.key}, inputState =`, inputState.modalOpen);
-            inputState.keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - 1,
                 0
@@ -471,8 +471,6 @@ document.addEventListener('keydown', (e) => {
         case 'ArrowDown':
         case 's':
         case 'S':
-            console.log(`DEBUG: keydown in modal: ${e.key}, inputState =`, inputState.modalOpen);
-            inputState.keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + columns,
                 plantModalButtons.length - 1
@@ -482,68 +480,31 @@ document.addEventListener('keydown', (e) => {
         case 'ArrowUp':
         case 'w':
         case 'W':
-            console.log(`DEBUG: keydown in modal: ${e.key}, inputState =`, inputState.modalOpen);
-            inputState.keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - columns,
                 0
             );
             handled = true;
             break;
-        // ----- CONFIRM -----
         case 'Enter':
         case ' ':
             plantModalButtons[plantModalFocusIndex]?.click();
-            e.preventDefault();
             return;
-        // ----- NUMBER SHORTCUTS -----
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9': {
-            // Only handle modal selection if inputState.modalOpen
-            if (!inputState.modalOpen) break;
-            console.log(`DEBUG: keydown in modal: ${e.key}, inputState =`, inputState.modalOpen);
-            inputState.blockedKeys.clear();
-            inputState.keysPressed[e.key] = false; // always consume keys pressed in the modal
+        case '1': case '2': case '3': case '4': case '5':
+        case '6': case '7': case '8': case '9': {
             const index = Number(e.key) - 1;
             if (plantModalButtons[index]) {
                 plantModalButtons[index].click();
             }
-            e.preventDefault();
             return;
         }
-        // ----- EXIT -----
         case 'Escape':
-            console.log("DEBUG: Closing plant modal, inputState before =", inputState);
             document.getElementById('plant-modal-overlay').style.display = 'none';
-
-            // Close modal
             inputState.modalOpen = false;
-
-            // Clear all keys pressed inside the modal
-            Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-
-            // Clear blockedKeys to allow normal input again
-            inputState.blockedKeys.clear();
-
-            e.preventDefault();
-            return;
-        default:
-            // Always consume/clear the key if inside the modal to prevent global actions
-            inputState.blockedKeys.clear();
-            inputState.keysPressed[e.key] = false;
             return;
     }
 
     if (handled) {
         plantModalButtons[plantModalFocusIndex]?.focus();
-        e.preventDefault();
-        e.stopPropagation();
     }
 });
