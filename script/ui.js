@@ -145,6 +145,7 @@ function finalizeAction(actionDef, config) {
  * @param {number} y
  */
 export function showPlantSelectionModal(config, tile, x, y) {
+    console.log("DEBUG: showPlantSelectionModal called. modalState before =", modalState);
     const overlay = document.getElementById('plant-modal-overlay');
     const modalButtonsEl = document.getElementById('plant-modal-buttons');
 
@@ -180,6 +181,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
                 }
             }, config);
 
+            console.log("DEBUG: Closing plant modal, modalState before =", modalState);
             modalState.plantModalOpen = false;
             plantModalButtons = [];
             plantModalFocusIndex = 0;
@@ -192,6 +194,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
     overlay.style.display = 'flex';
 
     modalState.plantModalOpen = true;
+    console.log("DEBUG: modalState after setting plantModalOpen =", modalState);
 
     plantModalButtons = Array.from(
         document.querySelectorAll('#plant-modal-buttons .ui-button:not(.disabled)')
@@ -435,6 +438,8 @@ function updateGrowth(config) {
 document.addEventListener('keydown', (e) => {
     if (!modalState.plantModalOpen) return;
 
+    console.log(`DEBUG: keydown event in modal: ${e.key}, modalState =`, modalState);
+
     const columns = 2;
 
     // ----- NAVIGATION (arrows + WASD) -----
@@ -504,6 +509,7 @@ document.addEventListener('keydown', (e) => {
 
         // ----- EXIT -----
         case 'Escape':
+            console.log("DEBUG: Closing plant modal, modalState before =", modalState);
             document.getElementById('plant-modal-overlay').style.display = 'none';
             modalState.plantModalOpen = false;
             return;
