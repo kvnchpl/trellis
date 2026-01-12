@@ -2,6 +2,9 @@ import { gameState, getTile } from './state.js';
 import { saveGameState } from './game.js';
 import { render } from './renderer.js';
 
+let plantModalOpen = false;
+let plantModalButtons = [];
+let plantModalFocusIndex = 0;
 let lastGrowthUpdateWeek = null;
 
 export function evaluateCondition(tile, condObj) {
@@ -110,6 +113,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
         const btn = document.createElement('button');
         btn.textContent = plantDef.label || plantKey;
         btn.classList.add('ui-button');
+        btn.tabIndex = 0;
         btn.onclick = () => {
             const newTile = { ...tile };
             newTile.plantType = plantKey;
@@ -117,12 +121,27 @@ export function showPlantSelectionModal(config, tile, x, y) {
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
             finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
+            plantModalOpen = false;
+            plantModalButtons = [];
+            plantModalFocusIndex = 0;
             overlay.style.display = 'none';
         };
         modalButtonsEl.appendChild(btn);
     });
 
     overlay.style.display = 'flex';
+
+    plantModalOpen = true;
+
+    plantModalButtons = Array.from(
+        document.querySelectorAll('#plant-modal-buttons .ui-button:not(.disabled)')
+    );
+
+    plantModalFocusIndex = 0;
+
+    if (plantModalButtons.length > 0) {
+        plantModalButtons[0].focus();
+    }
 }
 
 export function updateTileInfoPanel(config) {
@@ -332,3 +351,56 @@ function updateGrowth(config) {
     // This call is only made once per day rollover due to incrementTime throttling.
     updateTileInfoPanel(config);
 }
+
+document.addEventListener('keydown', (e) => {
+    if (!plantModalOpen) return;
+
+    const columns = 2;
+
+    switch (e.key) {
+        case 'ArrowRight':
+            plantModalFocusIndex = Math.min(
+                plantModalFocusIndex + 1,
+                plantModalButtons.length - 1
+            );
+            break;
+
+        case 'ArrowLeft':
+            plantModalFocusIndex = Math.max(
+                plantModalFocusIndex - 1,
+                0
+            );
+            break;
+
+        case 'ArrowDown':
+            plantModalFocusIndex = Math.min(
+                plantModalFocusIndex + columns,
+                plantModalButtons.length - 1
+            );
+            break;
+
+        case 'ArrowUp':
+            plantModalFocusIndex = Math.max(
+                plantModalFocusIndex - columns,
+                0
+            );
+            break;
+
+        case 'Enter':
+        case ' ':
+            plantModalButtons[plantModalFocusIndex]?.click();
+            e.preventDefault();
+            return;
+
+        case 'Escape':
+            document.getElementById('plant-modal-overlay').style.display = 'none';
+            plantModalOpen = false;
+            return;
+
+        default:
+            return;
+    }
+
+    plantModalButtons[plantModalFocusIndex]?.focus();
+    e.preventDefault();
+});
