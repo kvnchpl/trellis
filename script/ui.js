@@ -467,6 +467,8 @@ document.addEventListener('keydown', (e) => {
         case '7':
         case '8':
         case '9': {
+            // Only handle modal selection if plantModalOpen
+            if (!plantModalOpen) break;
             const index = Number(e.key) - 1;
             if (plantModalButtons[index]) {
                 plantModalButtons[index].click();
@@ -487,4 +489,5 @@ document.addEventListener('keydown', (e) => {
 
     plantModalButtons[plantModalFocusIndex]?.focus();
     e.preventDefault();
+    e.stopPropagation();
 });
