@@ -435,58 +435,92 @@ function updateGrowth(config) {
 }
 
 // Handles keyboard navigation and selection within the plant selection modal.
+// This also consumes keys so they do not trigger global actions.
+let keysPressed = {}; // will be shadowed by player.js, but needed here for modal key consumption
 document.addEventListener('keydown', (e) => {
     if (!modalState.plantModalOpen) return;
 
     console.log(`DEBUG: keydown event in modal: ${e.key}, modalState =`, modalState);
 
     const columns = 2;
+    let handled = false;
 
     // ----- NAVIGATION (arrows + WASD) -----
     switch (e.key) {
         case 'ArrowRight':
-        case 'd':
-        case 'D':
+            keysPressed[e.key] = false;
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + 1,
                 plantModalButtons.length - 1
             );
+            handled = true;
             break;
-
+        case 'd':
+        case 'D':
+            keysPressed[e.key] = false;
+            plantModalFocusIndex = Math.min(
+                plantModalFocusIndex + 1,
+                plantModalButtons.length - 1
+            );
+            handled = true;
+            break;
         case 'ArrowLeft':
-        case 'a':
-        case 'A':
+            keysPressed[e.key] = false;
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - 1,
                 0
             );
+            handled = true;
             break;
-
+        case 'a':
+        case 'A':
+            keysPressed[e.key] = false;
+            plantModalFocusIndex = Math.max(
+                plantModalFocusIndex - 1,
+                0
+            );
+            handled = true;
+            break;
         case 'ArrowDown':
-        case 's':
-        case 'S':
+            keysPressed[e.key] = false;
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + columns,
                 plantModalButtons.length - 1
             );
+            handled = true;
             break;
-
+        case 's':
+        case 'S':
+            keysPressed[e.key] = false;
+            plantModalFocusIndex = Math.min(
+                plantModalFocusIndex + columns,
+                plantModalButtons.length - 1
+            );
+            handled = true;
+            break;
         case 'ArrowUp':
-        case 'w':
-        case 'W':
+            keysPressed[e.key] = false;
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - columns,
                 0
             );
+            handled = true;
             break;
-
+        case 'w':
+        case 'W':
+            keysPressed[e.key] = false;
+            plantModalFocusIndex = Math.max(
+                plantModalFocusIndex - columns,
+                0
+            );
+            handled = true;
+            break;
         // ----- CONFIRM -----
         case 'Enter':
         case ' ':
             plantModalButtons[plantModalFocusIndex]?.click();
             e.preventDefault();
             return;
-
         // ----- NUMBER SHORTCUTS -----
         case '1':
         case '2':
@@ -499,6 +533,7 @@ document.addEventListener('keydown', (e) => {
         case '9': {
             // Only handle modal selection if modalState.plantModalOpen
             if (!modalState.plantModalOpen) break;
+            keysPressed[e.key] = false;
             const index = Number(e.key) - 1;
             if (plantModalButtons[index]) {
                 plantModalButtons[index].click();
@@ -506,19 +541,22 @@ document.addEventListener('keydown', (e) => {
             e.preventDefault();
             return;
         }
-
         // ----- EXIT -----
         case 'Escape':
             console.log("DEBUG: Closing plant modal, modalState before =", modalState);
             document.getElementById('plant-modal-overlay').style.display = 'none';
             modalState.plantModalOpen = false;
+            // Clear all pressed keys
+            Object.keys(keysPressed).forEach(k => keysPressed[k] = false);
+            e.preventDefault();
             return;
-
         default:
             return;
     }
 
-    plantModalButtons[plantModalFocusIndex]?.focus();
-    e.preventDefault();
-    e.stopPropagation();
+    if (handled) {
+        plantModalButtons[plantModalFocusIndex]?.focus();
+        e.preventDefault();
+        e.stopPropagation();
+    }
 });
