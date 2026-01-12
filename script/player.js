@@ -12,7 +12,8 @@ import {
     getFailedConditions,
     showPlantSelectionModal,
     modalState,
-    keysPressed
+    keysPressed,
+    modalPressedKeys
 } from './ui.js';
 import {
     render
@@ -77,16 +78,19 @@ function attemptMove(player, dx, dy, config) {
 export function initPlayer(config) {
     window.addEventListener('keydown', (e) => {
         console.log(`DEBUG: keydown captured: ${e.key}, modalState =`, modalState.plantModalOpen);
+
         if (modalState.plantModalOpen) {
             keysPressed[e.key] = false;
+            modalPressedKeys.add(e.key); // track keys pressed during modal
             return;
         }
-        keysPressed[e.key] = true;
-    });
 
-    window.addEventListener('keyup', (e) => {
-        console.log(`DEBUG: keyup captured: ${e.key}`);
-        keysPressed[e.key] = false;
+        if (modalPressedKeys.has(e.key)) {
+            keysPressed[e.key] = false; // ignore keys pressed during modal
+            return;
+        }
+
+        keysPressed[e.key] = true;
     });
 }
 

@@ -14,6 +14,7 @@ export const modalState = {
 };
 
 export const keysPressed = {};
+export const modalPressedKeys = new Set();
 
 let plantModalButtons = [];
 let plantModalFocusIndex = 0;
