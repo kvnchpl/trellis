@@ -446,6 +446,7 @@ document.addEventListener('keydown', (e) => {
     switch (e.key) {
         case 'ArrowRight':
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + 1,
@@ -456,6 +457,7 @@ document.addEventListener('keydown', (e) => {
         case 'd':
         case 'D':
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + 1,
@@ -465,6 +467,7 @@ document.addEventListener('keydown', (e) => {
             break;
         case 'ArrowLeft':
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - 1,
@@ -475,6 +478,7 @@ document.addEventListener('keydown', (e) => {
         case 'a':
         case 'A':
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - 1,
@@ -484,6 +488,7 @@ document.addEventListener('keydown', (e) => {
             break;
         case 'ArrowDown':
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + columns,
@@ -494,6 +499,7 @@ document.addEventListener('keydown', (e) => {
         case 's':
         case 'S':
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.min(
                 plantModalFocusIndex + columns,
@@ -503,6 +509,7 @@ document.addEventListener('keydown', (e) => {
             break;
         case 'ArrowUp':
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - columns,
@@ -513,6 +520,7 @@ document.addEventListener('keydown', (e) => {
         case 'w':
         case 'W':
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             plantModalFocusIndex = Math.max(
                 plantModalFocusIndex - columns,
@@ -539,6 +547,7 @@ document.addEventListener('keydown', (e) => {
             // Only handle modal selection if modalState.plantModalOpen
             if (!modalState.plantModalOpen) break;
             console.log(`DEBUG: keydown in modal: ${e.key}, modalState =`, modalState.plantModalOpen);
+            modalPressedKeys.clear();
             keysPressed[e.key] = false; // always consume keys pressed in the modal
             const index = Number(e.key) - 1;
             if (plantModalButtons[index]) {
@@ -554,12 +563,14 @@ document.addEventListener('keydown', (e) => {
             modalState.plantModalOpen = false;
 
             // Clear all keys pressed inside the modal
+            modalPressedKeys.clear();
             Object.keys(keysPressed).forEach(k => keysPressed[k] = false);
 
             e.preventDefault();
             return;
         default:
             // Always consume/clear the key if inside the modal to prevent global actions
+            modalPressedKeys.clear();
             keysPressed[e.key] = false;
             return;
     }
