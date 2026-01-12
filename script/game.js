@@ -173,14 +173,7 @@ initGame(true).catch((err) => {
     });
 
     endDayBtn.addEventListener('click', () => {
-        // Force time to pass until end-of-day logic triggers
-        const minutesUntilEnd =
-            (config.dayEndHour - gameState.time.hour) * 60 - gameState.time.minute;
-
-        if (minutesUntilEnd > 0) {
-            incrementTime(minutesUntilEnd, config);
-        }
-        saveGameState();
+        showDayCompleteModal({ ...gameState.dailyStats }, config);
     });
 
     cancelBtn.addEventListener('click', () => {
