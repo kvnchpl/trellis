@@ -143,6 +143,8 @@ export function updatePlayer(config) {
     // Handle number keys for actions based on config.keyBindings.actions
     const actionKeys = config.keyBindings.actions || {};
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
+        // Always get the currently selected tile at the start of the loop
+        const tile = getTile(gameState.selector.x, gameState.selector.y, config);
         if (keysPressed[key]) {
             keysPressed[key] = false;  // consume key immediately
 
