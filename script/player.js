@@ -76,6 +76,11 @@ function attemptMove(player, dx, dy, config) {
  */
 export function initPlayer(config) {
     window.addEventListener('keydown', (e) => {
+        if (modalState.plantModalOpen) {
+            // Prevent any key from registering globally while modal is open
+            keysPressed[e.key] = false;
+            return;
+        }
         keysPressed[e.key] = true;
     });
     window.addEventListener('keyup', (e) => {
