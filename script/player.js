@@ -184,8 +184,13 @@ export function updatePlayer(config) {
         // Always get the currently selected tile at the start of the loop
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
         if (keysPressed[key]) {
-            keysPressed[key] = false; // consume key immediately
             if (actionLabel === 'plant') {
+                // Consume the plant key immediately
+                keysPressed[key] = false;
+                // Consume all other action keys immediately
+                for (const k of Object.values(config.keyBindings.actions)) {
+                    keysPressed[k] = false;
+                }
                 showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
                 console.log(`DEBUG: Plant modal opened, exiting updatePlayer to block other actions`);
                 return; // exit immediately to prevent any other actions from firing
@@ -195,6 +200,7 @@ export function updatePlayer(config) {
                 console.log(`DEBUG: Skipping action "${actionLabel}" because modal is open`);
                 return;
             }
+            keysPressed[key] = false; // consume key immediately for non-plant actions
             const actionDef = config.tiles.actions[actionLabel];
             const validNow = evaluateCondition(tile, actionDef.condition);
             if (!validNow) {
