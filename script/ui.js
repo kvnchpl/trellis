@@ -175,10 +175,14 @@ export function showPlantSelectionModal(config, tile, x, y) {
             finalizeAction({ effect: { plantType: null, growthStage: null, growthProgress: 0 } }, config);
 
             console.log("DEBUG: Closing plant modal, inputState before =", inputState);
+            // Close modal
             inputState.modalOpen = false;
 
             // Clear all keys pressed inside the modal
             Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
+
+            // Clear blockedKeys to allow normal input again
+            inputState.blockedKeys.clear();
 
             plantModalButtons = [];
             plantModalFocusIndex = 0;
@@ -558,11 +562,15 @@ document.addEventListener('keydown', (e) => {
         case 'Escape':
             console.log("DEBUG: Closing plant modal, inputState before =", inputState);
             document.getElementById('plant-modal-overlay').style.display = 'none';
+            
+            // Close modal
             inputState.modalOpen = false;
 
             // Clear all keys pressed inside the modal
-            inputState.blockedKeys.clear();
             Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
+
+            // Clear blockedKeys to allow normal input again
+            inputState.blockedKeys.clear();
 
             e.preventDefault();
             return;

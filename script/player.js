@@ -75,7 +75,7 @@ function attemptMove(player, dx, dy, config) {
  */
 export function initPlayer(config) {
     window.addEventListener('keydown', (e) => {
-        console.log(`DEBUG: keydown captured: ${e.key}, inputState =`, inputState.modalOpen);
+        console.log(`DEBUG: keydown captured: ${e.key}, inputState.modalOpen =`, inputState.modalOpen);
 
         if (inputState.modalOpen) {
             inputState.keysPressed[e.key] = false;
