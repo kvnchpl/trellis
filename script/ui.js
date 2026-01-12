@@ -1,7 +1,8 @@
 import {
     gameState,
     getTile,
-    resetDailyStats
+    resetDailyStats,
+    advanceDay
 } from './state.js';
 import {
     saveGameState
@@ -19,6 +20,29 @@ export const inputState = {
 let plantModalButtons = [];
 let plantModalFocusIndex = 0;
 let lastGrowthUpdateWeek = null;
+
+/**
+ * Shows a generic game message modal.
+ * @param {string} message - Message text to display.
+ */
+export function showGameMessageModal(message) {
+    const overlay = document.getElementById('game-message-overlay');
+    const titleEl = document.getElementById('game-message-title');
+    const contentEl = document.getElementById('game-message-content');
+    const btn = document.getElementById('game-message-continue');
+
+    titleEl.textContent = 'MESSAGE';
+    contentEl.innerHTML = `<div>${message}</div>`;
+
+    inputState.modalOpen = true;
+    overlay.style.display = 'flex';
+    btn.focus();
+
+    btn.onclick = () => {
+        overlay.style.display = 'none';
+        inputState.modalOpen = false;
+    };
+}
 
 /**
  * Evaluates if a tile meets the specified conditions.
@@ -227,23 +251,12 @@ export function showDayCompleteModal(stats, config) {
         inputState.modalOpen = false;
 
         // Advance to next day ONLY after confirmation
-        gameState.time.hour = config.dayStartHour;
-        gameState.time.minute = 0;
-        gameState.time.week++;
-
-        if (gameState.time.week > config.weeksPerSeason) {
-            gameState.time.week = 1;
-            gameState.time.seasonIndex =
-                (gameState.time.seasonIndex + 1) % config.seasons.length;
-        }
-
+        advanceDay(config);
         resetDailyStats();
-
         if (gameState.time.week !== lastGrowthUpdateWeek) {
             updateGrowth(config);
             lastGrowthUpdateWeek = gameState.time.week;
         }
-
         updateTimePanel(config);
         saveGameState();
     };
@@ -382,7 +395,7 @@ export function updateTileInfoPanel(config) {
                 const message = failed.length ?
                     `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}` :
                     `Cannot perform "${actionLabel}" on this tile.`;
-                alert(message);
+                showGameMessageModal(message);
                 console.log(`Action "${actionLabel}" blocked on tile:`, tileNow, "Failed conditions:", failed);
                 return;
             }

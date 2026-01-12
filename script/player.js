@@ -11,7 +11,8 @@ import {
     evaluateCondition,
     getFailedConditions,
     showPlantSelectionModal,
-    inputState
+    inputState,
+    showGameMessageModal
 } from './ui.js';
 import {
     render
@@ -217,7 +218,7 @@ export function updatePlayer(config) {
             const validNow = evaluateCondition(tile, actionDef.condition);
             if (!validNow) {
                 const failed = getFailedConditions(tile, actionDef.condition);
-                alert(`Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`);
+                showGameMessageModal(`Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`);
                 return;
             }
             const newTile = applyActionEffects(tile, actionDef, config);
