@@ -29,7 +29,8 @@ import {
 /**
  * Returns an array of human-readable reasons why an action cannot be performed on a tile.
  * Fully relies on config.json conditions and strings.json for messages.
- * Only returns messages for conditions that actually failed.
+ * Uses strings.conditionKeyMap to map failed conditions to friendly messages.
+ * Works for all actions, including OR/nested conditions, without hardcoded special cases.
  * @param {Object} tile - The tile object.
  * @param {Object} actionDef - The action definition from config.tiles.actions
  * @param {Object} strings - The loaded strings.json
@@ -45,10 +46,14 @@ export function getActionBlockReasons(tile, actionDef, strings) {
     function collectFailedKeys(tile, condition) {
         if (!condition) return [];
 
+        // Handle OR: only fail if ALL OR subconditions fail
         if (condition.or && Array.isArray(condition.or)) {
-            const failedOr = condition.or.map(sub => collectFailedKeys(tile, sub)).filter(f => f.length);
-            if (failedOr.length === condition.or.length) return failedOr.flat();
-            return [];
+            const failedOr = condition.or.map(sub => collectFailedKeys(tile, sub));
+            if (failedOr.every(f => f.length > 0)) {
+                return failedOr.flat();
+            } else {
+                return []; // at least one OR subcondition passed
+            }
         }
 
         const failed = [];
@@ -80,10 +85,6 @@ export function getActionBlockReasons(tile, actionDef, strings) {
 
     const failedKeys = collectFailedKeys(tile, actionDef.condition);
     const reasons = failedKeys.map(k => blockedStrings[k]).filter(Boolean);
-
-    if (reasons.length === 0 && !evaluateCondition(tile, actionDef.condition)) {
-        reasons.push("Cannot perform this action.");
-    }
 
     return reasons;
 }
