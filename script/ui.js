@@ -98,75 +98,69 @@ export function showGameMessageModal({
 }
 
 /**
- * Evaluates if a tile meets the specified conditions.
- * @param {*} tile - The tile object.
- * @param {*} condObj - The condition object.
- * @returns {boolean} True if the condition is met, false otherwise.
+ * Evaluates if a tile meets a condition.
+ * Supports nested AND/OR logic.
+ * @param {Object} tile - The tile object.
+ * @param {Object} condition - The condition object.
+ * @returns {boolean} true if all conditions are met
  */
-export function evaluateCondition(tile, condObj) {
-    if (condObj.or && Array.isArray(condObj.or)) {
-        return condObj.or.some(c => evaluateCondition(tile, c));
+export function evaluateCondition(tile, condition) {
+    if (!condition) return true;
+
+    if (condition.or && Array.isArray(condition.or)) {
+        return condition.or.some(sub => evaluateCondition(tile, sub));
     }
-    return Object.entries(condObj).every(([key, cond]) => {
-        const current = tile[key];
-        if (cond === 'exists') return !(current === null || current === undefined);
-        if (typeof cond === 'object' && cond !== null) {
-            if ('not' in cond) return current !== cond.not;
-            if ('lt' in cond && !(current < cond.lt)) return false;
-            if ('gt' in cond && !(current > cond.gt)) return false;
-            if ('lte' in cond && !(current <= cond.lte)) return false;
-            if ('gte' in cond && !(current >= cond.gte)) return false;
+
+    return Object.entries(condition).every(([key, val]) => {
+        if (typeof val === "object" && val !== null) {
+            if ("lt" in val) return tile[key] < val.lt;
+            if ("gt" in val) return tile[key] > val.gt;
+            if ("not" in val) return tile[key] !== val.not;
+            // nested AND in object
+            return evaluateCondition(tile[key], val);
         } else {
-            if (current !== cond) return false;
+            return tile[key] === val;
         }
-        return true;
     });
 }
 
 /**
- * Returns an array of human-readable strings describing which conditions failed.
- * @param {*} tile - The tile object.
- * @param {*} condObj - The condition object.
- * @returns {string[]} Array of failed condition descriptions.
+ * Returns an array of failed conditions for a tile.
+ * Only includes the conditions that actually failed.
+ * @param {Object} tile - The tile object.
+ * @param {Object} condition - The condition object.
+ * @returns {string[]} Array of human-readable failed condition messages
  */
-export function getFailedConditions(tile, condObj) {
-    const failed = [];
+export function getFailedConditions(tile, condition) {
+    if (!condition) return [];
 
-    if (condObj.or && Array.isArray(condObj.or)) {
-        const passed = condObj.or.some(c => evaluateCondition(tile, c));
-        if (!passed) {
-            const readable = condObj.or.map(c => {
-                const key = Object.keys(c)[0];
-                switch (key) {
-                    case 'tile':
-                        if (c.tile === 'grass') return strings.tileAttributes.tileGrass;
-                        if (c.tile === 'rock') return strings.tileAttributes.tileRock;
-                        break;
-                    default:
-                        return strings.tileAttributes[key] || key;
-                }
-            });
-            failed.push(readable.join(', '));
+    // Handle OR: only fail if ALL OR subconditions fail
+    if (condition.or && Array.isArray(condition.or)) {
+        const failedOr = condition.or.map(sub => getFailedConditions(tile, sub)).filter(f => f.length);
+        if (failedOr.length === condition.or.length) {
+            // all OR options failed
+            return failedOr.flat();
+        } else {
+            return []; // at least one OR option passed
         }
-        return failed;
     }
 
-    Object.entries(condObj).forEach(([key, cond]) => {
-        const current = tile[key];
-        let failMessage = null;
+    const failed = [];
 
-        if (cond === 'exists' && (current === null || current === undefined)) {
-            failMessage = strings.tileAttributes[key] || key;
-        } else if (typeof cond === 'object' && cond !== null) {
-            if ('not' in cond && current === cond.not) failMessage = strings.tileAttributes[key] || key;
-            if ('lt' in cond && !(current < cond.lt)) failMessage = strings.tileAttributes[key] || key;
-            if ('gt' in cond && !(current > cond.gt)) failMessage = strings.tileAttributes[key] || key;
-        } else if (current !== cond) {
-            failMessage = strings.tileAttributes[key] || key;
+    for (const [key, val] of Object.entries(condition)) {
+        if (typeof val === "object" && val !== null) {
+            if ("lt" in val && !(tile[key] < val.lt)) failed.push(`${key} must be < ${val.lt}`);
+            else if ("gt" in val && !(tile[key] > val.gt)) failed.push(`${key} must be > ${val.gt}`);
+            else if ("not" in val && tile[key] === val.not) failed.push(`${key} must not be ${val.not}`);
+            else {
+                // nested AND object
+                const subFailed = getFailedConditions(tile[key], val);
+                failed.push(...subFailed);
+            }
+        } else if (tile[key] !== val) {
+            failed.push(`${key} must be ${val}`);
         }
-
-        if (failMessage) failed.push(failMessage);
-    });
+    }
 
     return failed;
 }
