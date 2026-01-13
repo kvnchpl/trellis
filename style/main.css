@@ -198,6 +198,8 @@ canvas {
 
 #game-message-continue {
     width: fit-content;
+    margin: 0 auto;
+    display: block;
 }
 
 .plant-modal-overlay {
