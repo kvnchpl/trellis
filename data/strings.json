@@ -110,5 +110,47 @@
                 "tileNotSoil": "Can only remove weeds from soil tiles."
             }
         }
+    },
+    "blockedKeyMap": {
+        "clear": {
+            "plantType": "plantTypeNotEmpty",
+            "weeds": "weedsMissing",
+            "mulch": "mulchMissing",
+            "tile": {
+                "grass": "tileGrass",
+                "rock": "tileRock"
+            }
+        },
+        "till": {
+            "plantType": "plantTypeNotEmpty",
+            "tile": "wrongTile"
+        },
+        "water": {
+            "tile": "wrongTile",
+            "moisture": "tooMoist",
+            "plantType": "plantTypeNotEmpty"
+        },
+        "fertilize": {
+            "tile": "wrongTile",
+            "fertility": "tooFertile",
+            "plantType": "plantTypeNotEmpty"
+        },
+        "plant": {
+            "tile": "wrongTile",
+            "plantType": "notEmpty",
+            "mulch": "mulch"
+        },
+        "mulch": {
+            "tile": "wrongTile",
+            "mulch": "alreadyMulched",
+            "plantType": "plantTypeNotEmpty"
+        },
+        "weed": {
+            "weeds": "noWeeds",
+            "tile": "tileNotSoil"
+        },
+        "harvest": {
+            "readyToHarvest": "notReady"
+        }
     }
 }

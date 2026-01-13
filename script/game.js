@@ -41,23 +41,7 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
     const actionName = actionDef.name;
     const blockedStrings = strings.messages.blockedAction[actionName] || {};
     const keyMap = strings.conditionKeyMap || {};
-
-    // Mapping of condition keys to blockedAction keys per action
-    const blockedKeyMap = {
-        clear: {
-            plantType: "plantTypeNotEmpty",
-            weeds: "weedsMissing",
-            mulch: "mulchMissing",
-            tile: (t) => t.tile === "grass" ? "tileGrass" : t.tile === "rock" ? "tileRock" : null
-        },
-        till: { plantType: "plantTypeNotEmpty", tile: "wrongTile" },
-        water: { tile: "wrongTile", moisture: "tooMoist", plantType: "plantTypeNotEmpty" },
-        fertilize: { tile: "wrongTile", fertility: "tooFertile", plantType: "plantTypeNotEmpty" },
-        plant: { tile: "wrongTile", plantType: "notEmpty", mulch: "mulch" },
-        mulch: { tile: "wrongTile", mulch: "alreadyMulched", plantType: "plantTypeNotEmpty" },
-        weed: { weeds: "noWeeds", tile: "tileNotSoil" },
-        harvest: { readyToHarvest: "notReady" }
-    };
+    const blockedKeyMap = strings.blockedKeyMap || {};
 
     function collectFailed(tile, condition) {
         if (!condition) return [];
@@ -88,10 +72,16 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
 
     const reasons = rawFailed.map(f => {
         const map = blockedKeyMap[actionName] || {};
-        const mapFn = map[f.key];
+        const mapVal = map[f.key];
 
-        if (typeof mapFn === "function") return blockedStrings[mapFn(tile)];
-        if (typeof mapFn === "string") return blockedStrings[mapFn];
+        if (typeof mapVal === "string") {
+            return blockedStrings[mapVal];
+        }
+
+        if (mapVal && typeof mapVal === "object") {
+            const tileValue = tile[f.key];
+            return blockedStrings[mapVal[tileValue]];
+        }
 
         // fallback to conditionKeyMap
         if (f.type && keyMap[f.key]?.[f.type]) return keyMap[f.key][f.type];
