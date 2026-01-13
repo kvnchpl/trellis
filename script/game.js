@@ -74,7 +74,7 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
         const map = blockedKeyMap[actionName] || {};
         const mapVal = map[f.key];
 
-        // 1️⃣ First try blockedKeyMap -> blockedStrings
+        // First try blockedKeyMap -> blockedStrings
         if (typeof mapVal === "string") {
             return blockedStrings[mapVal];
         }
@@ -86,11 +86,11 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
             }
         }
 
-        // 2️⃣ Then try conditionKeyMap
+        // Then try conditionKeyMap
         if (f.type && keyMap[f.key]?.[f.type]) return keyMap[f.key][f.type];
         if (f.value !== undefined && keyMap[f.key]?.[f.value] !== undefined) return keyMap[f.key][f.value];
 
-        // 3️⃣ Last fallback: generic message
+        // Last fallback: generic message
         return `Cannot perform action due to ${f.key}.`;
     }).filter(Boolean);
 
