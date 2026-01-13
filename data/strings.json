@@ -21,7 +21,7 @@
             "tilled": "tile must be tilled",
             "grass": "tile must be grass",
             "rock": "tile must be rock",
-            "default": "invalid tile type"
+            "default": "tile type is not valid for this action"
         },
         "readyToHarvest": {
             "true": "ready to harvest",
@@ -75,13 +75,14 @@
                 "mulchMissing": "The tile is not mulched.",
                 "tileGrass": "The tile is not grass.",
                 "tileRock": "The tile is not rock.",
-                "nothingToClear": "There is nothing to clear here."
+                "nothingToClear": "There is nothing to clear here.",
+                "wrongTile": "Only grass or rock tiles can be cleared."
             },
             "harvest": {
                 "notReady": "The crop is not ready to harvest."
             },
             "till": {
-                "wrongTile": "The tile cannot be tilled. It must be bare soil with no plant.",
+                "wrongTile": "The tile must be bare soil (with no plant) to be tilled.",
                 "plantTypeNotEmpty": "Cannot till a tile that already has a plant."
             },
             "water": {
