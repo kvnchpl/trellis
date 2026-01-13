@@ -5,16 +5,16 @@
             "null": "tile must be empty"
         },
         "weeds": {
-            "true": "there are weeds",
+            "true": "weeds present",
             "false": "no weeds to remove"
         },
         "mulch": {
-            "true": "tile is mulched",
+            "true": "tile is already mulched",
             "false": "tile is not mulched"
         },
         "tile": {
-            "soil": "must be soil",
-            "tilled": "must be tilled",
+            "soil": "tile must be soil",
+            "tilled": "tile must be tilled",
             "grass": "tile must be grass",
             "rock": "tile must be rock",
             "default": "invalid tile type"
@@ -24,15 +24,15 @@
             "false": "not ready to harvest"
         },
         "fertility": {
-            "lt": "fertility is already high",
-            "gt": "fertility is too high"
+            "lt": "tile is already fully fertile",
+            "gt": "tile is too fertile"
         },
         "moisture": {
             "lt": "tile is too wet",
             "gt": "tile is too dry"
         },
         "growthStage": {
-            "sprout": "plant is just a sprout",
+            "sprout": "plant is a sprout",
             "flower": "plant is flowering",
             "vine": "plant is a vine",
             "pod": "plant is in pod stage",
@@ -45,8 +45,8 @@
             "gt": "growth exceeded limit"
         },
         "fertilized": {
-            "true": "tile is already fertilized",
-            "false": "tile not fertilized yet"
+            "true": "tile already fertilized",
+            "false": "tile not fertilized"
         },
         "or": "none of the required conditions met"
     },
@@ -68,38 +68,43 @@
         },
         "blockedAction": {
             "clear": {
-                "tileMustBeSoil": "The tile must be soil to clear it.",
-                "tileGrass": "The tile is not grass.",
-                "tileRock": "The tile is not rock.",
-                "plantTypeNotEmpty": "The tile must be empty.",
+                "plantTypeNotEmpty": "The tile must be empty to clear plants.",
                 "weedsMissing": "There are no weeds to remove.",
                 "mulchMissing": "The tile is not mulched.",
-                "nothingToClear": "The tile has nothing to clear."
+                "tileGrass": "The tile is not grass.",
+                "tileRock": "The tile is not rock.",
+                "nothingToClear": "There is nothing to clear here."
             },
             "harvest": {
-                "notReady": "The tile is not ready to harvest."
+                "notReady": "The crop is not ready to harvest."
             },
             "till": {
-                "wrongTile": "The tile cannot be tilled. It must be bare soil with no plant."
+                "wrongTile": "The tile cannot be tilled. It must be bare soil with no plant.",
+                "plantTypeNotEmpty": "Cannot till a tile that already has a plant."
             },
             "water": {
-                "wrongTile": "The tile cannot be watered. It must be tilled.",
-                "tooMoist": "The tile is already fully moist."
+                "wrongTile": "The tile must be tilled before watering.",
+                "tooMoist": "The tile is already fully moist.",
+                "plantTypeNotEmpty": "Cannot water a tile with a growing plant (use appropriate growth stage)."
             },
             "fertilize": {
-                "wrongTile": "The tile cannot be fertilized. It must be tilled.",
-                "tooFertile": "The tile is already fully fertile."
+                "wrongTile": "The tile must be tilled before fertilizing.",
+                "tooFertile": "The tile is already fully fertile.",
+                "plantTypeNotEmpty": "Cannot fertilize a tile with a growing plant (use appropriate growth stage)."
             },
             "plant": {
-                "wrongTile": "The tile cannot be planted. It must be tilled first.",
-                "notEmpty": "The tile is not empty."
+                "wrongTile": "The tile must be tilled before planting.",
+                "notEmpty": "The tile already contains a plant.",
+                "mulch": "Cannot plant on mulched tile."
             },
             "mulch": {
-                "wrongTile": "The tile cannot be mulched. It must be tilled first.",
-                "alreadyMulched": "The tile is already mulched."
+                "wrongTile": "The tile must be tilled to apply mulch.",
+                "alreadyMulched": "The tile is already mulched.",
+                "plantTypeNotEmpty": "Cannot mulch a tile with a growing plant."
             },
             "weed": {
-                "noWeeds": "There are no weeds to remove on this tile."
+                "noWeeds": "There are no weeds to remove here.",
+                "tileNotSoil": "Can only remove weeds from soil tiles."
             }
         }
     }
