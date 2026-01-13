@@ -30,67 +30,53 @@ import {
  * Returns an array of reasons why an action cannot be performed on a tile.
  * Checks each condition in the action's config against the tile state.
  */
-export function getActionBlockReasons(tile, actionConfig, strings) {
+export function getActionBlockReasons(tile, actionDef, strings) {
     const reasons = [];
-    const cond = actionConfig.condition;
+    const cond = actionDef.condition;
+    if (!cond || !strings?.messages?.blockedAction) return reasons;
 
-    if (!cond) return reasons;
+    const actionName = actionDef.name;
+    const blockedStrings = strings.messages.blockedAction[actionName] || {};
 
-    // Tile type
-    if (cond.tile !== undefined && tile.tile !== cond.tile) {
-        reasons.push(`It must be ${cond.tile}`);
+    // Example checks per action
+    switch (actionName) {
+        case "harvest":
+            if (!tile.readyToHarvest) reasons.push(blockedStrings.notReady);
+            break;
+        case "till":
+            if (tile.tile !== "soil" || tile.plantType !== null) reasons.push(blockedStrings.wrongTile);
+            break;
+        case "water":
+            if (tile.tile !== "tilled") reasons.push(blockedStrings.wrongTile);
+            if (tile.moisture >= 100) reasons.push(blockedStrings.tooMoist);
+            break;
+        case "fertilize":
+            if (tile.tile !== "tilled") reasons.push(blockedStrings.wrongTile);
+            if (tile.fertility >= 100) reasons.push(blockedStrings.tooFertile);
+            break;
+        case "plant":
+            if (tile.tile !== "tilled") reasons.push(blockedStrings.wrongTile);
+            if (tile.plantType !== null) reasons.push(blockedStrings.notEmpty);
+            break;
+        case "mulch":
+            if (tile.tile !== "tilled") reasons.push(blockedStrings.wrongTile);
+            if (tile.mulch) reasons.push(blockedStrings.alreadyMulched);
+            break;
+        case "weed":
+            if (!tile.weeds) reasons.push(blockedStrings.noWeeds);
+            break;
+        case "clear":
+            // Check all OR conditions and report only failed ones
+            if (tile.plantType !== null) reasons.push(blockedStrings.plantTypeNotEmpty);
+            if (!tile.weeds) reasons.push(blockedStrings.weedsMissing);
+            if (!tile.mulch) reasons.push(blockedStrings.mulchMissing);
+            if (tile.tile !== "grass" && tile.tile !== "rock") reasons.push(blockedStrings.nothingToClear);
+            break;
+        default:
+            reasons.push(strings.messages.general.actionBlockedTitle);
     }
 
-    // Moisture
-    if (cond.moisture?.lt !== undefined && tile.moisture >= cond.moisture.lt) {
-        reasons.push("It must not be fully moist");
-    }
-    if (cond.moisture?.gt !== undefined && tile.moisture <= cond.moisture.gt) {
-        reasons.push("It must be moist enough");
-    }
-
-    // Fertility
-    if (cond.fertility?.lt !== undefined && tile.fertility >= cond.fertility.lt) {
-        reasons.push("It must not be fully fertile");
-    }
-    if (cond.fertility?.gt !== undefined && tile.fertility <= cond.fertility.gt) {
-        reasons.push("It must be fertile enough");
-    }
-
-    // Mulch
-    if (cond.mulch !== undefined && tile.mulch !== cond.mulch) {
-        reasons.push(cond.mulch ? "It must be mulched" : "It must be unmulched");
-    }
-
-    // Weeds
-    if (cond.weeds !== undefined && tile.weeds !== cond.weeds) {
-        reasons.push(cond.weeds ? "It must have weeds" : "It must have no weeds");
-    }
-
-    // PlantType
-    if (cond.plantType !== undefined) {
-        if (cond.plantType === null && tile.plantType !== null) {
-            reasons.push("It must be empty");
-        } else if (cond.plantType !== null && tile.plantType !== cond.plantType) {
-            reasons.push(`It must contain ${cond.plantType}`);
-        }
-    }
-
-    // OR conditions
-    if (cond.or && Array.isArray(cond.or)) {
-        const orFailed = cond.or.every(subCond => {
-            return Object.entries(subCond).every(([key, val]) => {
-                if (key === "tile") return tile.tile !== val;
-                if (key === "plantType") return tile.plantType === val;
-                if (key === "weeds") return tile.weeds !== val;
-                if (key === "mulch") return tile.mulch !== val;
-                return false;
-            });
-        });
-        if (orFailed) reasons.push("No valid element to clear");
-    }
-
-    return reasons;
+    return reasons.filter(Boolean);
 }
 
 const configUrl = 'config.json';

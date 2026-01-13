@@ -218,10 +218,9 @@ export function updatePlayer(config) {
             const actionDef = config.tiles.actions[actionLabel];
             const reasons = getActionBlockReasons(tile, actionDef, window.strings || {});
             if (reasons.length > 0) {
-                const reasonsText = reasons.join("<br>- ");
                 showGameMessageModal({
-                    title: "Action blocked",
-                    message: `Cannot ${actionLabel} this tile.<br>- ${reasonsText}`
+                    title: strings.messages.general.actionBlockedTitle,
+                    message: reasons.join("<br>- ")
                 });
                 return;
             }
