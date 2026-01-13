@@ -216,15 +216,18 @@ export function updatePlayer(config) {
                 return;
             }
             inputState.keysPressed[key] = false; // consume key immediately for non-plant actions
-            const tile = getTile(gameState.selector.x, gameState.selector.y, config);
-            const actionDef = config.tiles.actions.clear;
-            const reasons = getActionBlockReasons(tile, actionDef, strings);
-            if (reasons.length) {
+            const actionDef = config.tiles.actions[actionLabel];
+            if (!actionDef) return;
+
+            const failedReasons = getActionBlockReasons(tile, actionDef, strings);
+            if (failedReasons.length > 0) {
                 showGameMessageModal({
-                    title: `Cannot ${strings.actions.clear} this tile`,
-                    message: reasons.join("<br>- ")
+                    title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
+                    message: failedReasons.map(r => `- ${r}`).join("<br>")
                 });
+                return;
             }
+
             const newTile = applyActionEffects(tile, actionDef, config);
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
             // increment daily stats for each action label
