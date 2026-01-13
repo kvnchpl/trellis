@@ -6,7 +6,7 @@ import {
 } from './state.js';
 import {
     saveGameState,
-    getActionBlockReasons
+    getBlockedActionMessages
 } from './game.js';
 import {
     render
@@ -138,59 +138,13 @@ function formatFailedConditions(failed, actionLabel, tile, actionDef) {
     if (!actionDef || !tile) return '';
 
     // Delegate to unified action-block reason logic
-    const reasons = getActionBlockReasons(tile, { ...actionDef, name: actionLabel }, strings);
+    const reasons = getBlockedActionMessages(tile, { ...actionDef, name: actionLabel }, strings);
 
     if (reasons.length > 0) {
         return reasons.join('<br>');
     }
 
     return '';
-}
-
-/**
- * Returns an array of failed condition keys for a tile.
- * Only includes the conditions that actually failed.
- * Supports nested AND/OR logic.
- * @param {Object} tile - The tile object.
- * @param {Object} condition - The condition object.
- * @returns {string[]} Array of failed condition keys (to map via strings.json)
- */
-export function getFailedConditions(tile, condition) {
-    if (!condition) return [];
-
-    // Handle OR: only fail if ALL OR subconditions fail
-    if (condition.or && Array.isArray(condition.or)) {
-        const failedOr = condition.or.map(sub => getFailedConditions(tile, sub));
-        if (failedOr.every(f => f.length > 0)) {
-            return failedOr.flat(); // all OR options failed
-        } else {
-            return []; // at least one OR option passed
-        }
-    }
-
-    const failed = [];
-
-    for (const [key, val] of Object.entries(condition)) {
-        const tileVal = tile[key];
-
-        if (val && typeof val === "object" && !Array.isArray(val)) {
-            if ("lt" in val && !(tileVal < val.lt)) {
-                failed.push(key);
-            } else if ("gt" in val && !(tileVal > val.gt)) {
-                failed.push(key);
-            } else if ("not" in val && tileVal === val.not) {
-                failed.push(key);
-            } else {
-                // nested AND object
-                const subFailed = getFailedConditions(tileVal, val);
-                failed.push(...subFailed);
-            }
-        } else if (tileVal !== val) {
-            failed.push(key);
-        }
-    }
-
-    return failed;
 }
 
 /**

@@ -4,14 +4,13 @@ import {
 } from './state.js';
 import {
     saveGameState,
-    getActionBlockReasons
+    getBlockedActionMessages
 } from './game.js';
 import {
     strings,
     incrementTime,
     updateTileInfoPanel,
     evaluateCondition,
-    getFailedConditions,
     showPlantSelectionModal,
     inputState,
     showGameMessageModal
@@ -219,7 +218,7 @@ export function updatePlayer(config) {
             const actionDef = config.tiles.actions[actionLabel];
             if (!actionDef) return;
 
-            const failedReasons = getActionBlockReasons(tile, actionDef, strings);
+            const failedReasons = getBlockedActionMessages(tile, actionDef, strings);
             if (failedReasons.length > 0) {
                 showGameMessageModal({
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,

@@ -27,7 +27,7 @@ import {
 } from './ui.js';
 
 /**
- * Returns human-readable reasons why an action cannot be performed on a tile.
+ * Returns human-readable messages explaining why an action is blocked on a tile.
  * Fully maps condition keys to per-action blocked messages dynamically.
  * Supports OR conditions, lt/gt/not, booleans, and tile-specific messages.
  * @param {Object} tile - The tile object.
@@ -35,7 +35,7 @@ import {
  * @param {Object} strings - Loaded strings.json
  * @returns {string[]} Array of human-readable messages
  */
-export function getActionBlockReasons(tile, actionDef, strings) {
+export function getBlockedActionMessages(tile, actionDef, strings) {
     if (!tile || !actionDef || !strings?.messages?.blockedAction) return [];
 
     const actionName = actionDef.name;
