@@ -1,0 +1,25 @@
+{
+    "actions": {
+        "clear": "clear",
+        "harvest": "harvest",
+        "plant": "plant",
+        "till": "till",
+        "water": "water",
+        "fertilize": "fertilize",
+        "mulch": "mulch",
+        "weed": "weed"
+    },
+    "tileAttributes": {
+        "plantType": "a plant",
+        "weeds": "weeds",
+        "mulch": "mulch",
+        "tileGrass": "grass",
+        "tileRock": "rocks",
+        "readyToHarvest": "ready to harvest"
+    },
+    "messages": {
+        "actionBlocked": "Cannot {action} this tile. Reason(s): {reason}.",
+        "noHarvest": "The tile is not ready to harvest.",
+        "nothingToClear": "The tile has no plant, weeds, mulch, grass, or rocks."
+    }
+}

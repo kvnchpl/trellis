@@ -10,6 +10,8 @@ import {
 import {
     render
 } from './renderer.js';
+import stringsData from '../data/strings.json' assert { type: 'json' };
+const strings = stringsData;
 
 // Modal helpers
 export function openModal() {
@@ -120,37 +122,37 @@ export function getFailedConditions(tile, condObj) {
     if (condObj.or && Array.isArray(condObj.or)) {
         const passed = condObj.or.some(c => evaluateCondition(tile, c));
         if (!passed) {
-            // Convert each OR alternative into a human-friendly description
             const readable = condObj.or.map(c => {
                 const key = Object.keys(c)[0];
-                const val = c[key];
-                if (typeof val === 'object' && val.not !== undefined) return `${key} must not be ${val.not}`;
-                if (typeof val === 'object' && val.lt !== undefined) return `${key} must be less than ${val.lt}`;
-                if (typeof val === 'object' && val.gt !== undefined) return `${key} must be greater than ${val.gt}`;
-                if (typeof val === 'object' && val.lte !== undefined) return `${key} must be ≤ ${val.lte}`;
-                if (typeof val === 'object' && val.gte !== undefined) return `${key} must be ≥ ${val.gte}`;
-                if (val === 'exists') return `${key} must exist`;
-                return `${key} must be ${val}`;
+                switch (key) {
+                    case 'tile':
+                        if (c.tile === 'grass') return strings.tileAttributes.tileGrass;
+                        if (c.tile === 'rock') return strings.tileAttributes.tileRock;
+                        break;
+                    default:
+                        return strings.tileAttributes[key] || key;
+                }
             });
-            failed.push(`One of: ${readable.join(', ')}`);
+            failed.push(readable.join(', '));
         }
         return failed;
     }
 
-    // Handle single conditions as before
     Object.entries(condObj).forEach(([key, cond]) => {
         const current = tile[key];
-        if (cond === 'exists') {
-            if (current === null || current === undefined) failed.push(`${key} must exist`);
+        let failMessage = null;
+
+        if (cond === 'exists' && (current === null || current === undefined)) {
+            failMessage = strings.tileAttributes[key] || key;
         } else if (typeof cond === 'object' && cond !== null) {
-            if ('not' in cond && current === cond.not) failed.push(`${key} must not be ${cond.not}`);
-            if ('lt' in cond && !(current < cond.lt)) failed.push(`${key} must be < ${cond.lt}`);
-            if ('gt' in cond && !(current > cond.gt)) failed.push(`${key} must be > ${cond.gt}`);
-            if ('lte' in cond && !(current <= cond.lte)) failed.push(`${key} must be ≤ ${cond.lte}`);
-            if ('gte' in cond && !(current >= cond.gte)) failed.push(`${key} must be ≥ ${cond.gte}`);
-        } else {
-            if (current !== cond) failed.push(`${key} must be ${cond}`);
+            if ('not' in cond && current === cond.not) failMessage = strings.tileAttributes[key] || key;
+            if ('lt' in cond && !(current < cond.lt)) failMessage = strings.tileAttributes[key] || key;
+            if ('gt' in cond && !(current > cond.gt)) failMessage = strings.tileAttributes[key] || key;
+        } else if (current !== cond) {
+            failMessage = strings.tileAttributes[key] || key;
         }
+
+        if (failMessage) failed.push(failMessage);
     });
 
     return failed;
@@ -444,9 +446,17 @@ export function updateTileInfoPanel(config) {
             const valid = evaluateCondition(tileNow, actionDef.condition);
             if (!valid) {
                 const failed = getFailedConditions(tileNow, actionDef.condition);
+                let reasonText = failed.join(', ');
+
+                if (actionLabel === 'clear' && failed.length > 0) {
+                    reasonText = strings.messages.nothingToClear;
+                } else if (actionLabel === 'harvest' && failed.includes('readyToHarvest')) {
+                    reasonText = strings.messages.noHarvest;
+                }
+
                 showGameMessageModal({
-                    title: "Action blocked",
-                    message: `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                    title: `Cannot ${strings.actions[actionLabel]} this tile`,
+                    message: reasonText
                 });
                 console.log(`Action "${actionLabel}" blocked on tile:`, tileNow, "Failed conditions:", failed);
                 return;
