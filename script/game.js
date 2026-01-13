@@ -27,13 +27,12 @@ import {
 } from './ui.js';
 
 /**
- * Returns an array of human-readable reasons why an action cannot be performed on a tile.
- * Fully relies on config.json conditions and strings.json for messages.
- * Uses strings.conditionKeyMap to map failed conditions to friendly messages.
- * Works for all actions, including OR/nested conditions, without hardcoded special cases.
- * @param {Object} tile - The tile object.
+ * Returns human-readable reasons why an action cannot be performed on a tile.
+ * Supports all condition types (boolean, numeric, not, lt, gt), nested AND/OR, and maps
+ * to the correct per-action messages from strings.json.
+ * @param {Object} tile - The tile object
  * @param {Object} actionDef - The action definition from config.tiles.actions
- * @param {Object} strings - The loaded strings.json
+ * @param {Object} strings - Loaded strings.json
  * @returns {string[]} Array of messages
  */
 export function getActionBlockReasons(tile, actionDef, strings) {
@@ -43,16 +42,18 @@ export function getActionBlockReasons(tile, actionDef, strings) {
     const blockedStrings = strings.messages.blockedAction[actionName] || {};
     const keyMap = strings.conditionKeyMap || {};
 
-    function collectFailedKeys(tile, condition) {
+    // Recursively collect failed conditions with context
+    function collectFailed(tile, condition) {
         if (!condition) return [];
 
-        // Handle OR: only fail if ALL OR subconditions fail
+        // OR condition: fail only if all subconditions fail
         if (condition.or && Array.isArray(condition.or)) {
-            const failedOr = condition.or.map(sub => collectFailedKeys(tile, sub));
-            if (failedOr.every(f => f.length > 0)) {
-                return failedOr.flat();
+            const orFailed = condition.or.map(sub => collectFailed(tile, sub));
+            if (orFailed.every(f => f.length > 0)) {
+                // flatten all OR failed messages
+                return orFailed.flat();
             } else {
-                return []; // at least one OR subcondition passed
+                return []; // at least one OR passed
             }
         }
 
@@ -63,30 +64,54 @@ export function getActionBlockReasons(tile, actionDef, strings) {
 
             if (val && typeof val === "object" && !Array.isArray(val)) {
                 if ("lt" in val && !(tileVal < val.lt)) {
-                    const mapKey = keyMap[key]?.lt;
-                    if (mapKey) failed.push(mapKey);
+                    failed.push({ key, type: "lt" });
                 } else if ("gt" in val && !(tileVal > val.gt)) {
-                    const mapKey = keyMap[key]?.gt;
-                    if (mapKey) failed.push(mapKey);
+                    failed.push({ key, type: "gt" });
                 } else if ("not" in val && tileVal === val.not) {
-                    const mapKey = keyMap[key];
-                    if (mapKey) failed.push(mapKey);
+                    failed.push({ key, type: "not", notValue: val.not });
                 } else {
-                    failed.push(...collectFailedKeys(tileVal, val));
+                    // nested AND
+                    failed.push(...collectFailed(tileVal, val));
                 }
             } else if (tileVal !== val) {
-                const mapKey = keyMap[key]?.[val] || keyMap[key];
-                if (mapKey) failed.push(mapKey);
+                failed.push({ key, value: val });
             }
         }
 
         return failed;
     }
 
-    const failedKeys = collectFailedKeys(tile, actionDef.condition);
-    const reasons = failedKeys.map(k => blockedStrings[k]).filter(Boolean);
+    const rawFailed = collectFailed(tile, actionDef.condition);
 
-    return reasons;
+    // Map each failed condition to the proper blockedAction message
+    const reasons = rawFailed.map(f => {
+        const key = f.key;
+        const type = f.type;
+        const value = f.value ?? f.notValue;
+
+        // First try direct blockedStrings mapping
+        // Some actions like "clear" have special message keys
+        let msgKey;
+
+        // Check if blockedStrings has a direct mapping
+        if (blockedStrings[key]) msgKey = key;
+
+        // Check for type-specific mapping (lt/gt/not)
+        else if (keyMap[key]) {
+            if (type && keyMap[key][type]) msgKey = keyMap[key][type];
+            else if (value !== undefined && keyMap[key][value] !== undefined) msgKey = value;
+        }
+
+        // Special handling for "tile" with multiple values
+        if (key === "tile") {
+            if (tile.tile === "grass" && blockedStrings["tileGrass"]) msgKey = "tileGrass";
+            else if (tile.tile === "rock" && blockedStrings["tileRock"]) msgKey = "tileRock";
+        }
+
+        return blockedStrings[msgKey] || key; // fallback to raw key
+    }).filter(Boolean);
+
+    return [...new Set(reasons)]; // remove duplicates
 }
 
 const configUrl = 'config.json';
