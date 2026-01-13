@@ -12,6 +12,10 @@
             "true": "tile is already mulched",
             "false": "tile is not mulched"
         },
+        "fertilized": {
+            "true": "tile already fertilized",
+            "false": "tile not fertilized"
+        },
         "tile": {
             "soil": "tile must be soil",
             "tilled": "tile must be tilled",
@@ -23,33 +27,28 @@
             "true": "ready to harvest",
             "false": "not ready to harvest"
         },
-        "fertility": {
-            "lt": "tile is already fully fertile",
-            "gt": "tile is too fertile"
-        },
         "moisture": {
             "lt": "tile is too wet",
             "gt": "tile is too dry"
         },
+        "fertility": {
+            "lt": "tile is already fully fertile",
+            "gt": "tile is too fertile"
+        },
         "growthStage": {
             "sprout": "plant is a sprout",
+            "shoot": "plant is a shoot",
+            "stalk": "plant is a stalk",
             "flower": "plant is flowering",
-            "vine": "plant is a vine",
             "pod": "plant is in pod stage",
             "tree": "plant is a tree",
             "fruiting": "plant is fruiting",
             "cob": "plant is a corn cob",
-            "sapling": "plant is a sapling",
-            "shoot": "plant is a shoot",
-            "stalk": "plant is a stalk"
+            "sapling": "plant is a sapling"
         },
         "growthProgress": {
             "lt": "growth not sufficient",
             "gt": "growth exceeded limit"
-        },
-        "fertilized": {
-            "true": "tile already fertilized",
-            "false": "tile not fertilized"
         },
         "or": "none of the required conditions met"
     },
