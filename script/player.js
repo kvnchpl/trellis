@@ -218,7 +218,10 @@ export function updatePlayer(config) {
             const validNow = evaluateCondition(tile, actionDef.condition);
             if (!validNow) {
                 const failed = getFailedConditions(tile, actionDef.condition);
-                showGameMessageModal(`Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`);
+                showGameMessageModal(
+                    "Action blocked",
+                    `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                );
                 return;
             }
             const newTile = applyActionEffects(tile, actionDef, config);

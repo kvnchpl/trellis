@@ -25,14 +25,14 @@ let lastGrowthUpdateWeek = null;
  * Shows a generic game message modal.
  * @param {string} message - Message text to display.
  */
-export function showGameMessageModal(message) {
+export function showGameMessageModal(title, message) {
     const overlay = document.getElementById('game-message-overlay');
     const titleEl = document.getElementById('game-message-title');
     const contentEl = document.getElementById('game-message-content');
     const btn = document.getElementById('game-message-continue');
     btn.tabIndex = 0;
 
-    titleEl.textContent = 'MESSAGE';
+    titleEl.textContent = title;
     contentEl.innerHTML = `<div>${message}</div>`;
 
     inputState.modalOpen = true;
@@ -397,7 +397,7 @@ export function updateTileInfoPanel(config) {
                 const message = failed.length ?
                     `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}` :
                     `Cannot perform "${actionLabel}" on this tile.`;
-                showGameMessageModal(message);
+                showGameMessageModal("Action blocked", message);
                 console.log(`Action "${actionLabel}" blocked on tile:`, tileNow, "Failed conditions:", failed);
                 return;
             }

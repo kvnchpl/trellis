@@ -106,7 +106,10 @@ function loadGameState() {
 function startNewGame() {
     if (localStorage.getItem("trellisSave")) {
         // Show confirmation modal instead of confirm dialog
-        showGameMessageModal("Start a new game? This will overwrite your current progress.");
+        showGameMessageModal(
+            "Start a new game?",
+            "This will overwrite your current progress."
+        );
         const btn = document.getElementById('game-message-continue');
         btn.onclick = () => {
             // Hide modal
