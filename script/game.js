@@ -28,12 +28,12 @@ import {
 
 /**
  * Returns human-readable reasons why an action cannot be performed on a tile.
- * Supports all condition types (boolean, numeric, not, lt, gt), nested AND/OR, and maps
- * to the correct per-action messages from strings.json.
+ * Works with all actions, nested AND/OR, numeric ranges (lt/gt), booleans, nots, and maps
+ * to the proper blockedAction messages from strings.json dynamically.
  * @param {Object} tile - The tile object
- * @param {Object} actionDef - The action definition from config.tiles.actions
+ * @param {Object} actionDef - The action definition (from config.tiles.actions)
  * @param {Object} strings - Loaded strings.json
- * @returns {string[]} Array of messages
+ * @returns {string[]} Array of human-readable messages
  */
 export function getActionBlockReasons(tile, actionDef, strings) {
     if (!tile || !actionDef || !strings?.messages?.blockedAction) return [];
@@ -42,73 +42,56 @@ export function getActionBlockReasons(tile, actionDef, strings) {
     const blockedStrings = strings.messages.blockedAction[actionName] || {};
     const keyMap = strings.conditionKeyMap || {};
 
-    // Recursively collect failed conditions with context
     function collectFailed(tile, condition) {
         if (!condition) return [];
 
-        // OR condition: fail only if all subconditions fail
+        // OR: fail only if all subconditions fail
         if (condition.or && Array.isArray(condition.or)) {
-            const orFailed = condition.or.map(sub => collectFailed(tile, sub));
-            if (orFailed.every(f => f.length > 0)) {
-                // flatten all OR failed messages
-                return orFailed.flat();
-            } else {
-                return []; // at least one OR passed
-            }
+            const subFailed = condition.or.map(sub => collectFailed(tile, sub));
+            if (subFailed.every(f => f.length > 0)) return subFailed.flat();
+            return [];
         }
 
         const failed = [];
-
         for (const [key, val] of Object.entries(condition)) {
             const tileVal = tile[key];
-
-            if (val && typeof val === "object" && !Array.isArray(val)) {
-                if ("lt" in val && !(tileVal < val.lt)) {
-                    failed.push({ key, type: "lt" });
-                } else if ("gt" in val && !(tileVal > val.gt)) {
-                    failed.push({ key, type: "gt" });
-                } else if ("not" in val && tileVal === val.not) {
-                    failed.push({ key, type: "not", notValue: val.not });
-                } else {
-                    // nested AND
-                    failed.push(...collectFailed(tileVal, val));
-                }
+            if (val && typeof val === 'object' && !Array.isArray(val)) {
+                if ('lt' in val && !(tileVal < val.lt)) failed.push({ key, type: 'lt' });
+                else if ('gt' in val && !(tileVal > val.gt)) failed.push({ key, type: 'gt' });
+                else if ('not' in val && tileVal === val.not) failed.push({ key, type: 'not', notValue: val.not });
+                else failed.push(...collectFailed(tileVal, val)); // nested AND
             } else if (tileVal !== val) {
                 failed.push({ key, value: val });
             }
         }
-
         return failed;
     }
 
     const rawFailed = collectFailed(tile, actionDef.condition);
 
-    // Map each failed condition to the proper blockedAction message
+    // Map each failed condition to the correct blockedAction message
     const reasons = rawFailed.map(f => {
         const key = f.key;
         const type = f.type;
         const value = f.value ?? f.notValue;
 
-        // First try direct blockedStrings mapping
-        // Some actions like "clear" have special message keys
-        let msgKey;
-
-        // Check if blockedStrings has a direct mapping
-        if (blockedStrings[key]) msgKey = key;
-
-        // Check for type-specific mapping (lt/gt/not)
-        else if (keyMap[key]) {
-            if (type && keyMap[key][type]) msgKey = keyMap[key][type];
-            else if (value !== undefined && keyMap[key][value] !== undefined) msgKey = value;
+        // Special mapping for tile types (grass/rock) if defined
+        if (key === 'tile') {
+            if (tile.tile === 'grass' && blockedStrings['tileGrass']) return blockedStrings['tileGrass'];
+            if (tile.tile === 'rock' && blockedStrings['tileRock']) return blockedStrings['tileRock'];
         }
 
-        // Special handling for "tile" with multiple values
-        if (key === "tile") {
-            if (tile.tile === "grass" && blockedStrings["tileGrass"]) msgKey = "tileGrass";
-            else if (tile.tile === "rock" && blockedStrings["tileRock"]) msgKey = "tileRock";
+        // Try direct per-action mapping first
+        if (blockedStrings[key]) return blockedStrings[key];
+
+        // Then try conditionKeyMap
+        if (keyMap[key]) {
+            if (type && keyMap[key][type]) return keyMap[key][type];
+            if (value !== undefined && keyMap[key][value] !== undefined) return keyMap[key][value];
         }
 
-        return blockedStrings[msgKey] || key; // fallback to raw key
+        // Fallback to key name if nothing found
+        return key;
     }).filter(Boolean);
 
     return [...new Set(reasons)]; // remove duplicates
