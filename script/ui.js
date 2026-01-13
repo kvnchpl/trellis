@@ -5,7 +5,8 @@ import {
     advanceDay
 } from './state.js';
 import {
-    saveGameState
+    saveGameState,
+    getActionBlockReasons
 } from './game.js';
 import {
     render
@@ -126,52 +127,24 @@ export function evaluateCondition(tile, condition) {
 
 /**
  * Converts failed condition keys into human-readable messages.
- * Uses the localized strings if available.
- * @param {string[]} failed - Array of failed condition keys/messages.
+ * Uses the unified getActionBlockReasons helper.
+ * @param {string[]} failed - Array of failed condition keys/messages (ignored).
  * @param {string} actionLabel - The action being attempted.
+ * @param {Object} tile - The tile object.
+ * @param {Object} actionDef - The action definition.
  * @returns {string} Formatted reason text
  */
-function formatFailedConditions(failed, actionLabel) {
-    if (!failed || !failed.length) return '';
+function formatFailedConditions(failed, actionLabel, tile, actionDef) {
+    if (!actionDef || !tile) return '';
 
-    const seen = new Set();
-    const messages = [];
+    // Delegate to unified action-block reason logic
+    const reasons = getActionBlockReasons(tile, { ...actionDef, name: actionLabel }, strings);
 
-    failed.forEach(key => {
-        if (seen.has(key)) return;
-        seen.add(key);
+    if (reasons.length > 0) {
+        return reasons.join('<br>');
+    }
 
-        // Try action-specific blocked messages first
-        const actionBlocked = strings.messages?.blockedAction?.[actionLabel];
-        if (actionBlocked) {
-            // Map known keys to per-action messages
-            const mapping = {
-                plantType: ['plantTypeNotEmpty', 'notEmpty'],
-                weeds: ['weedsMissing', 'noWeeds'],
-                mulch: ['mulchMissing', 'alreadyMulched'],
-                tile: ['wrongTile'],
-                readyToHarvest: ['notReady']
-            };
-
-            const candidates = mapping[key] || [];
-            for (const c of candidates) {
-                if (actionBlocked[c]) {
-                    messages.push(actionBlocked[c]);
-                    return;
-                }
-            }
-        }
-
-        // Fallback to generic conditionKeyMap
-        const generic = strings.conditionKeyMap?.[key];
-        if (typeof generic === 'string') {
-            messages.push(generic);
-        } else if (generic && generic.default) {
-            messages.push(generic.default);
-        }
-    });
-
-    return messages.join('<br>');
+    return '';
 }
 
 /**
@@ -507,8 +480,7 @@ export function updateTileInfoPanel(config) {
             const tileNow = getTile(gameState.selector.x, gameState.selector.y, config);
             const valid = evaluateCondition(tileNow, actionDef.condition);
             if (!valid) {
-                const failedConditions = getFailedConditions(tileNow, actionDef.condition);
-                const reasonText = formatFailedConditions(failedConditions, actionLabel);
+                const reasonText = formatFailedConditions(null, actionLabel, tileNow, actionDef);
 
                 showGameMessageModal({
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
