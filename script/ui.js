@@ -32,7 +32,7 @@ let plantModalButtons = [];
 let plantModalFocusIndex = 0;
 let lastGrowthUpdateWeek = null;
 
-let strings = {};
+export let strings = {};
 
 /**
  * Loads localized strings from external JSON file.

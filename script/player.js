@@ -7,6 +7,7 @@ import {
     getActionBlockReasons
 } from './game.js';
 import {
+    strings,
     incrementTime,
     updateTileInfoPanel,
     evaluateCondition,
@@ -215,7 +216,7 @@ export function updatePlayer(config) {
                 return;
             }
             inputState.keysPressed[key] = false; // consume key immediately for non-plant actions
-            const tile = getTile(x, y, config);
+            const tile = getTile(gameState.selector.x, gameState.selector.y, config);
             const actionDef = config.tiles.actions.clear;
             const reasons = getActionBlockReasons(tile, actionDef, strings);
             if (reasons.length) {
