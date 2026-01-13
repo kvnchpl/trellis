@@ -445,20 +445,43 @@ export function updateTileInfoPanel(config) {
             const tileNow = getTile(gameState.selector.x, gameState.selector.y, config);
             const valid = evaluateCondition(tileNow, actionDef.condition);
             if (!valid) {
-                const failed = getFailedConditions(tileNow, actionDef.condition);
-                let reasonText = failed.join(', ');
+                let reasonText = '';
 
-                if (actionLabel === 'clear' && failed.length > 0) {
-                    reasonText = strings.messages.nothingToClear;
-                } else if (actionLabel === 'harvest' && failed.includes('readyToHarvest')) {
-                    reasonText = strings.messages.noHarvest;
+                switch (actionLabel) {
+                    case 'clear':
+                        reasonText = strings.messages.nothingToClear;
+                        break;
+                    case 'harvest':
+                        reasonText = strings.messages.noHarvest;
+                        break;
+                    case 'till':
+                        reasonText = strings.messages.cannotTill;
+                        break;
+                    case 'water':
+                        reasonText = strings.messages.cannotWater;
+                        break;
+                    case 'fertilize':
+                        reasonText = strings.messages.cannotFertilize;
+                        break;
+                    case 'plant':
+                        reasonText = strings.messages.cannotPlant;
+                        break;
+                    case 'mulch':
+                        reasonText = strings.messages.cannotMulch;
+                        break;
+                    case 'weed':
+                        reasonText = strings.messages.cannotWeed;
+                        break;
+                    default:
+                        const failed = getFailedConditions(tileNow, actionDef.condition);
+                        reasonText = failed.join(', ');
+                        break;
                 }
 
                 showGameMessageModal({
                     title: `Cannot ${strings.actions[actionLabel]} this tile`,
                     message: reasonText
                 });
-                console.log(`Action "${actionLabel}" blocked on tile:`, tileNow, "Failed conditions:", failed);
                 return;
             }
             if (isPlant) {
