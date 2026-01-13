@@ -20,7 +20,7 @@
         "fertility": "fertility"
     },
     "messages": {
-        "actionBlocked": "Cannot {action} this tile. Reason(s): {reason}.",
+        "actionBlocked": "Cannot {action} this tile.",
         "nothingToClear": "The tile has no plant, weeds, mulch, grass, or rocks to clear.",
         "noHarvest": "The tile is not ready to harvest.",
         "cannotTill": "The tile cannot be tilled. It must be bare soil with no plant.",
