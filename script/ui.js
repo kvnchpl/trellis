@@ -70,6 +70,13 @@ export function showGameMessageModal({
         cancelBtn.style.display = 'none';
     }
 
+    // Overlay click-to-cancel support for cancelable modals
+    overlay.onclick = (e) => {
+        if (e.target === overlay && cancelText) {
+            cancelBtn.click();
+        }
+    };
+
     openModal();
     overlay.style.display = 'flex';
     confirmBtn.focus();
@@ -243,6 +250,17 @@ export function showPlantSelectionModal(config, tile, x, y) {
     });
 
     overlay.style.display = 'flex';
+    // Overlay click-to-cancel: clicking overlay cancels plant modal
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            closeModal();
+            Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
+            inputState.blockedKeys.clear();
+            plantModalButtons = [];
+            plantModalFocusIndex = 0;
+            overlay.style.display = 'none';
+        }
+    };
     openModal();
 
     plantModalButtons = Array.from(
