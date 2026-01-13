@@ -222,7 +222,7 @@ export function updatePlayer(config) {
             if (failedReasons.length > 0) {
                 showGameMessageModal({
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
-                    message: failedReasons.map(r => `- ${r}`).join("<br>")
+                    message: failedReasons
                 });
                 return;
             }

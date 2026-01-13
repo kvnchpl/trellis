@@ -67,7 +67,15 @@ export function showGameMessageModal({
     const cancelBtn = document.getElementById('game-message-cancel');
 
     titleEl.textContent = title;
-    contentEl.innerHTML = `<div>${message}</div>`;
+    if (Array.isArray(message)) {
+        contentEl.innerHTML = `
+            <ul>
+                ${message.map(m => `<li>${m}</li>`).join('')}
+            </ul>
+        `;
+    } else {
+        contentEl.innerHTML = `<div>${message}</div>`;
+    }
 
     confirmBtn.textContent = confirmText;
     confirmBtn.onclick = () => {
@@ -140,11 +148,7 @@ function formatFailedConditions(failed, actionLabel, tile, actionDef) {
     // Delegate to unified action-block reason logic
     const reasons = getBlockedActionMessages(tile, { ...actionDef, name: actionLabel }, strings);
 
-    if (reasons.length > 0) {
-        return reasons.join('<br>');
-    }
-
-    return '';
+    return reasons;
 }
 
 /**
@@ -438,7 +442,7 @@ export function updateTileInfoPanel(config) {
 
                 showGameMessageModal({
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
-                    message: reasonText || "The tile does not meet the requirements for this action."
+                    message: Array.isArray(reasonText) ? reasonText : "The tile does not meet the requirements for this action."
                 });
                 return;
             }
