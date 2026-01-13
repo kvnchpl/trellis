@@ -9,25 +9,46 @@
         "mulch": "mulch",
         "weed": "weed"
     },
-    "tileAttributes": {
-        "plantType": "a plant",
-        "weeds": "weeds",
-        "mulch": "mulch",
-        "tileGrass": "grass",
-        "tileRock": "rocks",
-        "readyToHarvest": "ready to harvest",
-        "moisture": "moisture",
-        "fertility": "fertility"
-    },
     "messages": {
-        "actionBlocked": "Cannot {action} this tile.",
-        "nothingToClear": "The tile has no plant, weeds, mulch, grass, or rocks to clear.",
-        "noHarvest": "The tile is not ready to harvest.",
-        "cannotTill": "The tile cannot be tilled. It must be bare soil with no plant.",
-        "cannotWater": "The tile cannot be watered. It must be tilled first and not fully moist.",
-        "cannotFertilize": "The tile cannot be fertilized. It must be tilled first and not fully fertile.",
-        "cannotPlant": "The tile cannot be planted. It must be tilled first and empty.",
-        "cannotMulch": "The tile cannot be mulched. It must be tilled first and unmulched.",
-        "cannotWeed": "There are no weeds to remove on this tile."
+        "general": {
+            "confirmNewGame": "This will overwrite your current progress.",
+            "endDayWarning": "You won’t be able to take more actions today.",
+            "actionBlockedTitle": "Action blocked"
+        },
+        "blockedAction": {
+            "clear": {
+                "plantTypeNotEmpty": "The tile must be empty.",
+                "weedsMissing": "There are no weeds to remove.",
+                "mulchMissing": "The tile is not mulched.",
+                "tileGrass": "The tile is not grass.",
+                "tileRock": "The tile is not rock.",
+                "nothingToClear": "The tile has nothing to clear."
+            },
+            "harvest": {
+                "notReady": "The tile is not ready to harvest."
+            },
+            "till": {
+                "wrongTile": "The tile cannot be tilled. It must be bare soil with no plant."
+            },
+            "water": {
+                "wrongTile": "The tile cannot be watered. It must be tilled.",
+                "tooMoist": "The tile is already fully moist."
+            },
+            "fertilize": {
+                "wrongTile": "The tile cannot be fertilized. It must be tilled.",
+                "tooFertile": "The tile is already fully fertile."
+            },
+            "plant": {
+                "wrongTile": "The tile cannot be planted. It must be tilled first.",
+                "notEmpty": "The tile is not empty."
+            },
+            "mulch": {
+                "wrongTile": "The tile cannot be mulched. It must be tilled first.",
+                "alreadyMulched": "The tile is already mulched."
+            },
+            "weed": {
+                "noWeeds": "There are no weeds to remove on this tile."
+            }
+        }
     }
 }
