@@ -40,48 +40,52 @@ export function getActionBlockReasons(tile, actionDef, strings) {
 
     const actionName = actionDef.name;
     const blockedStrings = strings.messages.blockedAction[actionName] || {};
+    const keyMap = strings.conditionKeyMap || {};
 
-    /**
-     * Recursively evaluates the condition object and returns an array of failed condition keys.
-     * Supports OR logic from config.
-     */
-    function collectFailedConditions(tile, condition) {
+    function collectFailedKeys(tile, condition) {
         if (!condition) return [];
 
-        // Handle OR conditions
         if (condition.or && Array.isArray(condition.or)) {
-            const failedOr = condition.or.map(sub => collectFailedConditions(tile, sub)).filter(f => f.length);
-            if (failedOr.length === condition.or.length) {
-                // all OR subconditions failed
-                return failedOr.flat();
-            } else {
-                return []; // at least one OR option passed
-            }
+            const failedOr = condition.or.map(sub => collectFailedKeys(tile, sub)).filter(f => f.length);
+            if (failedOr.length === condition.or.length) return failedOr.flat();
+            return [];
         }
 
         const failed = [];
+
         for (const [key, val] of Object.entries(condition)) {
+            const tileVal = tile[key];
+
             if (val && typeof val === "object" && !Array.isArray(val)) {
-                if ("lt" in val && !(tile[key] < val.lt)) failed.push(key);
-                else if ("gt" in val && !(tile[key] > val.gt)) failed.push(key);
-                else if ("not" in val && tile[key] === val.not) failed.push(key);
-                else {
-                    const subFailed = collectFailedConditions(tile[key], val);
-                    failed.push(...subFailed);
+                if ("lt" in val && !(tileVal < val.lt)) {
+                    const mapKey = keyMap[key]?.lt;
+                    if (mapKey) failed.push(mapKey);
+                } else if ("gt" in val && !(tileVal > val.gt)) {
+                    const mapKey = keyMap[key]?.gt;
+                    if (mapKey) failed.push(mapKey);
+                } else if ("not" in val && tileVal === val.not) {
+                    const mapKey = keyMap[key];
+                    if (mapKey) failed.push(mapKey);
+                } else {
+                    failed.push(...collectFailedKeys(tileVal, val));
                 }
-            } else if (tile[key] !== val) {
-                failed.push(key);
+            } else if (tileVal !== val) {
+                const mapKey = keyMap[key]?.[val] || keyMap[key];
+                if (mapKey) failed.push(mapKey);
             }
         }
+
         return failed;
     }
 
-    const failedKeys = collectFailedConditions(tile, actionDef.condition);
+    const failedKeys = collectFailedKeys(tile, actionDef.condition);
+    const reasons = failedKeys.map(k => blockedStrings[k]).filter(Boolean);
 
-    // Map failed keys to human-readable messages from strings.json
-    const reasons = failedKeys.map(f => blockedStrings[f] || f);
+    if (reasons.length === 0 && !evaluateCondition(tile, actionDef.condition)) {
+        reasons.push("Cannot perform this action.");
+    }
 
-    return reasons.filter(Boolean);
+    return reasons;
 }
 
 const configUrl = 'config.json';

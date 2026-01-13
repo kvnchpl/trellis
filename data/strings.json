@@ -1,4 +1,20 @@
 {
+    "conditionKeyMap": {
+        "plantType": "plantTypeNotEmpty",
+        "weeds": "weedsMissing",
+        "mulch": "mulchMissing",
+        "tile": {
+            "grass": "tileGrass",
+            "rock": "tileRock"
+        },
+        "readyToHarvest": "notReady",
+        "fertility": {
+            "lt": "tooFertile"
+        },
+        "moisture": {
+            "lt": "tooMoist"
+        }
+    },
     "actions": {
         "clear": "clear",
         "harvest": "harvest",
