@@ -1,19 +1,54 @@
 {
     "conditionKeyMap": {
-        "plantType": "plantTypeNotEmpty",
-        "weeds": "weedsMissing",
-        "mulch": "mulchMissing",
-        "tile": {
-            "grass": "tileGrass",
-            "rock": "tileRock"
+        "plantType": {
+            "not": "tile must be empty",
+            "null": "tile must be empty"
         },
-        "readyToHarvest": "notReady",
+        "weeds": {
+            "true": "there are weeds",
+            "false": "no weeds to remove"
+        },
+        "mulch": {
+            "true": "tile is mulched",
+            "false": "tile is not mulched"
+        },
+        "tile": {
+            "soil": "must be soil",
+            "tilled": "must be tilled",
+            "grass": "tile must be grass",
+            "rock": "tile must be rock",
+            "default": "invalid tile type"
+        },
+        "readyToHarvest": {
+            "true": "ready to harvest",
+            "false": "not ready to harvest"
+        },
         "fertility": {
-            "lt": "tooFertile"
+            "lt": "fertility is already high",
+            "gt": "fertility is too high"
         },
         "moisture": {
-            "lt": "tooMoist"
-        }
+            "lt": "tile is too wet",
+            "gt": "tile is too dry"
+        },
+        "growthStage": {
+            "sprout": "plant is just a sprout",
+            "flower": "plant is flowering",
+            "vine": "plant is a vine",
+            "pod": "plant is in pod stage",
+            "tree": "plant is a tree",
+            "fruiting": "plant is fruiting",
+            "cob": "plant is a corn cob"
+        },
+        "growthProgress": {
+            "lt": "growth not sufficient",
+            "gt": "growth exceeded limit"
+        },
+        "fertilized": {
+            "true": "tile is already fertilized",
+            "false": "tile not fertilized yet"
+        },
+        "or": "none of the required conditions met"
     },
     "actions": {
         "clear": "clear",
@@ -33,11 +68,12 @@
         },
         "blockedAction": {
             "clear": {
+                "tileMustBeSoil": "The tile must be soil to clear it.",
+                "tileGrass": "The tile is not grass.",
+                "tileRock": "The tile is not rock.",
                 "plantTypeNotEmpty": "The tile must be empty.",
                 "weedsMissing": "There are no weeds to remove.",
                 "mulchMissing": "The tile is not mulched.",
-                "tileGrass": "The tile is not grass.",
-                "tileRock": "The tile is not rock.",
                 "nothingToClear": "The tile has nothing to clear."
             },
             "harvest": {
