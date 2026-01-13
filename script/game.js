@@ -27,54 +27,59 @@ import {
 } from './ui.js';
 
 /**
- * Returns an array of reasons why an action cannot be performed on a tile.
- * Checks each condition in the action's config against the tile state.
+ * Returns an array of human-readable reasons why an action cannot be performed on a tile.
+ * Fully relies on config.json conditions and strings.json for messages.
+ * Only returns messages for conditions that actually failed.
+ * @param {Object} tile - The tile object.
+ * @param {Object} actionDef - The action definition from config.tiles.actions
+ * @param {Object} strings - The loaded strings.json
+ * @returns {string[]} Array of messages
  */
 export function getActionBlockReasons(tile, actionDef, strings) {
-    const reasons = [];
-    const cond = actionDef.condition;
-    if (!cond || !strings?.messages?.blockedAction) return reasons;
+    if (!tile || !actionDef || !strings?.messages?.blockedAction) return [];
 
     const actionName = actionDef.name;
     const blockedStrings = strings.messages.blockedAction[actionName] || {};
 
-    // Example checks per action
-    switch (actionName) {
-        case "harvest":
-            if (!tile.readyToHarvest) reasons.push(blockedStrings.notReady);
-            break;
-        case "till":
-            if (tile.tile !== "soil" || tile.plantType !== null) reasons.push(blockedStrings.wrongTile);
-            break;
-        case "water":
-            if (tile.tile !== "tilled") reasons.push(blockedStrings.wrongTile);
-            if (tile.moisture >= 100) reasons.push(blockedStrings.tooMoist);
-            break;
-        case "fertilize":
-            if (tile.tile !== "tilled") reasons.push(blockedStrings.wrongTile);
-            if (tile.fertility >= 100) reasons.push(blockedStrings.tooFertile);
-            break;
-        case "plant":
-            if (tile.tile !== "tilled") reasons.push(blockedStrings.wrongTile);
-            if (tile.plantType !== null) reasons.push(blockedStrings.notEmpty);
-            break;
-        case "mulch":
-            if (tile.tile !== "tilled") reasons.push(blockedStrings.wrongTile);
-            if (tile.mulch) reasons.push(blockedStrings.alreadyMulched);
-            break;
-        case "weed":
-            if (!tile.weeds) reasons.push(blockedStrings.noWeeds);
-            break;
-        case "clear":
-            // Check all OR conditions and report only failed ones
-            if (tile.plantType !== null) reasons.push(blockedStrings.plantTypeNotEmpty);
-            if (!tile.weeds) reasons.push(blockedStrings.weedsMissing);
-            if (!tile.mulch) reasons.push(blockedStrings.mulchMissing);
-            if (tile.tile !== "grass" && tile.tile !== "rock") reasons.push(blockedStrings.nothingToClear);
-            break;
-        default:
-            reasons.push(strings.messages.general.actionBlockedTitle);
+    /**
+     * Recursively evaluates the condition object and returns an array of failed condition keys.
+     * Supports OR logic from config.
+     */
+    function collectFailedConditions(tile, condition) {
+        if (!condition) return [];
+
+        // Handle OR conditions
+        if (condition.or && Array.isArray(condition.or)) {
+            const failedOr = condition.or.map(sub => collectFailedConditions(tile, sub)).filter(f => f.length);
+            if (failedOr.length === condition.or.length) {
+                // all OR subconditions failed
+                return failedOr.flat();
+            } else {
+                return []; // at least one OR option passed
+            }
+        }
+
+        const failed = [];
+        for (const [key, val] of Object.entries(condition)) {
+            if (val && typeof val === "object" && !Array.isArray(val)) {
+                if ("lt" in val && !(tile[key] < val.lt)) failed.push(key);
+                else if ("gt" in val && !(tile[key] > val.gt)) failed.push(key);
+                else if ("not" in val && tile[key] === val.not) failed.push(key);
+                else {
+                    const subFailed = collectFailedConditions(tile[key], val);
+                    failed.push(...subFailed);
+                }
+            } else if (tile[key] !== val) {
+                failed.push(key);
+            }
+        }
+        return failed;
     }
+
+    const failedKeys = collectFailedConditions(tile, actionDef.condition);
+
+    // Map failed keys to human-readable messages from strings.json
+    const reasons = failedKeys.map(f => blockedStrings[f] || f);
 
     return reasons.filter(Boolean);
 }
