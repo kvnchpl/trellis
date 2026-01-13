@@ -25,26 +25,45 @@ let lastGrowthUpdateWeek = null;
  * Shows a generic game message modal.
  * @param {string} message - Message text to display.
  */
-export function showGameMessageModal(title, message, continueText = "Continue") {
+export function showGameMessageModal({
+    title,
+    message,
+    confirmText = "OK",
+    cancelText = null,
+    onConfirm = null,
+    onCancel = null
+}) {
     const overlay = document.getElementById('game-message-overlay');
     const titleEl = document.getElementById('game-message-title');
     const contentEl = document.getElementById('game-message-content');
-    const btn = document.getElementById('game-message-continue');
-    btn.tabIndex = 0;
+    const confirmBtn = document.getElementById('game-message-confirm');
+    const cancelBtn = document.getElementById('game-message-cancel');
 
     titleEl.textContent = title;
     contentEl.innerHTML = `<div>${message}</div>`;
-    btn.textContent = continueText;
+
+    confirmBtn.textContent = confirmText;
+    confirmBtn.onclick = () => {
+        overlay.style.display = 'none';
+        inputState.modalOpen = false;
+        onConfirm?.();
+    };
+
+    if (cancelText) {
+        cancelBtn.textContent = cancelText;
+        cancelBtn.style.display = 'inline-block';
+        cancelBtn.onclick = () => {
+            overlay.style.display = 'none';
+            inputState.modalOpen = false;
+            onCancel?.();
+        };
+    } else {
+        cancelBtn.style.display = 'none';
+    }
 
     inputState.modalOpen = true;
     overlay.style.display = 'flex';
-    btn.focus();
-
-    // Remove any previous click handlers to avoid stacking
-    btn.onclick = () => {
-        overlay.style.display = 'none';
-        inputState.modalOpen = false;
-    };
+    confirmBtn.focus();
 }
 
 /**
@@ -395,10 +414,10 @@ export function updateTileInfoPanel(config) {
             const valid = evaluateCondition(tileNow, actionDef.condition);
             if (!valid) {
                 const failed = getFailedConditions(tileNow, actionDef.condition);
-                const message = failed.length ?
-                    `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}` :
-                    `Cannot perform "${actionLabel}" on this tile.`;
-                showGameMessageModal("Action blocked", message);
+                showGameMessageModal({
+                    title: "Action blocked",
+                    message: `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                });
                 console.log(`Action "${actionLabel}" blocked on tile:`, tileNow, "Failed conditions:", failed);
                 return;
             }

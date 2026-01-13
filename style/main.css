@@ -202,6 +202,13 @@ canvas {
     display: block;
 }
 
+#game-message-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-medium);
+    margin-top: var(--spacing-medium);
+}
+
 .plant-modal-overlay {
     position: fixed;
     top: 0;
