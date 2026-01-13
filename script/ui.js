@@ -125,6 +125,33 @@ export function evaluateCondition(tile, condition) {
 }
 
 /**
+ * Converts failed condition keys into human-readable messages.
+ * Uses the localized strings if available.
+ * @param {string[]} failed - Array of failed condition keys/messages.
+ * @param {string} actionLabel - The action being attempted.
+ * @returns {string} Formatted reason text
+ */
+function formatFailedConditions(failed, actionLabel) {
+    if (!failed || !failed.length) return '';
+
+    // Try to use the per-action message from strings.json first
+    const msgKey = `cannot${actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1)}`;
+    if (strings.messages?.[msgKey]) {
+        const template = strings.messages[msgKey];
+        // Remove clauses for conditions that passed
+        const parts = template.split(/ and |, /); // split on "and" or comma
+        const filteredParts = parts.filter(p => {
+            return failed.some(f => p.toLowerCase().includes(f.split(' ')[0].toLowerCase()));
+        });
+        if (filteredParts.length) return filteredParts.join(' and ');
+        return template.split(' and ')[0]; // fallback to first clause if none matched
+    }
+
+    // Fallback: join failed keys directly
+    return failed.join(', ');
+}
+
+/**
  * Returns an array of failed conditions for a tile.
  * Only includes the conditions that actually failed.
  * @param {Object} tile - The tile object.
@@ -452,42 +479,12 @@ export function updateTileInfoPanel(config) {
             const tileNow = getTile(gameState.selector.x, gameState.selector.y, config);
             const valid = evaluateCondition(tileNow, actionDef.condition);
             if (!valid) {
-                let reasonText = '';
-
-                switch (actionLabel) {
-                    case 'clear':
-                        reasonText = strings.messages.nothingToClear;
-                        break;
-                    case 'harvest':
-                        reasonText = strings.messages.noHarvest;
-                        break;
-                    case 'till':
-                        reasonText = strings.messages.cannotTill;
-                        break;
-                    case 'water':
-                        reasonText = strings.messages.cannotWater;
-                        break;
-                    case 'fertilize':
-                        reasonText = strings.messages.cannotFertilize;
-                        break;
-                    case 'plant':
-                        reasonText = strings.messages.cannotPlant;
-                        break;
-                    case 'mulch':
-                        reasonText = strings.messages.cannotMulch;
-                        break;
-                    case 'weed':
-                        reasonText = strings.messages.cannotWeed;
-                        break;
-                    default:
-                        const failed = getFailedConditions(tileNow, actionDef.condition);
-                        reasonText = failed.join(', ');
-                        break;
-                }
+                const failedConditions = getFailedConditions(tileNow, actionDef.condition);
+                const reasonText = formatFailedConditions(failedConditions, actionLabel);
 
                 showGameMessageModal({
                     title: `Cannot ${strings.actions[actionLabel]} this tile`,
-                    message: reasonText
+                    message: reasonText || "Cannot perform this action."
                 });
                 return;
             }
