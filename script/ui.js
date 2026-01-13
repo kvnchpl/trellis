@@ -10,8 +10,6 @@ import {
 import {
     render
 } from './renderer.js';
-import stringsData from '../data/strings.json' assert { type: 'json' };
-const strings = stringsData;
 
 // Modal helpers
 export function openModal() {
@@ -33,6 +31,21 @@ export const inputState = {
 let plantModalButtons = [];
 let plantModalFocusIndex = 0;
 let lastGrowthUpdateWeek = null;
+
+let strings = {};
+
+/**
+ * Loads localized strings from external JSON file.
+ */
+export async function loadStrings() {
+    try {
+        const response = await fetch('./data/strings.json');
+        if (!response.ok) throw new Error('Failed to load strings.json');
+        strings = await response.json();
+    } catch (err) {
+        console.error('Error loading strings.json:', err);
+    }
+}
 
 /**
  * Shows a generic game message modal.
