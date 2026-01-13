@@ -196,6 +196,11 @@ canvas {
     margin-bottom: var(--spacing-medium);
 }
 
+#game-message-content ul {
+    padding-left: 1.5em;
+    margin-left: 0;
+}
+
 #game-message-continue {
     width: fit-content;
     margin: 0 auto;
