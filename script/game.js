@@ -22,7 +22,8 @@ import {
 import {
     updateTileInfoPanel,
     updateTimePanel,
-    inputState
+    inputState,
+    loadStrings
 } from './ui.js';
 
 const configUrl = 'config.json';
@@ -138,6 +139,7 @@ function startNewGame() {
 
 async function initGame(loadExisting = true) {
     await loadConfig();
+    await loadStrings();
 
     window.addEventListener('resize', () => {
         resizeCanvasAndTiles(config);
