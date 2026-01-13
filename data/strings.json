@@ -15,11 +15,19 @@
         "mulch": "mulch",
         "tileGrass": "grass",
         "tileRock": "rocks",
-        "readyToHarvest": "ready to harvest"
+        "readyToHarvest": "ready to harvest",
+        "moisture": "moisture",
+        "fertility": "fertility"
     },
     "messages": {
         "actionBlocked": "Cannot {action} this tile. Reason(s): {reason}.",
+        "nothingToClear": "The tile has no plant, weeds, mulch, grass, or rocks.",
         "noHarvest": "The tile is not ready to harvest.",
-        "nothingToClear": "The tile has no plant, weeds, mulch, grass, or rocks."
+        "cannotTill": "The tile cannot be tilled. It must be bare soil with no plant.",
+        "cannotWater": "The tile cannot be watered. It must be tilled and not fully moist.",
+        "cannotFertilize": "The tile cannot be fertilized. It must be tilled and not fully fertile.",
+        "cannotPlant": "The tile cannot be planted. It must be tilled and empty.",
+        "cannotMulch": "The tile cannot be mulched. It must be tilled and unmulched.",
+        "cannotWeed": "There are no weeds to remove on this tile."
     }
 }
