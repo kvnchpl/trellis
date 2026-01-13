@@ -215,14 +215,14 @@ export function updatePlayer(config) {
                 return;
             }
             inputState.keysPressed[key] = false; // consume key immediately for non-plant actions
-            const actionDef = config.tiles.actions[actionLabel];
-            const reasons = getActionBlockReasons(tile, actionDef, window.strings || {});
-            if (reasons.length > 0) {
+            const tile = getTile(x, y, config);
+            const actionDef = config.tiles.actions.clear;
+            const reasons = getActionBlockReasons(tile, actionDef, strings);
+            if (reasons.length) {
                 showGameMessageModal({
-                    title: strings.messages.general.actionBlockedTitle,
+                    title: `Cannot ${strings.actions.clear} this tile`,
                     message: reasons.join("<br>- ")
                 });
-                return;
             }
             const newTile = applyActionEffects(tile, actionDef, config);
             gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
