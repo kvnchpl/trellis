@@ -3,7 +3,8 @@ import {
     getTile
 } from './state.js';
 import {
-    saveGameState
+    saveGameState,
+    getActionBlockReasons
 } from './game.js';
 import {
     incrementTime,
@@ -215,12 +216,12 @@ export function updatePlayer(config) {
             }
             inputState.keysPressed[key] = false; // consume key immediately for non-plant actions
             const actionDef = config.tiles.actions[actionLabel];
-            const validNow = evaluateCondition(tile, actionDef.condition);
-            if (!validNow) {
-                const failed = getFailedConditions(tile, actionDef.condition);
+            const reasons = getActionBlockReasons(tile, actionDef, window.strings || {});
+            if (reasons.length > 0) {
+                const reasonsText = reasons.join("<br>- ");
                 showGameMessageModal({
                     title: "Action blocked",
-                    message: `Cannot perform "${actionLabel}" on this tile. \n-${failed.join('\n- ')}`
+                    message: `Cannot ${actionLabel} this tile.<br>- ${reasonsText}`
                 });
                 return;
             }
