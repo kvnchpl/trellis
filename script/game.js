@@ -108,7 +108,8 @@ function startNewGame() {
         // Show confirmation modal instead of confirm dialog
         showGameMessageModal(
             "Start a new game?",
-            "This will overwrite your current progress."
+            "This will overwrite your current progress.",
+            "Start new game"
         );
         const btn = document.getElementById('game-message-continue');
         btn.onclick = () => {

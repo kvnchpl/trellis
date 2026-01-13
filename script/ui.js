@@ -25,7 +25,7 @@ let lastGrowthUpdateWeek = null;
  * Shows a generic game message modal.
  * @param {string} message - Message text to display.
  */
-export function showGameMessageModal(title, message) {
+export function showGameMessageModal(title, message, continueText = "Continue") {
     const overlay = document.getElementById('game-message-overlay');
     const titleEl = document.getElementById('game-message-title');
     const contentEl = document.getElementById('game-message-content');
@@ -34,6 +34,7 @@ export function showGameMessageModal(title, message) {
 
     titleEl.textContent = title;
     contentEl.innerHTML = `<div>${message}</div>`;
+    btn.textContent = continueText;
 
     inputState.modalOpen = true;
     overlay.style.display = 'flex';
