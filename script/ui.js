@@ -279,7 +279,8 @@ export function showDayCompleteModal(stats, config) {
     const overlay = document.getElementById('game-message-overlay');
     const titleEl = document.getElementById('game-message-title');
     const contentEl = document.getElementById('game-message-content');
-    const btn = document.getElementById('game-message-continue');
+    const confirmBtn = document.getElementById('game-message-confirm');
+    const cancelBtn = document.getElementById('game-message-cancel');
 
     titleEl.textContent = 'DAY COMPLETE';
     contentEl.innerHTML = `
@@ -291,14 +292,17 @@ export function showDayCompleteModal(stats, config) {
         <div>Crops harvested: ${stats.harvested}</div>
     `;
 
-    openModal();
-    overlay.style.display = 'flex';
-    btn.focus();
+    // Hide cancel button for day complete
+    cancelBtn.style.display = 'none';
 
-    btn.onclick = () => {
+    overlay.style.display = 'flex';
+    openModal();
+    confirmBtn.focus();
+
+    confirmBtn.onclick = () => {
         closeModal();
 
-        // Advance to next day ONLY after confirmation
+        // Advance to next day
         advanceDay(config);
         resetDailyStats();
         if (gameState.time.week !== lastGrowthUpdateWeek) {
