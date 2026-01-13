@@ -134,21 +134,44 @@ export function evaluateCondition(tile, condition) {
 function formatFailedConditions(failed, actionLabel) {
     if (!failed || !failed.length) return '';
 
-    // Try to use the per-action message from strings.json first
-    const msgKey = `cannot${actionLabel.charAt(0).toUpperCase() + actionLabel.slice(1)}`;
-    if (strings.messages?.[msgKey]) {
-        const template = strings.messages[msgKey];
-        // Remove clauses for conditions that passed
-        const parts = template.split(/ and |, /); // split on "and" or comma
-        const filteredParts = parts.filter(p => {
-            return failed.some(f => p.toLowerCase().includes(f.split(' ')[0].toLowerCase()));
-        });
-        if (filteredParts.length) return filteredParts.join(' and ');
-        return template.split(' and ')[0]; // fallback to first clause if none matched
-    }
+    const seen = new Set();
+    const messages = [];
 
-    // Fallback: join failed keys directly
-    return failed.join(', ');
+    failed.forEach(key => {
+        if (seen.has(key)) return;
+        seen.add(key);
+
+        // Try action-specific blocked messages first
+        const actionBlocked = strings.messages?.blockedAction?.[actionLabel];
+        if (actionBlocked) {
+            // Map known keys to per-action messages
+            const mapping = {
+                plantType: ['plantTypeNotEmpty', 'notEmpty'],
+                weeds: ['weedsMissing', 'noWeeds'],
+                mulch: ['mulchMissing', 'alreadyMulched'],
+                tile: ['wrongTile'],
+                readyToHarvest: ['notReady']
+            };
+
+            const candidates = mapping[key] || [];
+            for (const c of candidates) {
+                if (actionBlocked[c]) {
+                    messages.push(actionBlocked[c]);
+                    return;
+                }
+            }
+        }
+
+        // Fallback to generic conditionKeyMap
+        const generic = strings.conditionKeyMap?.[key];
+        if (typeof generic === 'string') {
+            messages.push(generic);
+        } else if (generic && generic.default) {
+            messages.push(generic.default);
+        }
+    });
+
+    return messages.join('<br>');
 }
 
 /**
@@ -488,8 +511,8 @@ export function updateTileInfoPanel(config) {
                 const reasonText = formatFailedConditions(failedConditions, actionLabel);
 
                 showGameMessageModal({
-                    title: `Cannot ${strings.actions[actionLabel]} this tile`,
-                    message: reasonText || "Cannot perform this action."
+                    title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
+                    message: reasonText || "The tile does not meet the requirements for this action."
                 });
                 return;
             }
