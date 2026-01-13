@@ -220,7 +220,7 @@ export function updatePlayer(config) {
                 const failed = getFailedConditions(tile, actionDef.condition);
                 showGameMessageModal({
                     title: "Action blocked",
-                    message: `Cannot perform "${actionLabel}" on this tile.\nReason(s):\n- ${failed.join('\n- ')}`
+                    message: `Cannot perform "${actionLabel}" on this tile. \n-${failed.join('\n- ')}`
                 });
                 return;
             }
