@@ -21,7 +21,7 @@
     },
     "messages": {
         "actionBlocked": "Cannot {action} this tile. Reason(s): {reason}.",
-        "nothingToClear": "The tile has no plant, weeds, mulch, grass, or rocks.",
+        "nothingToClear": "The tile has no plant, weeds, mulch, grass, or rocks to clear.",
         "noHarvest": "The tile is not ready to harvest.",
         "cannotTill": "The tile cannot be tilled. It must be bare soil with no plant.",
         "cannotWater": "The tile cannot be watered. It must be tilled and not fully moist.",
