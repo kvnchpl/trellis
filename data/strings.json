@@ -5,7 +5,7 @@
             "null": "tile must be empty"
         },
         "weeds": {
-            "true": "weeds present",
+            "true": "there are weeds",
             "false": "no weeds to remove"
         },
         "mulch": {
@@ -38,7 +38,10 @@
             "pod": "plant is in pod stage",
             "tree": "plant is a tree",
             "fruiting": "plant is fruiting",
-            "cob": "plant is a corn cob"
+            "cob": "plant is a corn cob",
+            "sapling": "plant is a sapling",
+            "shoot": "plant is a shoot",
+            "stalk": "plant is a stalk"
         },
         "growthProgress": {
             "lt": "growth not sufficient",
@@ -85,17 +88,17 @@
             "water": {
                 "wrongTile": "The tile must be tilled before watering.",
                 "tooMoist": "The tile is already fully moist.",
-                "plantTypeNotEmpty": "Cannot water a tile with a growing plant (use appropriate growth stage)."
+                "plantTypeNotEmpty": "Cannot water a tile with a growing plant."
             },
             "fertilize": {
                 "wrongTile": "The tile must be tilled before fertilizing.",
                 "tooFertile": "The tile is already fully fertile.",
-                "plantTypeNotEmpty": "Cannot fertilize a tile with a growing plant (use appropriate growth stage)."
+                "plantTypeNotEmpty": "Cannot fertilize a tile with a growing plant."
             },
             "plant": {
                 "wrongTile": "The tile must be tilled before planting.",
                 "notEmpty": "The tile already contains a plant.",
-                "mulch": "Cannot plant on mulched tile."
+                "mulch": "Cannot plant on a mulched tile."
             },
             "mulch": {
                 "wrongTile": "The tile must be tilled to apply mulch.",
