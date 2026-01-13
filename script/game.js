@@ -193,7 +193,13 @@ initGame(true).catch((err) => {
     });
 
     endDayBtn.addEventListener('click', () => {
-        showDayCompleteModal({ ...gameState.dailyStats }, config);
+        showGameMessageModal({
+            title: "End the day?",
+            message: "You won’t be able to take more actions today.",
+            confirmText: "End Day",
+            cancelText: "Cancel",
+            onConfirm: () => showDayCompleteModal({ ...gameState.dailyStats }, config)
+        });
     });
 
     cancelBtn.addEventListener('click', () => {
