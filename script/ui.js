@@ -152,21 +152,21 @@ function formatFailedConditions(failed, actionLabel) {
 }
 
 /**
- * Returns an array of failed conditions for a tile.
+ * Returns an array of failed condition keys for a tile.
  * Only includes the conditions that actually failed.
+ * Supports nested AND/OR logic.
  * @param {Object} tile - The tile object.
  * @param {Object} condition - The condition object.
- * @returns {string[]} Array of human-readable failed condition messages
+ * @returns {string[]} Array of failed condition keys (to map via strings.json)
  */
 export function getFailedConditions(tile, condition) {
     if (!condition) return [];
 
     // Handle OR: only fail if ALL OR subconditions fail
     if (condition.or && Array.isArray(condition.or)) {
-        const failedOr = condition.or.map(sub => getFailedConditions(tile, sub)).filter(f => f.length);
-        if (failedOr.length === condition.or.length) {
-            // all OR options failed
-            return failedOr.flat();
+        const failedOr = condition.or.map(sub => getFailedConditions(tile, sub));
+        if (failedOr.every(f => f.length > 0)) {
+            return failedOr.flat(); // all OR options failed
         } else {
             return []; // at least one OR option passed
         }
@@ -175,17 +175,22 @@ export function getFailedConditions(tile, condition) {
     const failed = [];
 
     for (const [key, val] of Object.entries(condition)) {
-        if (typeof val === "object" && val !== null) {
-            if ("lt" in val && !(tile[key] < val.lt)) failed.push(`${key} must be < ${val.lt}`);
-            else if ("gt" in val && !(tile[key] > val.gt)) failed.push(`${key} must be > ${val.gt}`);
-            else if ("not" in val && tile[key] === val.not) failed.push(`${key} must not be ${val.not}`);
-            else {
+        const tileVal = tile[key];
+
+        if (val && typeof val === "object" && !Array.isArray(val)) {
+            if ("lt" in val && !(tileVal < val.lt)) {
+                failed.push(key);
+            } else if ("gt" in val && !(tileVal > val.gt)) {
+                failed.push(key);
+            } else if ("not" in val && tileVal === val.not) {
+                failed.push(key);
+            } else {
                 // nested AND object
-                const subFailed = getFailedConditions(tile[key], val);
+                const subFailed = getFailedConditions(tileVal, val);
                 failed.push(...subFailed);
             }
-        } else if (tile[key] !== val) {
-            failed.push(`${key} must be ${val}`);
+        } else if (tileVal !== val) {
+            failed.push(key);
         }
     }
 
