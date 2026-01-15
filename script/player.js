@@ -14,6 +14,7 @@ import {
     showPlantSelectionModal,
     inputState,
     showGameMessageModal,
+    finalizeAction,
     applyActionEffects
 } from './ui.js';
 import {

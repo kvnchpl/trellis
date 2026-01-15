@@ -260,7 +260,7 @@ export function applyActionEffects(tile, actionDef, config) {
  * @param {Object} actionDef - The action definition.
  * @param {Object} config - Game configuration.
  */
-function finalizeAction(actionDef, config) {
+export function finalizeAction(actionDef, config) {
     updateTileInfoPanel(config);
 
     // Animate changed values
