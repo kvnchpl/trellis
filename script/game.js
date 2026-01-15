@@ -134,8 +134,7 @@ export function saveGameState() {
             fertility: 0,
             weeds: false,
             mulch: false,
-            readyToHarvest: false,
-            fertilized: false
+            readyToHarvest: false
         };
     }
 

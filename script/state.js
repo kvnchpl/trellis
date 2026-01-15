@@ -106,8 +106,7 @@ export function getTile(x, y, config) {
             fertility: 0,
             weeds: false,
             mulch: false,
-            readyToHarvest: false,
-            fertilized: false
+            readyToHarvest: false
         };
     }
     return gameState.map[key];
