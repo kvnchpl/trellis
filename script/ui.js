@@ -18,6 +18,7 @@ import {
     getTile,
     resetDailyStats,
     advanceDay,
+    advanceTime,
     updateGrowth
 } from './state.js';
 
@@ -451,27 +452,26 @@ export function updateTimePanel(config) {
     el.textContent = `${season} - WEEK ${week} - ${displayHour}:${paddedMinute} ${period}`;
 }
 
-/**
- * Increments the in-game time by the specified number of minutes.
- * Handles day and season transitions, and updates growth weekly.
- * @param {number} minutes - Minutes to increment.
- * @param {Object} config - Game configuration.
- */
 export function incrementTimeUI(minutes, config) {
-    const time = gameState.time;
-    time.minute += minutes;
-    while (time.minute >= 60) {
-        time.minute -= 60;
-        time.hour++;
-    }
+    advanceTime(minutes, config); // pure state update
 
-    if (time.hour >= config.dayEndHour) {
-        // Clamp time and wait for player confirmation
-        time.hour = config.dayEndHour;
-        time.minute = 0;
+    // Check for end-of-day
+    if (gameState.time.hour >= config.dayEndHour) {
         showModal('dayComplete', { ...gameState.dailyStats }, config);
     }
+
+    // Update UI elements
     updateTimePanel(config);
+
+    // Optionally: trigger weekly growth
+    if (gameState.time.week !== lastGrowthUpdateWeek) {
+        const changedTiles = updateGrowth(config);
+        lastGrowthUpdateWeek = gameState.time.week;
+
+        if (changedTiles.includes(`${gameState.selector.x},${gameState.selector.y}`)) {
+            updateTileInfoPanel(config);
+        }
+    }
 }
 
 // Handles keyboard navigation and selection within the plant selection modal.

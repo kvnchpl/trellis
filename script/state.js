@@ -132,6 +132,30 @@ export function advanceDay(config) {
     }
 }
 
+/**
+ * Advances in-game time by the specified number of minutes.
+ * @param {number} minutes
+ * @param {Object} config
+ */
+export function advanceTime(minutes, config) {
+    const time = gameState.time;
+    time.minute += minutes;
+
+    while (time.minute >= 60) {
+        time.minute -= 60;
+        time.hour++;
+    }
+
+    // End of day logic
+    if (time.hour >= config.dayEndHour) {
+        time.hour = config.dayEndHour;
+        time.minute = 0;
+    }
+
+    // Weekly and seasonal rollover can stay here or in advanceDay if needed
+    // e.g., if advancing weeks, call updateGrowth elsewhere
+}
+
 export function resetDailyStats() {
     gameState.dailyStats = {
         steps: 0,
