@@ -1,7 +1,6 @@
 {
     "conditionKeyMap": {
         "plantType": {
-            "not": "The tile must be empty to clear plants.",
             "null": "The tile must be empty to clear plants."
         },
         "weeds": {
@@ -98,7 +97,7 @@
             },
             "plant": {
                 "wrongTile": "The tile must be tilled before planting.",
-                "notEmpty": "The tile already contains a plant.",
+                "plantTypeNotEmpty": "The tile already contains a plant.",
                 "mulch": "Cannot plant on a mulched tile."
             },
             "mulch": {
@@ -138,7 +137,7 @@
         },
         "plant": {
             "tile": "wrongTile",
-            "plantType": "notEmpty",
+            "plantType": "plantTypeNotEmpty",
             "mulch": "mulch"
         },
         "mulch": {
