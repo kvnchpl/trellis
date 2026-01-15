@@ -15,9 +15,8 @@ import {
 import {
     strings,
     updateTileInfoPanel,
-    showPlantSelectionModal,
+    showModal,
     inputState,
-    showGameMessageModal,
     finalizeAction
 } from './ui.js';
 
