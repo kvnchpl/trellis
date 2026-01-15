@@ -452,7 +452,7 @@ export function incrementTimeUI(minutes, config) {
         // Clamp time and wait for player confirmation
         time.hour = config.dayEndHour;
         time.minute = 0;
-        showDayCompleteModal({ ...gameState.dailyStats }, config);
+        showModal('dayComplete', { ...gameState.dailyStats }, config);
     }
     updateTimePanel(config);
 }

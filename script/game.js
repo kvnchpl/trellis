@@ -22,7 +22,6 @@ import {
     inputState,
     loadStrings,
     showModal,
-    showDayCompleteModal,
     closeModal
 } from './ui.js';
 
