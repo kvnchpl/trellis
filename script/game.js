@@ -29,7 +29,8 @@ import {
     closeModal,
     updateSaveSizeDisplay,
     incrementTimeUI,
-    finalizeAction
+    finalizeAction,
+    strings
 } from './ui.js';
 
 const configUrl = 'config.json';
