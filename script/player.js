@@ -1,5 +1,6 @@
 import { attemptActionOnTile } from './actions.js';
 import { gameState, getTile, attemptPlayerMove } from './state.js';
+import { inputState } from './ui.js';
 
 /**
  * Handles movement keys and updates player state.
