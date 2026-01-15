@@ -152,7 +152,10 @@ function gameLoop(config) {
         const { movementTime, selectorMoved, actionInfo } = updatePlayer(config, inputState) || {};
 
         if (movementTime) incrementTimeUI(movementTime, config);
-        if (selectorMoved) updateTileInfoPanel(config);
+        if (selectorMoved) {
+            updateTileInfoPanel(config);
+            render(config);
+        }
         if (actionInfo) {
             const { actionLabel, result } = actionInfo;
             if (!result.success) {
