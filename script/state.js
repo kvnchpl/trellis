@@ -1,3 +1,7 @@
+import {
+    saveGameState
+} from './game.js';
+
 export const gameState = {
     player: {
         x: 0,
