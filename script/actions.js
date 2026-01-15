@@ -93,12 +93,12 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
         return failed;
     }
 
-    const rawFailed = collectFailedConditions(tile, actionDef.condition);
+    const failedConditions = collectFailedConditions(tile, actionDef.condition);
 
     const actionKeyMap = blockedKeyMap[actionName] || {};
 
     // First pass: collect explicit per-action blocked reasons
-    const primaryReasons = rawFailed
+    const explicitBlockedMessages = failedConditions
         .map(f => {
             const mapVal = actionKeyMap[f.key];
             if (typeof mapVal === 'string') return blockedStrings[mapVal];
@@ -112,11 +112,11 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
         })
         .filter(Boolean);
 
-    if (primaryReasons.length > 0) {
-        return [...new Set(primaryReasons)];
+    if (explicitBlockedMessages.length > 0) {
+        return [...new Set(explicitBlockedMessages)];
     }
 
-    const reasons = rawFailed.map(f => {
+    const fallbackBlockedMessages = failedConditions.map(f => {
         // Then try conditionKeyMap
         if (f.type && keyMap[f.key]?.[f.type]) return keyMap[f.key][f.type];
         if (f.value !== undefined && keyMap[f.key]?.[f.value] !== undefined) return keyMap[f.key][f.value];
@@ -126,5 +126,5 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
         return null;
     }).filter(Boolean);
 
-    return [...new Set(reasons)]; // remove duplicates and falsy
+    return [...new Set(fallbackBlockedMessages)]; // remove duplicates and falsy
 }
