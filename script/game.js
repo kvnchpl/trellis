@@ -5,6 +5,7 @@ import {
 
 import {
     render,
+    fullRender,
     preloadImages,
     updateFog
 } from './renderer.js';
@@ -111,7 +112,6 @@ function startNewGame() {
             onConfirm: () => {
                 localStorage.removeItem("trellisSave");
                 initState(config);
-                generateMap(config);
                 initPlayer(config);
                 updateFog(config);
                 updateTimePanel(config);
@@ -124,7 +124,6 @@ function startNewGame() {
     }
     localStorage.removeItem("trellisSave");
     initState(config);
-    generateMap(config);
     initPlayer(config);
     updateFog(config);
     updateTimePanel(config);
@@ -163,7 +162,6 @@ async function initGame(loadExisting = true) {
         updateTimePanel(config);
     } else {
         initState(config);
-        generateMap(config);
         saveGameState();
     }
 

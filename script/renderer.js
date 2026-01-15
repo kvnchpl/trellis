@@ -218,17 +218,13 @@ export function resizeCanvasAndTiles(config) {
     config.tileSize = tileSize;
 }
 
-function maybeRender(config) {
+export function fullRender(config) {
     const currentPlayerKey = `${gameState.player.x},${gameState.player.y}`;
     if (currentPlayerKey !== lastPlayerKey) {
         updateFog(config);
         render(config);
         lastPlayerKey = currentPlayerKey;
     }
-}
-
-function fullRender(config) {
-    maybeRender(config);
     refreshUI(config);
 }
 
