@@ -141,6 +141,7 @@ export function updatePlayer(config) {
         if (movementCost > 0) {
             incrementTimeUI(movementCost, config);
             saveGameState(config); // Save after movement
+            updateSaveSizeDisplay(config); 
         }
         return true;
     }

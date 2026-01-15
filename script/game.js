@@ -83,6 +83,7 @@ function startNewGame() {
                 render(config);
                 updateTileInfoPanel(config);
                 saveGameState(config);
+                updateSaveSizeDisplay(config);
             }
         });
         return;
@@ -95,6 +96,7 @@ function startNewGame() {
     render(config);
     updateTileInfoPanel(config);
     saveGameState(config);
+    updateSaveSizeDisplay(config);
     // New game started
 }
 
@@ -136,6 +138,7 @@ async function initGame(loadExisting = true) {
     } else {
         initState(config);
         saveGameState(config);
+        updateSaveSizeDisplay(config);
     }
 
     initPlayer();

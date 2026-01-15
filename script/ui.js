@@ -165,6 +165,7 @@ export const modalRegistry = {
                 }
                 updateTimePanel(config);
                 saveGameState(config);
+                updateSaveSizeDisplay(config); 
             };
         }
     },
@@ -264,6 +265,7 @@ export function finalizeAction(actionDef, config) {
     });
 
     saveGameState(config);
+    updateSaveSizeDisplay(config); 
 
     // Use per-action timeIncrement
     const timeInc = actionDef.timeIncrement ?? 1; // fallback to 1 if missing
@@ -591,13 +593,7 @@ export function updateSaveSizeDisplay(config) {
     const saveEl = document.getElementById("save-size");
     if (!saveEl) return;
 
-    const savedData = localStorage.getItem("trellisSave");
-    if (!savedData) {
-        saveEl.textContent = "(no save)";
-        return;
-    }
-
-    const sizeInBytes = new Blob([savedData]).size;
+    const sizeInBytes = saveGameState(config);
     const sizeInKB = (sizeInBytes / 1024).toFixed(2);
 
     let warningText = "";

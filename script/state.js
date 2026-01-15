@@ -222,7 +222,7 @@ export function updateGrowth(config) {
 }
 
 export function saveGameState(config) {
-    function defaultTile(config) {
+    function defaultTile() {
         return {
             tile: null,
             plantType: null,
@@ -237,7 +237,7 @@ export function saveGameState(config) {
     }
 
     const optimizedMap = {};
-    const def = defaultTile(config);
+    const def = defaultTile();
 
     for (const [key, tile] of Object.entries(gameState.map)) {
         if (Object.keys(def).some(k => tile[k] !== def[k] && tile[k] !== undefined)) {
@@ -245,13 +245,17 @@ export function saveGameState(config) {
         }
     }
 
-    localStorage.setItem("trellisSave", JSON.stringify({
+    const saveData = {
         player: gameState.player,
         selector: gameState.selector,
         map: optimizedMap,
         revealed: gameState.revealed,
         time: gameState.time
-    }));
+    };
 
-    updateSaveSizeDisplay(config);
+    localStorage.setItem("trellisSave", JSON.stringify(saveData));
+
+    // Return size so UI can update display
+    const sizeInBytes = new Blob([JSON.stringify(saveData)]).size;
+    return sizeInBytes;
 }
