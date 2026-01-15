@@ -54,11 +54,11 @@
             "plantType",
             "growthStage",
             "growthProgress",
+            "readyToHarvest",
             "moisture",
             "fertility",
             "weeds",
-            "mulch",
-            "readyToHarvest"
+            "mulch"
         ],
         "labels": {
             "none": "None",
