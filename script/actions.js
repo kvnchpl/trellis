@@ -68,11 +68,12 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
     const keyMap = strings.conditionKeyMap || {};
     const blockedKeyMap = strings.blockedKeyMap || {};
 
-    function collectFailedConditions(tile, condition, parentKey = null) {
+    function collectFailedConditions(tile, condition) {
         if (!condition) return [];
 
+        // OR condition: fail only if all subconditions fail
         if (condition.or && Array.isArray(condition.or)) {
-            const subFailed = condition.or.map(sub => collectFailedConditions(tile, sub, parentKey));
+            const subFailed = condition.or.map(sub => collectFailedConditions(tile, sub));
             if (subFailed.every(f => f.length > 0)) return subFailed.flat();
             return [];
         }
@@ -81,12 +82,12 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
         for (const [key, val] of Object.entries(condition)) {
             const tileVal = tile[key];
             if (val && typeof val === 'object' && !Array.isArray(val)) {
-                if ('lt' in val && !(tileVal < val.lt)) failed.push({ key: parentKey || key, type: 'lt' });
-                else if ('gt' in val && !(tileVal > val.gt)) failed.push({ key: parentKey || key, type: 'gt' });
-                else if ('not' in val && tileVal === val.not) failed.push({ key: parentKey || key, type: 'not' });
-                else failed.push(...collectFailedConditions(tileVal, val, parentKey || key));
+                if ('lt' in val && !(tileVal < val.lt)) failed.push({ key, type: 'lt' });
+                else if ('gt' in val && !(tileVal > val.gt)) failed.push({ key, type: 'gt' });
+                else if ('not' in val && tileVal === val.not) failed.push({ key, type: 'not' });
+                else failed.push(...collectFailedConditions(tileVal, val));
             } else if (tileVal !== val) {
-                failed.push({ key: parentKey || key, value: val });
+                failed.push({ key, value: val });
             }
         }
         return failed;
