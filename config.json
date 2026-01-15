@@ -148,6 +148,9 @@
             },
             "harvest": {
                 "condition": {
+                    "plantType": {
+                        "not": null
+                    },
                     "readyToHarvest": true
                 },
                 "effect": {
