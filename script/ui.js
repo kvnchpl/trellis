@@ -5,10 +5,6 @@ import {
 } from './actions.js';
 
 import {
-    saveGameState
-} from './game.js';
-
-import {
     render,
     updateTileInfoPanelIfChanged
 } from './renderer.js';
@@ -19,7 +15,8 @@ import {
     resetDailyStats,
     advanceDay,
     advanceTime,
-    updateGrowth
+    updateGrowth,
+    saveGameState
 } from './state.js';
 
 export const inputState = {
@@ -165,7 +162,7 @@ export const modalRegistry = {
                 }
                 updateTimePanel(config);
                 saveGameState(config);
-                updateSaveSizeDisplay(config); 
+                updateSaveSizeDisplay(config);
             };
         }
     },
@@ -265,7 +262,7 @@ export function finalizeAction(actionDef, config) {
     });
 
     saveGameState(config);
-    updateSaveSizeDisplay(config); 
+    updateSaveSizeDisplay(config);
 
     // Use per-action timeIncrement
     const timeInc = actionDef.timeIncrement ?? 1; // fallback to 1 if missing
