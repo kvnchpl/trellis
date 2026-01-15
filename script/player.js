@@ -24,35 +24,45 @@ function handleMovementKeys(player, controls, inputState, config) {
 function handleSelectorKeys(player, controls, inputState, config) {
     const sel = gameState.selector;
 
-    // Start selector movement from player position
-    let newX = player.x;
-    let newY = player.y;
+    // Start selector movement from current selector position
+    let newX = sel.x;
+    let newY = sel.y;
+    let selectorKeyPressed = false;
 
     // Selector movement is always relative to player position
     if (inputState.keysPressed[controls.selectUp]) {
+        selectorKeyPressed = true;
         newX = player.x;
         newY = player.y - 1;
         inputState.keysPressed[controls.selectUp] = false;
     }
     if (inputState.keysPressed[controls.selectDown]) {
+        selectorKeyPressed = true;
         newX = player.x;
         newY = player.y + 1;
         inputState.keysPressed[controls.selectDown] = false;
     }
     if (inputState.keysPressed[controls.selectLeft]) {
+        selectorKeyPressed = true;
         newX = player.x - 1;
         newY = player.y;
         inputState.keysPressed[controls.selectLeft] = false;
     }
     if (inputState.keysPressed[controls.selectRight]) {
+        selectorKeyPressed = true;
         newX = player.x + 1;
         newY = player.y;
         inputState.keysPressed[controls.selectRight] = false;
     }
     if (inputState.keysPressed[controls.resetSelector]) {
+        selectorKeyPressed = true;
         newX = player.x;
         newY = player.y;
         inputState.keysPressed[controls.resetSelector] = false;
+    }
+
+    if (!selectorKeyPressed) {
+        return false;
     }
 
     const moved = newX !== sel.x || newY !== sel.y;
