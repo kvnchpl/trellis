@@ -77,7 +77,7 @@ function startNewGame() {
             onConfirm: () => {
                 localStorage.removeItem("trellisSave");
                 initState(config);
-                initPlayer();
+                initPlayer(inputState);
                 updateFog(config);
                 updateTimePanel(config);
                 render(config);
