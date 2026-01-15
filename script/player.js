@@ -15,7 +15,6 @@ import {
 
 import {
     strings,
-    incrementTimeUI,
     updateTileInfoPanel,
     showPlantSelectionModal,
     inputState,
@@ -24,11 +23,7 @@ import {
     applyActionEffects
 } from './ui.js';
 
-/**
- * Initializes player input event listeners.
- * @param {Object} config - Game configuration (not used here, but provided for consistency)
- */
-export function initPlayer(config) {
+export function initPlayer() {
     window.addEventListener('keydown', (e) => {
         if (inputState.modalOpen) {
             e.preventDefault();

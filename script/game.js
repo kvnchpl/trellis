@@ -112,7 +112,7 @@ function startNewGame() {
             onConfirm: () => {
                 localStorage.removeItem("trellisSave");
                 initState(config);
-                initPlayer(config);
+                initPlayer();
                 updateFog(config);
                 updateTimePanel(config);
                 render(config);
@@ -124,7 +124,7 @@ function startNewGame() {
     }
     localStorage.removeItem("trellisSave");
     initState(config);
-    initPlayer(config);
+    initPlayer();
     updateFog(config);
     updateTimePanel(config);
     render(config);
@@ -165,7 +165,7 @@ async function initGame(loadExisting = true) {
         saveGameState();
     }
 
-    initPlayer(config);
+    initPlayer();
     refreshScreenIfChanged(config);
     requestAnimationFrame(() => gameLoop(config));
 }
