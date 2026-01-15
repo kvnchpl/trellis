@@ -1,5 +1,4 @@
 import {
-    saveGameState,
     getBlockedActionMessages
 } from './game.js';
 
@@ -32,10 +31,10 @@ export function initPlayer() {
             e.preventDefault();
             e.stopPropagation();
             inputState.keysPressed[e.key] = false;
-            inputState.blockedKeys.add(e.key);
+            inputState.keysBlocked.add(e.key);
             return;
         }
-        if (inputState.blockedKeys.has(e.key)) {
+        if (inputState.keysBlocked.has(e.key)) {
             inputState.keysPressed[e.key] = false; // ignore keys pressed during modal
             return;
         }

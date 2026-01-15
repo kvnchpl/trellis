@@ -23,7 +23,7 @@ import {
 export const inputState = {
     modalOpen: false,
     keysPressed: {},
-    blockedKeys: new Set()
+    keysBlocked: new Set()
 };
 
 let plantModalButtonList = [];
@@ -111,7 +111,7 @@ export function closeModal() {
     Object.keys(inputState.keysPressed).forEach(
         k => inputState.keysPressed[k] = false
     );
-    inputState.blockedKeys.clear();
+    inputState.keysBlocked.clear();
 
     // Hide all modal overlays defensively
     const plantOverlay = document.getElementById('plant-modal-overlay');
@@ -572,9 +572,9 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        // Always clear keysPressed and blockedKeys for safety
+        // Always clear keysPressed and keysBlocked for safety
         Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-        inputState.blockedKeys.clear();
+        inputState.keysBlocked.clear();
 
         const columns = 2;
         let handled = false;
