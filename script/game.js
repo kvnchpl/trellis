@@ -30,8 +30,9 @@ const configUrl = 'config.json';
 let config;
 
 let lastSelectorKey = null;
-let lastSaveSizeUpdate = 0;
 let lastPlayerKey = null;
+
+let lastSaveSizeUpdate = 0;
 
 async function fetchConfig() {
     try {

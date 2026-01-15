@@ -8,8 +8,10 @@ import {
     updateTimePanel
 } from './ui.js';
 
-let lastPlayerKey = null;
 let lastSelectorKey = null;
+let lastPlayerKey = null;
+
+let lastSaveSizeUpdate = 0;
 
 /**
  * Draws the player on the canvas.
