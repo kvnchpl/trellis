@@ -3,6 +3,8 @@ import {
     getTile
 } from './state.js';
 
+let lastPlayerKey = null;
+
 /**
  * Draws the player on the canvas.
  * @param {CanvasRenderingContext2D} ctx - The canvas context.
