@@ -1,7 +1,8 @@
 {
     "conditionKeyMap": {
         "plantType": {
-            "null": "The tile must be empty to clear plants."
+            "null": "The tile must not have a plant.",
+            "set": "The tile must have a plant."
         },
         "weeds": {
             "true": "There are weeds here that can be removed.",
