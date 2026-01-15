@@ -21,6 +21,111 @@ import {
 } from './ui.js';
 
 /**
+ * Handles player movement input keys.
+ */
+function handleMovementKeys(player, controls, config) {
+    if (inputState.keysPressed[controls.up]) {
+        attemptPlayerMove(player, 0, -1, config);
+        inputState.keysPressed[controls.up] = false;
+        return true;
+    }
+    if (inputState.keysPressed[controls.down]) {
+        attemptPlayerMove(player, 0, 1, config);
+        inputState.keysPressed[controls.down] = false;
+        return true;
+    }
+    if (inputState.keysPressed[controls.left]) {
+        attemptPlayerMove(player, -1, 0, config);
+        inputState.keysPressed[controls.left] = false;
+        return true;
+    }
+    if (inputState.keysPressed[controls.right]) {
+        attemptPlayerMove(player, 1, 0, config);
+        inputState.keysPressed[controls.right] = false;
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Handles selector movement input keys.
+ */
+function handleSelectorKeys(player, controls, config) {
+    const { mapWidth, mapHeight } = config;
+    const sel = gameState.selector;
+
+    const updateSelector = (x, y) => {
+        gameState.selector = { x, y };
+        updateTileInfoPanel(config);
+        render(config);
+    };
+
+    if (inputState.keysPressed[controls.selectUp]) {
+        const newY = player.y - 1;
+        if (newY >= 0) updateSelector(player.x, newY);
+        inputState.keysPressed[controls.selectUp] = false;
+        return true;
+    }
+    if (inputState.keysPressed[controls.selectDown]) {
+        const newY = player.y + 1;
+        if (newY < mapHeight) updateSelector(player.x, newY);
+        inputState.keysPressed[controls.selectDown] = false;
+        return true;
+    }
+    if (inputState.keysPressed[controls.selectLeft]) {
+        const newX = player.x - 1;
+        if (newX >= 0) updateSelector(newX, player.y);
+        inputState.keysPressed[controls.selectLeft] = false;
+        return true;
+    }
+    if (inputState.keysPressed[controls.selectRight]) {
+        const newX = player.x + 1;
+        if (newX < mapWidth) updateSelector(newX, player.y);
+        inputState.keysPressed[controls.selectRight] = false;
+        return true;
+    }
+    if (inputState.keysPressed[controls.resetSelector]) {
+        updateSelector(player.x, player.y);
+        inputState.keysPressed[controls.resetSelector] = false;
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Handles action input keys based on config.keyBindings.actions.
+ */
+function handleActionKeys(config) {
+    const actionKeys = config.keyBindings.actions || {};
+    const sel = gameState.selector;
+    const tile = getTile(sel.x, sel.y, config);
+
+    for (const [actionLabel, key] of Object.entries(actionKeys)) {
+        if (!inputState.keysPressed[key]) continue;
+
+        inputState.keysPressed[key] = false; // consume key
+
+        const result = attemptActionOnTile(tile, actionLabel, config, strings, gameState.dailyStats);
+
+        if (!result.success) {
+            showModal('gameMessage', {
+                title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
+                message: Array.isArray(result.message) ? result.message : [result.message]
+            });
+            return true;
+        }
+
+        if (result.plantModal) {
+            showModal('plantSelection', config, tile, sel.x, sel.y);
+        } else {
+            finalizeAction(config.tiles.actions[actionLabel], config);
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
  * Initializes player input event listeners.
  */
 export function initPlayer() {
@@ -41,9 +146,8 @@ export function initPlayer() {
 }
 
 /**
- * Updates the player position and handles player actions based on input.
- * Handles map boundary checking and action key handling.
- * @param {Object} config - Game configuration (expects mapWidth, mapHeight)
+ * Updates the player position and handles actions based on input.
+ * Delegates to movement, selector, and action handlers.
  */
 export function updatePlayer(config) {
     if (inputState.modalOpen) {
@@ -51,105 +155,11 @@ export function updatePlayer(config) {
         return;
     }
 
-    const {
-        mapWidth,
-        mapHeight
-    } = config;
     const player = gameState.player;
     const controls = config.keyBindings;
 
-    // Movement
-    if (inputState.keysPressed[controls.up]) {
-        attemptPlayerMove(player, 0, -1, config);
-        inputState.keysPressed[controls.up] = false;
-    } else if (inputState.keysPressed[controls.down]) {
-        attemptPlayerMove(player, 0, 1, config);
-        inputState.keysPressed[controls.down] = false;
-    } else if (inputState.keysPressed[controls.left]) {
-        attemptPlayerMove(player, -1, 0, config);
-        inputState.keysPressed[controls.left] = false;
-    } else if (inputState.keysPressed[controls.right]) {
-        attemptPlayerMove(player, 1, 0, config);
-        inputState.keysPressed[controls.right] = false;
-    }
-
-    // Select tile above player
-    else if (inputState.keysPressed[controls.selectUp]) {
-        const newY = player.y - 1;
-        if (newY >= 0) gameState.selector = {
-            x: player.x,
-            y: newY
-        };
-        inputState.keysPressed[controls.selectUp] = false;
-        updateTileInfoPanel(config);
-        render(config);
-    }
-    // Select tile below player
-    else if (inputState.keysPressed[controls.selectDown]) {
-        const newY = player.y + 1;
-        if (newY < mapHeight) gameState.selector = {
-            x: player.x,
-            y: newY
-        };
-        inputState.keysPressed[controls.selectDown] = false;
-        updateTileInfoPanel(config);
-        render(config);
-    }
-    // Select tile left of player
-    else if (inputState.keysPressed[controls.selectLeft]) {
-        const newX = player.x - 1;
-        if (newX >= 0) gameState.selector = {
-            x: newX,
-            y: player.y
-        };
-        inputState.keysPressed[controls.selectLeft] = false;
-        updateTileInfoPanel(config);
-        render(config);
-    }
-    // Select tile right of player
-    else if (inputState.keysPressed[controls.selectRight]) {
-        const newX = player.x + 1;
-        if (newX < mapWidth) gameState.selector = {
-            x: newX,
-            y: player.y
-        };
-        inputState.keysPressed[controls.selectRight] = false;
-        updateTileInfoPanel(config);
-        render(config);
-    }
-    // Reset selector to player position
-    else if (inputState.keysPressed[controls.resetSelector]) {
-        gameState.selector = {
-            x: player.x,
-            y: player.y
-        };
-        inputState.keysPressed[controls.resetSelector] = false;
-        updateTileInfoPanel(config);
-        render(config);
-    }
-
-    // Handle number keys for actions based on config.keyBindings.actions
-    const actionKeys = config.keyBindings.actions || {};
-    for (const [actionLabel, key] of Object.entries(actionKeys)) {
-        const tile = getTile(gameState.selector.x, gameState.selector.y, config);
-        if (inputState.keysPressed[key]) {
-            inputState.keysPressed[key] = false; // consume the key
-
-            const result = attemptActionOnTile(tile, actionLabel, config, strings, gameState.dailyStats);
-
-            if (!result.success) {
-                showModal('gameMessage', {
-                    title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
-                    message: Array.isArray(result.message) ? result.message : [result.message]
-                });
-                return;
-            }
-
-            if (result.plantModal) {
-                showModal('plantSelection', config, tile, gameState.selector.x, gameState.selector.y);
-            } else {
-                finalizeAction(config.tiles.actions[actionLabel], config);
-            }
-        }
-    }
+    // Handle inputs in priority: movement > selector > actions
+    if (handleMovementKeys(player, controls, config)) return;
+    if (handleSelectorKeys(player, controls, config)) return;
+    handleActionKeys(config);
 }
