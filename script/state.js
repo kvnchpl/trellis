@@ -143,7 +143,7 @@ export function resetDailyStats() {
  * @param {number} dy - Delta y.
  * @param {Object} config - Game configuration.
  */
-function attemptPlayerMove(player, dx, dy, config) {
+export function attemptPlayerMove(player, dx, dy, config) {
     const newX = player.x + dx;
     const newY = player.y + dy;
     const targetTile = getTile(newX, newY, config);
