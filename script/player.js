@@ -47,54 +47,44 @@ function handleMovementKeys(player, controls, config) {
     return false;
 }
 
-/**
- * Handles selector movement input keys.
- */
 function handleSelectorKeys(player, controls, config) {
     const { mapWidth, mapHeight } = config;
     const sel = gameState.selector;
 
-    const updateSelector = (x, y) => {
-        gameState.selector = { x, y };
-        updateTileInfoPanel(config);
-        render(config);
-    };
+    let newX = sel.x;
+    let newY = sel.y;
 
     if (inputState.keysPressed[controls.selectUp]) {
-        const newY = player.y - 1;
-        if (newY >= 0) updateSelector(player.x, newY);
+        newY = Math.max(0, sel.y - 1);
         inputState.keysPressed[controls.selectUp] = false;
-        return true;
     }
     if (inputState.keysPressed[controls.selectDown]) {
-        const newY = player.y + 1;
-        if (newY < mapHeight) updateSelector(player.x, newY);
+        newY = Math.min(mapHeight - 1, sel.y + 1);
         inputState.keysPressed[controls.selectDown] = false;
-        return true;
     }
     if (inputState.keysPressed[controls.selectLeft]) {
-        const newX = player.x - 1;
-        if (newX >= 0) updateSelector(newX, player.y);
+        newX = Math.max(0, sel.x - 1);
         inputState.keysPressed[controls.selectLeft] = false;
-        return true;
     }
     if (inputState.keysPressed[controls.selectRight]) {
-        const newX = player.x + 1;
-        if (newX < mapWidth) updateSelector(newX, player.y);
+        newX = Math.min(mapWidth - 1, sel.x + 1);
         inputState.keysPressed[controls.selectRight] = false;
-        return true;
     }
     if (inputState.keysPressed[controls.resetSelector]) {
-        updateSelector(player.x, player.y);
+        newX = player.x;
+        newY = player.y;
         inputState.keysPressed[controls.resetSelector] = false;
-        return true;
     }
-    return false;
+
+    const moved = newX !== sel.x || newY !== sel.y;
+    if (moved) {
+        gameState.selector.x = newX;
+        gameState.selector.y = newY;
+    }
+
+    return moved;
 }
 
-/**
- * Handles action input keys based on config.keyBindings.actions.
- */
 function handleActionKeys(config) {
     const actionKeys = config.keyBindings.actions || {};
     const sel = gameState.selector;
@@ -102,27 +92,14 @@ function handleActionKeys(config) {
 
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
         if (!inputState.keysPressed[key]) continue;
-
         inputState.keysPressed[key] = false; // consume key
 
+        // Only apply the state change, do not show UI
         const result = attemptActionOnTile(tile, actionLabel, config, strings, gameState.dailyStats);
 
-        if (!result.success) {
-            showModal('gameMessage', {
-                title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
-                message: Array.isArray(result.message) ? result.message : [result.message]
-            });
-            return true;
-        }
-
-        if (result.plantModal) {
-            showModal('plantSelection', config, tile, sel.x, sel.y);
-        } else {
-            finalizeAction(config.tiles.actions[actionLabel], config);
-        }
-        return true;
+        return { actionLabel, result }; // caller handles UI and time
     }
-    return false;
+    return null;
 }
 
 /**
@@ -159,7 +136,35 @@ export function updatePlayer(config) {
     const controls = config.keyBindings;
 
     // Handle inputs in priority: movement > selector > actions
-    if (handleMovementKeys(player, controls, config)) return;
-    if (handleSelectorKeys(player, controls, config)) return;
-    handleActionKeys(config);
+    if (handleMovementKeys(player, controls, config)) {
+        const movementCost = attemptPlayerMove(player, dx, dy, config);
+        if (movementCost > 0) {
+            incrementTimeUI(movementCost, config);
+            saveGameState(config); // Save after movement
+        }
+        return true;
+    }
+    if (handleSelectorKeys(player, controls, config)) {
+        updateTileInfoPanel(config);
+        render(config);
+        return true;
+    }
+    const actionResult = handleActionKeys(config);
+    if (actionResult) {
+        const { actionLabel, result } = actionResult;
+
+        if (!result.success) {
+            showModal('gameMessage', {
+                title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
+                message: Array.isArray(result.message) ? result.message : [result.message]
+            });
+        } else if (result.plantModal) {
+            showModal('plantSelection', config, getTile(sel.x, sel.y, config), sel.x, sel.y);
+        } else {
+            finalizeAction(config.tiles.actions[actionLabel], config);
+        }
+
+        return true; // input was handled
+    }
 }
+

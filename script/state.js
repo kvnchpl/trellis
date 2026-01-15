@@ -167,30 +167,31 @@ export function resetDailyStats() {
     };
 }
 
-/**
- * Attempts to move the player by (dx, dy) if the target tile is not rock and has no plant.
- * @param {Object} player - The player object.
- * @param {number} dx - Delta x.
- * @param {number} dy - Delta y.
- * @param {Object} config - Game configuration.
- */
 export function attemptPlayerMove(player, dx, dy, config) {
     const newX = player.x + dx;
     const newY = player.y + dy;
     const targetTile = getTile(newX, newY, config);
+
+    // Only allow movement if tile is walkable
     if (targetTile.tile !== 'rock' && !targetTile.plantType) {
         player.x = newX;
         player.y = newY;
+
+        // Move selector with player
         gameState.selector = {
             x: player.x,
             y: player.y
         };
+
+        // Increment steps
         gameState.dailyStats.steps++;
-        saveGameState(config);
+
+        // Return how much time should be advanced
         const movementCost = config.movementTimeIncrement || 1;
-        incrementTimeUI(movementCost, config);
-        updateTileInfoPanel(config);
+        return movementCost;
     }
+
+    return 0; // No movement occurred
 }
 
 export function updateGrowth(config) {
