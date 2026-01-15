@@ -21,35 +21,6 @@ import {
 } from './renderer.js';
 
 /**
- * Applies the effects of an action to a tile and returns the new tile object.
- * @param {Object} tile - The current tile object.
- * @param {Object} actionDef - The action definition.
- * @param {Object} config - Game configuration.
- * @returns {Object} The new tile object after applying effects.
- */
-function applyActionEffects(tile, actionDef, config) {
-    const effect = actionDef.effect || {};
-    const newTile = {
-        ...tile
-    };
-    for (const key in effect) {
-        const val = effect[key];
-        if (val && typeof val === "object" && !Array.isArray(val)) {
-            if ("inc" in val) {
-                newTile[key] = (newTile[key] || 0) + val.inc;
-            } else if ("dec" in val) {
-                newTile[key] = (newTile[key] || 0) - val.dec;
-            } else {
-                newTile[key] = val;
-            }
-        } else {
-            newTile[key] = val;
-        }
-    }
-    return newTile;
-}
-
-/**
  * Attempts to move the player by (dx, dy) if the target tile is not rock and has no plant.
  * @param {Object} player - The player object.
  * @param {number} dx - Delta x.
