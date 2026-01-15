@@ -47,6 +47,7 @@ export const modalRegistry = {
                     newTile.plantType = plantKey;
                     newTile.growthStage = def.growthStages[0];
                     gameState.map[`${x},${y}`] = newTile;
+                    gameState.dailyStats.planted++;
                     finalizeAction(config.tiles.actions.plant, config);
                     closeModal();
                 };
@@ -264,6 +265,7 @@ export function showPlantSelectionModal(config, tile, x, y) {
             newTile.growthStage = plantDef.growthStages[0];
             newTile.growthProgress = 0;
             gameState.map[`${x},${y}`] = newTile;
+            gameState.dailyStats.planted++;
             const plantActionDef = config.tiles.actions.plant;
             finalizeAction(plantActionDef, config);
             closeModal();
