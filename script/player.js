@@ -218,7 +218,7 @@ export function updatePlayer(config) {
             const actionDef = config.tiles.actions[actionLabel];
             if (!actionDef) return;
 
-            const failedReasons = getBlockedActionMessages(tile, actionDef, strings);
+            const failedReasons = getBlockedActionMessages(tile, { ...actionDef, name: actionLabel }, strings);
             if (failedReasons.length > 0) {
                 showGameMessageModal({
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
