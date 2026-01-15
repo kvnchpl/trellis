@@ -175,7 +175,7 @@ export function attemptPlayerMove(player, dx, dy, config) {
  * Updates plant growth for all tiles based on their growth time and conditions.
  * @param {Object} config - Game configuration.
  */
-function updateGrowth(config) {
+export function updateGrowth(config) {
     for (const tile of Object.values(gameState.map)) {
         if (!tile.plantType) continue;
         const def = config.plants.definitions[tile.plantType];
