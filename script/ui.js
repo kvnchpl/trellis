@@ -607,3 +607,17 @@ export function updateSaveSizeDisplay() {
 
     saveEl.textContent = `(${sizeInKB} KB${warningText})`;
 }
+
+function maybeUpdateSaveSizeDisplay() {
+    const now = performance.now();
+    if (now - lastSaveSizeUpdate > 2000) { // update every 2 seconds
+        updateSaveSizeDisplay();
+        lastSaveSizeUpdate = now;
+    }
+}
+
+export function refreshUI(config) {
+    updateTimePanel(config);
+    updateTileInfoPanelIfChanged(config);
+    maybeUpdateSaveSizeDisplay();
+}

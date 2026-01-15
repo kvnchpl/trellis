@@ -22,7 +22,8 @@ import {
     inputState,
     loadStrings,
     showModal,
-    closeModal
+    closeModal,
+    updateSaveSizeDisplay
 } from './ui.js';
 
 const configUrl = 'config.json';

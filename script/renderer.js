@@ -4,15 +4,12 @@ import {
 } from './state.js';
 
 import {
-    updateTileInfoPanel,
-    updateTimePanel,
-    updateSaveSizeDisplay
+    refreshUI,
+    updateTileInfoPanel
 } from './ui.js';
 
 let lastSelectorKey = null;
 let lastPlayerKey = null;
-
-let lastSaveSizeUpdate = 0;
 
 /**
  * Draws a tile or its color at the given position.
@@ -55,20 +52,6 @@ function updateTileInfoPanelIfChanged(config) {
         updateTileInfoPanel(config);
         lastSelectorKey = currentKey;
     }
-}
-
-function maybeUpdateSaveSizeDisplay() {
-    const now = performance.now();
-    if (now - lastSaveSizeUpdate > 2000) { // update every 2 seconds
-        updateSaveSizeDisplay();
-        lastSaveSizeUpdate = now;
-    }
-}
-
-function refreshUI(config) {
-    updateTimePanel(config);
-    updateTileInfoPanelIfChanged(config);
-    maybeUpdateSaveSizeDisplay();
 }
 
 /**
