@@ -100,7 +100,7 @@ export function updatePlayer(config, inputState) {
     const controls = config.keyBindings;
 
     const movementTime = handleMovementKeys(player, controls, inputState, config);
-    const selectorMoved = handleSelectorKeys(controls, inputState, config);
+    const selectorMoved = handleSelectorKeys(player, controls, inputState, config);
     const actionInfo = handleActionKeys(config, inputState, gameState.dailyStats);
 
     return {
