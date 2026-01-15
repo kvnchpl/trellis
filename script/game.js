@@ -161,8 +161,6 @@ async function initGame(loadExisting = true) {
         updateFog(config);
 
         // Force initial render
-        lastPlayerKey = null;
-        lastSelectorKey = null;
         render(config);
         updateTileInfoPanel(config);
         updateTimePanel(config);
