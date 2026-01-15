@@ -160,9 +160,13 @@ function gameLoop(config) {
         if (actionInfo) {
             const { actionLabel, result } = actionInfo;
             if (!result.success) {
+                const tile = getTile(gameState.selector.x, gameState.selector.y, config);
+                const actionDef = { ...config.tiles.actions[actionLabel], name: actionLabel };
+                const reasonText = getBlockedActionMessages(tile, actionDef, strings);
+
                 showModal('gameMessage', {
-                    title: `Cannot ${actionLabel} this tile`,
-                    message: Array.isArray(result.message) ? result.message : [result.message]
+                    title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
+                    message: reasonText.length > 0 ? reasonText : ["The tile does not meet the requirements for this action."]
                 });
             } else if (result.plantModal) {
                 showModal('plantSelection', config, getTile(gameState.selector.x, gameState.selector.y, config), gameState.selector.x, gameState.selector.y);
