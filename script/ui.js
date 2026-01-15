@@ -136,6 +136,45 @@ export const modalRegistry = {
             plantModalButtonList = [];
             plantModalFocusedIndex = 0;
         }
+    },
+    dayComplete: {
+        setup: (stats, config) => {
+            const overlay = document.getElementById('game-message-overlay');
+            const titleEl = document.getElementById('game-message-title');
+            const contentEl = document.getElementById('game-message-content');
+            const confirmBtn = document.getElementById('game-message-confirm');
+            const cancelBtn = document.getElementById('game-message-cancel');
+
+            titleEl.textContent = 'DAY COMPLETE';
+            contentEl.innerHTML = `
+            <div>Steps walked: ${stats.steps}</div>
+            <div>Crops planted: ${stats.planted}</div>
+            <div>Tiles tilled: ${stats.tilled}</div>
+            <div>Tiles watered: ${stats.watered}</div>
+            <div>Tiles fertilized: ${stats.fertilized}</div>
+            <div>Crops harvested: ${stats.harvested}</div>
+        `;
+
+            // Hide cancel button
+            cancelBtn.style.display = 'none';
+
+            overlay.style.display = 'flex';
+            openModal();
+            confirmBtn.focus();
+
+            confirmBtn.onclick = () => {
+                showModal('closeAll');
+                // Advance to next day
+                advanceDay(config);
+                resetDailyStats();
+                if (gameState.time.week !== lastGrowthUpdateWeek) {
+                    updateGrowth(config);
+                    lastGrowthUpdateWeek = gameState.time.week;
+                }
+                updateTimePanel(config);
+                saveGameState();
+            };
+        }
     }
 };
 
