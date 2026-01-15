@@ -1,38 +1,38 @@
 {
     "conditionKeyMap": {
         "plantType": {
-            "null": "The tile must not have a plant.",
-            "set": "The tile must have a plant."
+            "null": "The tile does not have a plant.",
+            "set": "The tile has a plant."
         },
         "weeds": {
-            "true": "There are weeds here that can be removed.",
-            "false": "There are no weeds to remove."
+            "true": "The tile has weeds.",
+            "false": "The tile has no weeds."
         },
         "mulch": {
-            "true": "This tile is already mulched.",
+            "true": "The tile is mulched.",
             "false": "The tile is not mulched."
         },
         "fertilized": {
-            "true": "This tile is already fertilized.",
-            "false": "The tile has not been fertilized."
+            "true": "The tile is fertilized.",
+            "false": "The tile is not fertilized."
         },
         "tile": {
-            "soil": "The tile must be soil for this action.",
-            "tilled": "The tile must be tilled for this action.",
-            "grass": "The tile must be grass for this action.",
-            "rock": "The tile must be rock for this action.",
-            "default": "This tile type is not valid for this action."
+            "soil": "The tile is soil.",
+            "tilled": "The tile is tilled.",
+            "grass": "The tile is grass.",
+            "rock": "The tile is rock.",
+            "default": "This tile type is not valid."
         },
         "readyToHarvest": {
-            "true": "This crop is ready to harvest.",
-            "false": "This crop is not ready to harvest."
+            "true": "The plant is ready for harvest.",
+            "false": "The plant is not ready for harvest."
         },
         "moisture": {
-            "lt": "The tile is already moist enough.",
+            "lt": "The tile is not dry enough.",
             "gt": "The tile is too dry."
         },
         "fertility": {
-            "lt": "The tile is already fully fertile.",
+            "lt": "The tile is fully fertile.",
             "gt": "The tile is too fertile."
         },
         "growthStage": {
@@ -47,8 +47,8 @@
             "sapling": "The plant is a sapling."
         },
         "growthProgress": {
-            "lt": "Growth is not sufficient for this action.",
-            "gt": "Growth has exceeded the limit for this action."
+            "lt": "Growth is insufficient.",
+            "gt": "Growth has exceeded the limit."
         },
         "or": "None of the required conditions are met."
     },
