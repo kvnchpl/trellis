@@ -28,11 +28,6 @@ import {
 const configUrl = 'config.json';
 let config;
 
-let lastSelectorKey = null;
-let lastPlayerKey = null;
-
-let lastSaveSizeUpdate = 0;
-
 async function fetchConfig() {
     try {
         const response = await fetch(configUrl);
