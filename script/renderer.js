@@ -4,9 +4,9 @@ import {
 } from './state.js';
 
 import {
+    updateTileInfoPanel,
     updateTimePanel
 } from './ui.js';
-
 
 let lastPlayerKey = null;
 let lastSelectorKey = null;
