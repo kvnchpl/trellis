@@ -1,4 +1,6 @@
-import { getBlockedActionMessages } from './actions.js';
+import {
+    getBlockedActionMessages
+} from './actions.js';
 
 import {
     initPlayer,
