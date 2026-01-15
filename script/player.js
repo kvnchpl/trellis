@@ -1,121 +1,69 @@
-import {
-    attemptActionOnTile
-} from './actions.js';
-
-import {
-    render
-} from './renderer.js';
-
-import {
-    gameState,
-    getTile,
-    attemptPlayerMove
-} from './state.js';
-
-import {
-    strings,
-    updateTileInfoPanel,
-    showModal,
-    inputState,
-    finalizeAction
-} from './ui.js';
+import { attemptActionOnTile } from './actions.js';
+import { gameState, getTile, attemptPlayerMove } from './state.js';
 
 /**
- * Handles player movement input keys.
+ * Handles movement keys and updates player state.
+ * Returns the number of minutes the player moved (0 if no movement).
  */
-function handleMovementKeys(player, controls, config) {
-    if (inputState.keysPressed[controls.up]) {
-        attemptPlayerMove(player, 0, -1, config);
-        inputState.keysPressed[controls.up] = false;
-        return true;
+function handleMovementKeys(player, controls, inputState, config) {
+    let dx = 0, dy = 0;
+
+    if (inputState.keysPressed[controls.up]) { dy = -1; inputState.keysPressed[controls.up] = false; }
+    else if (inputState.keysPressed[controls.down]) { dy = 1; inputState.keysPressed[controls.down] = false; }
+    else if (inputState.keysPressed[controls.left]) { dx = -1; inputState.keysPressed[controls.left] = false; }
+    else if (inputState.keysPressed[controls.right]) { dx = 1; inputState.keysPressed[controls.right] = false; }
+
+    if (dx !== 0 || dy !== 0) {
+        const timeCost = attemptPlayerMove(player, dx, dy, config);
+        return timeCost;
     }
-    if (inputState.keysPressed[controls.down]) {
-        attemptPlayerMove(player, 0, 1, config);
-        inputState.keysPressed[controls.down] = false;
-        return true;
-    }
-    if (inputState.keysPressed[controls.left]) {
-        attemptPlayerMove(player, -1, 0, config);
-        inputState.keysPressed[controls.left] = false;
-        return true;
-    }
-    if (inputState.keysPressed[controls.right]) {
-        attemptPlayerMove(player, 1, 0, config);
-        inputState.keysPressed[controls.right] = false;
-        return true;
-    }
-    return false;
+    return 0;
 }
 
-function handleSelectorKeys(player, controls, config) {
-    const { mapWidth, mapHeight } = config;
+function handleSelectorKeys(controls, inputState, config) {
     const sel = gameState.selector;
+    const { mapWidth, mapHeight } = config;
+    let newX = sel.x, newY = sel.y;
 
-    let newX = sel.x;
-    let newY = sel.y;
-
-    if (inputState.keysPressed[controls.selectUp]) {
-        newY = Math.max(0, sel.y - 1);
-        inputState.keysPressed[controls.selectUp] = false;
-    }
-    if (inputState.keysPressed[controls.selectDown]) {
-        newY = Math.min(mapHeight - 1, sel.y + 1);
-        inputState.keysPressed[controls.selectDown] = false;
-    }
-    if (inputState.keysPressed[controls.selectLeft]) {
-        newX = Math.max(0, sel.x - 1);
-        inputState.keysPressed[controls.selectLeft] = false;
-    }
-    if (inputState.keysPressed[controls.selectRight]) {
-        newX = Math.min(mapWidth - 1, sel.x + 1);
-        inputState.keysPressed[controls.selectRight] = false;
-    }
-    if (inputState.keysPressed[controls.resetSelector]) {
-        newX = player.x;
-        newY = player.y;
-        inputState.keysPressed[controls.resetSelector] = false;
-    }
+    if (inputState.keysPressed[controls.selectUp]) { newY = Math.max(0, sel.y - 1); inputState.keysPressed[controls.selectUp] = false; }
+    if (inputState.keysPressed[controls.selectDown]) { newY = Math.min(mapHeight - 1, sel.y + 1); inputState.keysPressed[controls.selectDown] = false; }
+    if (inputState.keysPressed[controls.selectLeft]) { newX = Math.max(0, sel.x - 1); inputState.keysPressed[controls.selectLeft] = false; }
+    if (inputState.keysPressed[controls.selectRight]) { newX = Math.min(mapWidth - 1, sel.x + 1); inputState.keysPressed[controls.selectRight] = false; }
+    if (inputState.keysPressed[controls.resetSelector]) { newX = gameState.player.x; newY = gameState.player.y; inputState.keysPressed[controls.resetSelector] = false; }
 
     const moved = newX !== sel.x || newY !== sel.y;
     if (moved) {
-        gameState.selector.x = newX;
-        gameState.selector.y = newY;
+        sel.x = newX;
+        sel.y = newY;
     }
-
     return moved;
 }
 
-function handleActionKeys(config) {
+/**
+ * Handles actions on the currently selected tile.
+ * Only mutates state; no UI handling.
+ */
+function handleActionKeys(config, inputState, dailyStats) {
     const actionKeys = config.keyBindings.actions || {};
     const sel = gameState.selector;
     const tile = getTile(sel.x, sel.y, config);
 
     for (const [actionLabel, key] of Object.entries(actionKeys)) {
         if (!inputState.keysPressed[key]) continue;
-        inputState.keysPressed[key] = false; // consume key
+        inputState.keysPressed[key] = false;
 
-        // Only apply the state change, do not show UI
-        const result = attemptActionOnTile(tile, actionLabel, config, strings, gameState.dailyStats);
-
-        return { actionLabel, result }; // caller handles UI and time
+        const result = attemptActionOnTile(tile, actionLabel, config, null, dailyStats); // pass null for strings, UI handles it
+        return { actionLabel, result }; // caller handles UI
     }
     return null;
 }
 
-/**
- * Initializes player input event listeners.
- */
-export function initPlayer() {
+export function initPlayer(inputState) {
     window.addEventListener('keydown', (e) => {
         if (inputState.modalOpen) {
             e.preventDefault();
             e.stopPropagation();
             inputState.keysPressed[e.key] = false;
-            inputState.keysBlocked.add(e.key);
-            return;
-        }
-        if (inputState.keysBlocked.has(e.key)) {
-            inputState.keysPressed[e.key] = false; // ignore keys pressed during modal
             return;
         }
         inputState.keysPressed[e.key] = true;
@@ -123,49 +71,21 @@ export function initPlayer() {
 }
 
 /**
- * Updates the player position and handles actions based on input.
- * Delegates to movement, selector, and action handlers.
+ * Updates player/selector state and returns info for UI handling.
  */
-export function updatePlayer(config) {
-    if (inputState.modalOpen) {
-        Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-        return;
-    }
+export function updatePlayer(config, inputState) {
+    if (inputState.modalOpen) return null;
 
     const player = gameState.player;
     const controls = config.keyBindings;
 
-    // Handle inputs in priority: movement > selector > actions
-    if (handleMovementKeys(player, controls, config)) {
-        const movementCost = attemptPlayerMove(player, dx, dy, config);
-        if (movementCost > 0) {
-            incrementTimeUI(movementCost, config);
-            saveGameState(config); // Save after movement
-            updateSaveSizeDisplay(config); 
-        }
-        return true;
-    }
-    if (handleSelectorKeys(player, controls, config)) {
-        updateTileInfoPanel(config);
-        render(config);
-        return true;
-    }
-    const actionResult = handleActionKeys(config);
-    if (actionResult) {
-        const { actionLabel, result } = actionResult;
+    const movementTime = handleMovementKeys(player, controls, inputState, config);
+    const selectorMoved = handleSelectorKeys(controls, inputState, config);
+    const actionInfo = handleActionKeys(config, inputState, gameState.dailyStats);
 
-        if (!result.success) {
-            showModal('gameMessage', {
-                title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
-                message: Array.isArray(result.message) ? result.message : [result.message]
-            });
-        } else if (result.plantModal) {
-            showModal('plantSelection', config, getTile(sel.x, sel.y, config), sel.x, sel.y);
-        } else {
-            finalizeAction(config.tiles.actions[actionLabel], config);
-        }
-
-        return true; // input was handled
-    }
+    return {
+        movementTime,
+        selectorMoved,
+        actionInfo
+    };
 }
-

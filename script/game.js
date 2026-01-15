@@ -147,7 +147,26 @@ async function initGame(loadExisting = true) {
 }
 
 function gameLoop(config) {
-    if (!inputState.modalOpen) updatePlayer(config); // player input blocked when modal open
+    if (!inputState.modalOpen) {
+        const { movementTime, selectorMoved, actionInfo } = updatePlayer(config, inputState) || {};
+
+        if (movementTime) incrementTimeUI(movementTime, config);
+        if (selectorMoved) updateTileInfoPanel(config);
+        if (actionInfo) {
+            const { actionLabel, result } = actionInfo;
+            if (!result.success) {
+                showModal('gameMessage', {
+                    title: `Cannot ${actionLabel} this tile`,
+                    message: Array.isArray(result.message) ? result.message : [result.message]
+                });
+            } else if (result.plantModal) {
+                showModal('plantSelection', config, getTile(gameState.selector.x, gameState.selector.y, config), gameState.selector.x, gameState.selector.y);
+            } else {
+                finalizeAction(config.tiles.actions[actionLabel], config);
+            }
+        }
+    }
+
     refreshScreenIfChanged(config);
     requestAnimationFrame(() => gameLoop(config));
 }
