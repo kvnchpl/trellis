@@ -13,7 +13,10 @@ import {
 
 import {
     gameState,
-    initState
+    initState,
+    getTile,
+    attemptPlayerMove,
+    saveGameState
 } from './state.js';
 
 import {
@@ -39,41 +42,6 @@ async function fetchConfig() {
         console.error('Error loading config:', error);
         throw error;
     }
-}
-
-export function saveGameState(config) {
-    function defaultTile(config) {
-        return {
-            tile: null,
-            plantType: null,
-            growthStage: null,
-            growthProgress: 0,
-            moisture: 0,
-            fertility: 0,
-            weeds: false,
-            mulch: false,
-            readyToHarvest: false
-        };
-    }
-
-    const optimizedMap = {};
-    const def = defaultTile(config);
-
-    for (const [key, tile] of Object.entries(gameState.map)) {
-        if (Object.keys(def).some(k => tile[k] !== def[k] && tile[k] !== undefined)) {
-            optimizedMap[key] = tile;
-        }
-    }
-
-    localStorage.setItem("trellisSave", JSON.stringify({
-        player: gameState.player,
-        selector: gameState.selector,
-        map: optimizedMap,
-        revealed: gameState.revealed,
-        time: gameState.time
-    }));
-
-    updateSaveSizeDisplay(config);
 }
 
 function loadGameState() {
