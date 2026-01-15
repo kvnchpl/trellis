@@ -19,8 +19,19 @@ export function openModal() {
 
 export function closeModal() {
     inputState.modalOpen = false;
-    const overlay = document.getElementById('game-message-overlay');
-    if (overlay) overlay.style.display = 'none';
+
+    // Clear any stuck input state
+    Object.keys(inputState.keysPressed).forEach(
+        k => inputState.keysPressed[k] = false
+    );
+    inputState.blockedKeys.clear();
+
+    // Hide all modal overlays defensively
+    const plantOverlay = document.getElementById('plant-modal-overlay');
+    if (plantOverlay) plantOverlay.style.display = 'none';
+
+    const messageOverlay = document.getElementById('game-message-overlay');
+    if (messageOverlay) messageOverlay.style.display = 'none';
 }
 
 export const inputState = {
