@@ -9,6 +9,7 @@ import {
 
 
 let lastPlayerKey = null;
+let lastSelectorKey = null;
 
 /**
  * Draws the player on the canvas.
