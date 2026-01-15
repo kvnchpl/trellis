@@ -50,6 +50,15 @@ function handleSelectorKeys(player, controls, inputState, config) {
         inputState.keysPressed[controls.resetSelector] = false;
     }
 
+    // Constrain selector to adjacent tiles around the player
+    const minX = player.x - 1;
+    const maxX = player.x + 1;
+    const minY = player.y - 1;
+    const maxY = player.y + 1;
+
+    newX = Math.max(minX, Math.min(maxX, newX));
+    newY = Math.max(minY, Math.min(maxY, newY));
+
     const moved = newX !== sel.x || newY !== sel.y;
     if (moved) {
         gameState.selector.x = newX;
