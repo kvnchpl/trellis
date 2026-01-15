@@ -264,107 +264,88 @@ export function finalizeAction(actionDef, config) {
 }
 
 /**
- * Updates the tile information panel based on the currently selected tile.
- * @param {Object} config - Game configuration.
+ * Determines the correct image src and visibility for the tile info panel.
+ * @param {Object} tile
+ * @param {Object} config
  */
-export function updateTileInfoPanel(config) {
-    const tile = getTile(gameState.selector.x, gameState.selector.y, config);
-    const detailsEl = document.getElementById('tile-details');
-    const actionsEl = document.getElementById('tile-actions');
-
-    // Show tile image if available (prefer plant image if plantType present)
+function _getTileImage(tile, config) {
     const imageEl = document.getElementById('tile-image');
-    if (imageEl) {
-        if (tile.plantType && config.plants.images && Array.isArray(config.plants.images[tile.plantType])) {
-            const stageIndex = config.plants.definitions[tile.plantType].growthStages.indexOf(tile.growthStage);
-            if (stageIndex >= 0 && config.plants.images[tile.plantType][stageIndex]) {
-                imageEl.src = config.plants.images[tile.plantType][stageIndex];
-                imageEl.style.display = 'block';
-            } else {
-                imageEl.style.display = 'none';
-                return;
-            }
+    if (!imageEl) return;
+
+    if (tile.plantType && config.plants.images && Array.isArray(config.plants.images[tile.plantType])) {
+        const def = config.plants.definitions[tile.plantType];
+        const stageIndex = def.growthStages.indexOf(tile.growthStage);
+        if (stageIndex >= 0 && config.plants.images[tile.plantType][stageIndex]) {
+            imageEl.src = config.plants.images[tile.plantType][stageIndex];
+            imageEl.style.display = 'block';
         } else {
-            const imageKey = tile.tile;
-            if (imageKey && config.tiles.images && config.tiles.images[imageKey]) {
-                imageEl.src = config.tiles.images[imageKey];
-                imageEl.style.display = 'block';
-            } else {
-                imageEl.style.display = 'none';
-            }
+            imageEl.style.display = 'none';
+        }
+    } else {
+        const imageKey = tile.tile;
+        if (imageKey && config.tiles.images && config.tiles.images[imageKey]) {
+            imageEl.src = config.tiles.images[imageKey];
+            imageEl.style.display = 'block';
+        } else {
+            imageEl.style.display = 'none';
         }
     }
+}
 
-    detailsEl.innerHTML = '';
+/**
+ * Formats the value for a given tile detail key, applying labels, booleans, percentages, etc.
+ * @param {Object} tile
+ * @param {string} key
+ * @param {Object} config
+ * @returns {Object} { label, value }
+ */
+function _formatTileDetailValue(tile, key, config) {
+    let value = tile[key];
+
+    // Normalize undefined or null to 'none' for tile and plantType
+    if ((key === 'tile' || key === 'plantType') && (value === null || value === undefined)) {
+        value = 'none';
+    }
+
+    // Handle boolean values: always display Yes or No
+    if (typeof value === 'boolean') {
+        value = value ? 'Yes' : 'No';
+    }
+
+    // Apply labels if defined
+    if (key === 'tile' && config.tiles.labels && config.tiles.labels[value]) {
+        value = config.tiles.labels[value];
+    }
+    if (key === 'plantType') {
+        value = config.plants.definitions[value]?.label || value;
+    }
+
+    // Format numeric values
+    if ((key === 'moisture' || key === 'fertility') && typeof value === 'number') {
+        value = `${value}%`;
+    }
+
+    // Fallback if still no value
+    if (value === null || value === undefined) {
+        value = '–';
+    }
+
+    // Apply custom labels for these keys if defined
+    const label = (config.tiles.labels && config.tiles.labels[key]) ?
+        config.tiles.labels[key] :
+        key;
+    return { label, value };
+}
+
+/**
+ * Renders the action buttons for the tile info panel.
+ * @param {Object} tile
+ * @param {Object} config
+ */
+function _renderActionButtons(tile, config) {
+    const actionsEl = document.getElementById('tile-actions');
+    if (!actionsEl) return;
     actionsEl.innerHTML = '';
-
-    config.tiles.detailsOrder.forEach((key, idx) => {
-        const p = document.createElement('p');
-        let value = tile[key];
-
-        // Normalize undefined or null to 'none' for tile and plantType
-        if ((key === 'tile' || key === 'plantType') && (value === null || value === undefined)) {
-            value = 'none';
-        }
-
-        // Handle boolean values: always display Yes or No
-        if (typeof value === 'boolean') {
-            value = value ? 'Yes' : 'No';
-        }
-
-        // Apply labels if defined
-        if (key === 'tile' && config.tiles.labels && config.tiles.labels[value]) {
-            value = config.tiles.labels[value];
-        }
-        if (key === 'plantType') {
-            value = config.plants.definitions[value]?.label || value;
-        }
-
-        // Format numeric values
-        if ((key === 'moisture' || key === 'fertility') && typeof value === 'number') {
-            value = `${value}%`;
-        }
-
-        // Fallback if still no value
-        if (value === null || value === undefined) {
-            value = '–';
-        }
-
-        // Apply custom labels for these keys if defined
-        const label = (config.tiles.labels && config.tiles.labels[key]) ?
-            config.tiles.labels[key] :
-            key;
-        p.innerHTML = `<strong>${label}:</strong> <span id="tile-value-${key}">${value}</span>`;
-        detailsEl.appendChild(p);
-    });
-
-    // Prepare plant select dropdown if "plant" action is valid
-    let plantActionValid = false;
-    for (const [actionLabel, actionDef] of Object.entries(config.tiles.actions)) {
-        if (actionLabel === "plant") {
-            if (evaluateCondition(tile, actionDef.condition)) {
-                plantActionValid = true;
-                break;
-            }
-        }
-    }
-    // Prevent planting if tile already has a plant
-    if (tile.plantType) {
-        plantActionValid = false;
-    }
-
-    // Determine if planting is valid
-    let plantEnabled = evaluateCondition(tile, config.tiles.actions.plant.condition);
-    if (tile.plantType) plantEnabled = false; // cannot plant if tile already has a plant
-
-    // Add default option and plant options
-    const plantKey = config.keyBindings.actions['plant'] || '';
-    const defaultOpt = document.createElement('option');
-    defaultOpt.value = '';
-    defaultOpt.textContent = `[${plantKey}] plant`;
-
-    // Now iterate actions and render their buttons (handling "plant" specially)
-    actionsEl.innerHTML = ''; // clear existing buttons
 
     // Sort actions by their keyBindings number
     const sortedActions = Object.entries(config.tiles.actions)
@@ -376,8 +357,13 @@ export function updateTileInfoPanel(config) {
 
     for (const [actionLabel, actionDef] of sortedActions) {
         const isPlant = actionLabel === "plant";
-        const tile = getTile(gameState.selector.x, gameState.selector.y, config);
-        const validNow = evaluateCondition(tile, actionDef.condition);
+        // Always get the current tile state in case it was updated
+        const tileNow = getTile(gameState.selector.x, gameState.selector.y, config);
+        let validNow = evaluateCondition(tileNow, actionDef.condition);
+        // Prevent planting if tile already has a plant
+        if (isPlant && tileNow.plantType) {
+            validNow = false;
+        }
 
         const key = config.keyBindings.actions[actionLabel] || '';
         const btn = document.createElement('button');
@@ -389,29 +375,52 @@ export function updateTileInfoPanel(config) {
         btn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
-            const tileNow = getTile(gameState.selector.x, gameState.selector.y, config);
-            const valid = evaluateCondition(tileNow, actionDef.condition);
+            const tileLatest = getTile(gameState.selector.x, gameState.selector.y, config);
+            const valid = evaluateCondition(tileLatest, actionDef.condition);
+            if (isPlant && tileLatest.plantType) {
+                // Prevent planting if already planted
+                return;
+            }
             if (!valid) {
-                const reasonText = formatFailedConditions(null, actionLabel, tileNow, actionDef);
-
+                const reasonText = formatFailedConditions(null, actionLabel, tileLatest, actionDef);
                 showModal('gameMessage', {
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
                     message: Array.isArray(reasonText) ? reasonText : "The tile does not meet the requirements for this action."
                 });
                 return;
             }
-
             if (isPlant) {
-                showModal('plantSelection', config, tileNow, gameState.selector.x, gameState.selector.y);
+                showModal('plantSelection', config, tileLatest, gameState.selector.x, gameState.selector.y);
             } else {
-                const newTile = applyActionEffects(tileNow, actionDef, config);
+                const newTile = applyActionEffects(tileLatest, actionDef, config);
                 gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
                 finalizeAction(actionDef, config);
             }
         };
-
         actionsEl.appendChild(btn);
     }
+}
+
+/**
+ * Updates the tile information panel based on the currently selected tile.
+ * @param {Object} config - Game configuration.
+ */
+export function updateTileInfoPanel(config) {
+    const tile = getTile(gameState.selector.x, gameState.selector.y, config);
+    const detailsEl = document.getElementById('tile-details');
+    if (!detailsEl) return;
+
+    _getTileImage(tile, config);
+
+    detailsEl.innerHTML = '';
+    config.tiles.detailsOrder.forEach((key) => {
+        const { label, value } = _formatTileDetailValue(tile, key, config);
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${label}:</strong> <span id="tile-value-${key}">${value}</span>`;
+        detailsEl.appendChild(p);
+    });
+
+    _renderActionButtons(tile, config);
 }
 
 /**
