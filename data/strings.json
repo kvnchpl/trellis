@@ -79,8 +79,8 @@
                 "wrongTile": "Only grass or rock tiles can be cleared."
             },
             "harvest": {
-                "notReady": "The crop is not ready to harvest.",
-                "plantTypeNotEmpty": "There is no plant to harvest here."
+                "plantTypeNotEmpty": "There is no plant to harvest here.",
+                "notReady": "The crop is not ready to harvest."
             },
             "till": {
                 "wrongTile": "The tile must be bare soil (with no plant) to be tilled.",
@@ -142,9 +142,9 @@
             "mulch": "mulch"
         },
         "mulch": {
+            "plantType": "plantTypeNotEmpty",
             "tile": "wrongTile",
-            "mulch": "alreadyMulched",
-            "plantType": "plantTypeNotEmpty"
+            "mulch": "alreadyMulched"
         },
         "weed": {
             "weeds": "noWeeds",
