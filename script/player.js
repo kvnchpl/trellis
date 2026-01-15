@@ -21,22 +21,41 @@ function handleMovementKeys(player, controls, inputState, config) {
     return 0;
 }
 
-function handleSelectorKeys(controls, inputState, config) {
-    const sel = gameState.selector;
+function handleSelectorKeys(player, controls, config) {
     const { mapWidth, mapHeight } = config;
-    let newX = sel.x, newY = sel.y;
+    const sel = gameState.selector;
 
-    if (inputState.keysPressed[controls.selectUp]) { newY = Math.max(0, sel.y - 1); inputState.keysPressed[controls.selectUp] = false; }
-    if (inputState.keysPressed[controls.selectDown]) { newY = Math.min(mapHeight - 1, sel.y + 1); inputState.keysPressed[controls.selectDown] = false; }
-    if (inputState.keysPressed[controls.selectLeft]) { newX = Math.max(0, sel.x - 1); inputState.keysPressed[controls.selectLeft] = false; }
-    if (inputState.keysPressed[controls.selectRight]) { newX = Math.min(mapWidth - 1, sel.x + 1); inputState.keysPressed[controls.selectRight] = false; }
-    if (inputState.keysPressed[controls.resetSelector]) { newX = gameState.player.x; newY = gameState.player.y; inputState.keysPressed[controls.resetSelector] = false; }
+    let newX = sel.x;
+    let newY = sel.y;
+
+    if (inputState.keysPressed[controls.selectUp]) {
+        newY = Math.max(0, sel.y - 1);
+        inputState.keysPressed[controls.selectUp] = false;
+    }
+    if (inputState.keysPressed[controls.selectDown]) {
+        newY = Math.min(mapHeight - 1, sel.y + 1);
+        inputState.keysPressed[controls.selectDown] = false;
+    }
+    if (inputState.keysPressed[controls.selectLeft]) {
+        newX = Math.max(0, sel.x - 1);
+        inputState.keysPressed[controls.selectLeft] = false;
+    }
+    if (inputState.keysPressed[controls.selectRight]) {
+        newX = Math.min(mapWidth - 1, sel.x + 1);
+        inputState.keysPressed[controls.selectRight] = false;
+    }
+    if (inputState.keysPressed[controls.resetSelector]) {
+        newX = player.x;
+        newY = player.y;
+        inputState.keysPressed[controls.resetSelector] = false;
+    }
 
     const moved = newX !== sel.x || newY !== sel.y;
     if (moved) {
-        sel.x = newX;
-        sel.y = newY;
+        gameState.selector.x = newX;
+        gameState.selector.y = newY;
     }
+
     return moved;
 }
 
