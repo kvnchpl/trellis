@@ -1,10 +1,3 @@
-import { updateSaveSizeDisplay } from './ui.js';
-
-import {
-    updateTileInfoPanel,
-    incrementTimeUI
-} from './ui.js';
-
 export const gameState = {
     player: {
         x: 0,
