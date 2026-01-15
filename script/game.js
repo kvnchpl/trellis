@@ -21,6 +21,7 @@ import {
     updateTimePanel,
     inputState,
     loadStrings,
+    showModal,
     showDayCompleteModal,
     closeModal
 } from './ui.js';
