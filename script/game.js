@@ -212,10 +212,11 @@ initGame(true).catch((err) => {
     });
 });
 
-
-
-// Display save size and warning/critical status
-function updateSaveSizeDisplay() {
+/**
+ * Updates the save size display in the UI.
+ * @param {Object} config - Game configuration.
+ */
+export function updateSaveSizeDisplay() {
     const saveEl = document.getElementById("save-size");
     if (!saveEl) return;
 

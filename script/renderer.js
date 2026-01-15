@@ -1,4 +1,8 @@
 import {
+    updateSaveSizeDisplay
+} from './game.js';
+
+import {
     gameState,
     getTile
 } from './state.js';
