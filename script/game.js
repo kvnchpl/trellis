@@ -7,6 +7,7 @@ import {
     render,
     refreshScreenIfChanged,
     preloadImages,
+    resizeCanvasAndTiles,
     updateFog
 } from './renderer.js';
 
