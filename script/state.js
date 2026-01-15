@@ -2,6 +2,10 @@ import {
     saveGameState
 } from './game.js';
 
+import {
+    incrementTimeUI
+} from './ui.js';
+
 export const gameState = {
     player: {
         x: 0,
