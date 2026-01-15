@@ -154,8 +154,13 @@ export const modalRegistry = {
                 advanceDay(config);
                 resetDailyStats();
                 if (gameState.time.week !== lastGrowthUpdateWeek) {
-                    updateGrowth(config);
+                    const changedTiles = updateGrowth(config);
                     lastGrowthUpdateWeek = gameState.time.week;
+
+                    // Only refresh tile info if the currently selected tile changed
+                    if (changedTiles.includes(`${gameState.selector.x},${gameState.selector.y}`)) {
+                        updateTileInfoPanel(config);
+                    }
                 }
                 updateTimePanel(config);
                 saveGameState(config);
