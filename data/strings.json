@@ -79,7 +79,8 @@
                 "wrongTile": "Only grass or rock tiles can be cleared."
             },
             "harvest": {
-                "notReady": "The crop is not ready to harvest."
+                "notReady": "The crop is not ready to harvest.",
+                "plantTypeNotEmpty": "There is no plant to harvest here."
             },
             "till": {
                 "wrongTile": "The tile must be bare soil (with no plant) to be tilled.",
@@ -150,6 +151,7 @@
             "tile": "tileNotSoil"
         },
         "harvest": {
+            "plantType": "plantTypeNotEmpty",
             "readyToHarvest": "notReady"
         }
     }
