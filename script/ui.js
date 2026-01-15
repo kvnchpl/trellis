@@ -32,50 +32,6 @@ let lastGrowthUpdateWeek = null;
 export let strings = {};
 
 export const modalRegistry = {
-    plantSelection: {
-        overlayId: 'plant-modal-overlay',
-        modalId: 'plant-modal',
-        setup: (config, tile, x, y) => {
-            const overlay = document.getElementById('plant-modal-overlay');
-            const container = document.getElementById('plant-modal-buttons');
-            container.innerHTML = '';
-
-            plantModalButtonList = [];
-            plantModalFocusedIndex = 0;
-
-            Object.entries(config.plants.definitions).forEach(([plantKey, def], idx) => {
-                const btn = document.createElement('button');
-                btn.textContent = `[${idx + 1}] ${def.label}`;
-                btn.className = 'ui-button';
-                btn.tabIndex = 0;
-                btn.onclick = () => {
-                    const newTile = { ...tile };
-                    newTile.plantType = plantKey;
-                    newTile.growthStage = def.growthStages[0];
-                    newTile.growthProgress = 0;
-                    gameState.map[`${x},${y}`] = newTile;
-                    gameState.dailyStats.planted++;
-                    finalizeAction(config.tiles.actions.plant, config);
-                    showModal('closeAll');
-                };
-                container.appendChild(btn);
-                plantModalButtonList.push(btn);
-            });
-
-            overlay.style.display = 'flex';
-            openModal();
-
-            if (plantModalButtonList.length > 0) {
-                plantModalButtonList[0].focus();
-            }
-
-            overlay.onclick = (e) => {
-                if (e.target === overlay) {
-                    showModal('closeAll');
-                }
-            };
-        }
-    },
     gameMessage: {
         overlayId: 'game-message-overlay',
         modalId: 'game-message-modal',
@@ -120,21 +76,48 @@ export const modalRegistry = {
             confirmBtn.focus();
         }
     },
-    closeAll: {
-        setup: () => {
-            inputState.modalOpen = false;
-
-            Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-            inputState.keysBlocked.clear();
-
-            const plantOverlay = document.getElementById('plant-modal-overlay');
-            if (plantOverlay) plantOverlay.style.display = 'none';
-
-            const gameOverlay = document.getElementById('game-message-overlay');
-            if (gameOverlay) gameOverlay.style.display = 'none';
+    plantSelection: {
+        overlayId: 'plant-modal-overlay',
+        modalId: 'plant-modal',
+        setup: (config, tile, x, y) => {
+            const overlay = document.getElementById('plant-modal-overlay');
+            const container = document.getElementById('plant-modal-buttons');
+            container.innerHTML = '';
 
             plantModalButtonList = [];
             plantModalFocusedIndex = 0;
+
+            Object.entries(config.plants.definitions).forEach(([plantKey, def], idx) => {
+                const btn = document.createElement('button');
+                btn.textContent = `[${idx + 1}] ${def.label}`;
+                btn.className = 'ui-button';
+                btn.tabIndex = 0;
+                btn.onclick = () => {
+                    const newTile = { ...tile };
+                    newTile.plantType = plantKey;
+                    newTile.growthStage = def.growthStages[0];
+                    newTile.growthProgress = 0;
+                    gameState.map[`${x},${y}`] = newTile;
+                    gameState.dailyStats.planted++;
+                    finalizeAction(config.tiles.actions.plant, config);
+                    showModal('closeAll');
+                };
+                container.appendChild(btn);
+                plantModalButtonList.push(btn);
+            });
+
+            overlay.style.display = 'flex';
+            openModal();
+
+            if (plantModalButtonList.length > 0) {
+                plantModalButtonList[0].focus();
+            }
+
+            overlay.onclick = (e) => {
+                if (e.target === overlay) {
+                    showModal('closeAll');
+                }
+            };
         }
     },
     dayComplete: {
@@ -174,6 +157,23 @@ export const modalRegistry = {
                 updateTimePanel(config);
                 saveGameState();
             };
+        }
+    },
+    closeAll: {
+        setup: () => {
+            inputState.modalOpen = false;
+
+            Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
+            inputState.keysBlocked.clear();
+
+            const plantOverlay = document.getElementById('plant-modal-overlay');
+            if (plantOverlay) plantOverlay.style.display = 'none';
+
+            const gameOverlay = document.getElementById('game-message-overlay');
+            if (gameOverlay) gameOverlay.style.display = 'none';
+
+            plantModalButtonList = [];
+            plantModalFocusedIndex = 0;
         }
     }
 };
