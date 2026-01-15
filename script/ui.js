@@ -1,5 +1,6 @@
 import {
     gameState,
+    finalizeAction,
     getTile,
     resetDailyStats,
     advanceDay
@@ -9,8 +10,88 @@ import {
     getBlockedActionMessages
 } from './game.js';
 import {
+    updateTileInfoPanel,
     render
 } from './renderer.js';
+
+export const inputState = {
+    modalOpen: false,
+    keysPressed: {},
+    blockedKeys: new Set()
+};
+
+let plantModalButtons = [];
+let plantModalFocusIndex = 0;
+let lastGrowthUpdateWeek = null;
+
+export let strings = {};
+
+export const modalRegistry = {
+    plantSelection: {
+        overlayId: 'plant-modal-overlay',
+        modalId: 'plant-modal',
+        setup: (config, tile, x, y) => {
+            const container = document.getElementById('plant-modal-buttons');
+            container.innerHTML = '';
+            Object.entries(config.plants.definitions).forEach(([plantKey, def], idx) => {
+                const btn = document.createElement('button');
+                btn.textContent = `[${idx + 1}] ${def.label}`;
+                btn.className = 'ui-button';
+                btn.onclick = () => {
+                    const newTile = { ...tile };
+                    newTile.plantType = plantKey;
+                    newTile.growthStage = def.growthStages[0];
+                    gameState.map[`${x},${y}`] = newTile;
+                    finalizeAction(config.tiles.actions.plant, config);
+                    closeModal();
+                };
+                container.appendChild(btn);
+            });
+        }
+    },
+    gameMessage: {
+        overlayId: 'game-message-overlay',
+        modalId: 'game-message-modal',
+        setup: ({ title, message, confirmText = 'OK', cancelText, onConfirm, onCancel }) => {
+            const overlay = document.getElementById('game-message-overlay');
+            const modal = document.getElementById('game-message-modal');
+            const titleEl = document.getElementById('game-message-title');
+            const contentEl = document.getElementById('game-message-content');
+            const confirmBtn = document.getElementById('game-message-confirm');
+            const cancelBtn = document.getElementById('game-message-cancel');
+
+            titleEl.textContent = title;
+            contentEl.innerHTML = Array.isArray(message)
+                ? `<ul>${message.map(m => `<li>${m}</li>`).join('')}</ul>`
+                : `<div>${message}</div>`;
+
+            confirmBtn.textContent = confirmText;
+            confirmBtn.onclick = () => {
+                closeModal();
+                onConfirm?.();
+            };
+
+            if (cancelText) {
+                cancelBtn.textContent = cancelText;
+                cancelBtn.style.display = 'inline-block';
+                cancelBtn.onclick = () => {
+                    closeModal();
+                    onCancel?.();
+                };
+            } else cancelBtn.style.display = 'none';
+
+            overlay.style.display = 'flex';
+            openModal();
+            confirmBtn.focus();
+        }
+    }
+};
+
+export function showModal(type, ...args) {
+    const modal = modalRegistry[type];
+    if (!modal) throw new Error(`Modal type '${type}' not registered`);
+    modal.setup(...args);
+}
 
 // Modal helpers
 export function openModal() {
@@ -33,18 +114,6 @@ export function closeModal() {
     const messageOverlay = document.getElementById('game-message-overlay');
     if (messageOverlay) messageOverlay.style.display = 'none';
 }
-
-export const inputState = {
-    modalOpen: false,
-    keysPressed: {},
-    blockedKeys: new Set()
-};
-
-let plantModalButtons = [];
-let plantModalFocusIndex = 0;
-let lastGrowthUpdateWeek = null;
-
-export let strings = {};
 
 /**
  * Loads localized strings from external JSON file.
