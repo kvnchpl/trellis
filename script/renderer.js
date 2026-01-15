@@ -218,7 +218,7 @@ export function resizeCanvasAndTiles(config) {
     config.tileSize = tileSize;
 }
 
-export function updateScreen(config) {
+export function refreshScreenIfChanged(config) {
     const currentPlayerKey = `${gameState.player.x},${gameState.player.y}`;
     if (currentPlayerKey !== lastPlayerKey) {
         updateFog(config);

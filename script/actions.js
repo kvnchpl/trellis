@@ -68,12 +68,12 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
     const keyMap = strings.conditionKeyMap || {};
     const blockedKeyMap = strings.blockedKeyMap || {};
 
-    function collectFailed(tile, condition) {
+    function collectFailedConditions(tile, condition) {
         if (!condition) return [];
 
         // OR condition: fail only if all subconditions fail
         if (condition.or && Array.isArray(condition.or)) {
-            const subFailed = condition.or.map(sub => collectFailed(tile, sub));
+            const subFailed = condition.or.map(sub => collectFailedConditions(tile, sub));
             if (subFailed.every(f => f.length > 0)) return subFailed.flat();
             return [];
         }
@@ -85,7 +85,7 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
                 if ('lt' in val && !(tileVal < val.lt)) failed.push({ key, type: 'lt' });
                 else if ('gt' in val && !(tileVal > val.gt)) failed.push({ key, type: 'gt' });
                 else if ('not' in val && tileVal === val.not) failed.push({ key, type: 'not' });
-                else failed.push(...collectFailed(tileVal, val));
+                else failed.push(...collectFailedConditions(tileVal, val));
             } else if (tileVal !== val) {
                 failed.push({ key, value: val });
             }
@@ -93,7 +93,7 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
         return failed;
     }
 
-    const rawFailed = collectFailed(tile, actionDef.condition);
+    const rawFailed = collectFailedConditions(tile, actionDef.condition);
 
     const actionKeyMap = blockedKeyMap[actionName] || {};
 

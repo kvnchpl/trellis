@@ -5,7 +5,7 @@ import {
 
 import {
     render,
-    updateScreen,
+    refreshScreenIfChanged,
     preloadImages,
     updateFog
 } from './renderer.js';
@@ -32,7 +32,7 @@ let lastSelectorKey = null;
 let lastSaveSizeUpdate = 0;
 let lastPlayerKey = null;
 
-async function loadConfig() {
+async function fetchConfig() {
     try {
         const response = await fetch(configUrl);
         if (!response.ok) throw new Error('Failed to load config');
@@ -134,7 +134,7 @@ function startNewGame() {
 }
 
 async function initGame(loadExisting = true) {
-    await loadConfig();
+    await fetchConfig();
     await loadStrings();
 
     window.addEventListener('resize', () => {
@@ -166,13 +166,13 @@ async function initGame(loadExisting = true) {
     }
 
     initPlayer(config);
-    updateScreen(config);
+    refreshScreenIfChanged(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
 function gameLoop(config) {
     if (!inputState.modalOpen) updatePlayer(config); // player input blocked when modal open
-    updateScreen(config);
+    refreshScreenIfChanged(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
@@ -237,7 +237,7 @@ function updateSaveSizeDisplay() {
     saveEl.textContent = `(${sizeInKB} KB${warningText})`;
 }
 
-function maybeUpdateTileInfoPanel(config) {
+function updateTileInfoPanelIfChanged(config) {
     const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
     if (currentKey !== lastSelectorKey) {
         updateTileInfoPanel(config);
@@ -255,7 +255,7 @@ function maybeUpdateSaveSizeDisplay() {
 
 function refreshUI(config) {
     updateTimePanel(config);
-    maybeUpdateTileInfoPanel(config);
+    updateTileInfoPanelIfChanged(config);
     maybeUpdateSaveSizeDisplay();
 }
 

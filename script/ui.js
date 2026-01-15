@@ -26,8 +26,8 @@ export const inputState = {
     blockedKeys: new Set()
 };
 
-let plantModalButtons = [];
-let plantModalFocusIndex = 0;
+let plantModalButtonList = [];
+let plantModalFocusedIndex = 0;
 let lastGrowthUpdateWeek = null;
 
 export let strings = {};
@@ -268,8 +268,8 @@ export function showPlantSelectionModal(config, tile, x, y) {
             const plantActionDef = config.tiles.actions.plant;
             finalizeAction(plantActionDef, config);
             closeModal();
-            plantModalButtons = [];
-            plantModalFocusIndex = 0;
+            plantModalButtonList = [];
+            plantModalFocusedIndex = 0;
         };
         modalButtonsEl.appendChild(btn);
     });
@@ -279,18 +279,18 @@ export function showPlantSelectionModal(config, tile, x, y) {
     overlay.onclick = (e) => {
         if (e.target === overlay) {
             closeModal();
-            plantModalButtons = [];
-            plantModalFocusIndex = 0;
+            plantModalButtonList = [];
+            plantModalFocusedIndex = 0;
         }
     };
     openModal();
 
-    plantModalButtons = Array.from(
+    plantModalButtonList = Array.from(
         document.querySelectorAll('#plant-modal-buttons .ui-button:not(.disabled)')
     );
-    plantModalFocusIndex = 0;
-    if (plantModalButtons.length > 0) {
-        plantModalButtons[0].focus();
+    plantModalFocusedIndex = 0;
+    if (plantModalButtonList.length > 0) {
+        plantModalButtonList[0].focus();
     }
 }
 /**
@@ -583,17 +583,17 @@ document.addEventListener('keydown', (e) => {
             case 'ArrowRight':
             case 'd':
             case 'D':
-                plantModalFocusIndex = Math.min(
-                    plantModalFocusIndex + 1,
-                    plantModalButtons.length - 1
+                plantModalFocusedIndex = Math.min(
+                    plantModalFocusedIndex + 1,
+                    plantModalButtonList.length - 1
                 );
                 handled = true;
                 break;
             case 'ArrowLeft':
             case 'a':
             case 'A':
-                plantModalFocusIndex = Math.max(
-                    plantModalFocusIndex - 1,
+                plantModalFocusedIndex = Math.max(
+                    plantModalFocusedIndex - 1,
                     0
                 );
                 handled = true;
@@ -601,30 +601,30 @@ document.addEventListener('keydown', (e) => {
             case 'ArrowDown':
             case 's':
             case 'S':
-                plantModalFocusIndex = Math.min(
-                    plantModalFocusIndex + columns,
-                    plantModalButtons.length - 1
+                plantModalFocusedIndex = Math.min(
+                    plantModalFocusedIndex + columns,
+                    plantModalButtonList.length - 1
                 );
                 handled = true;
                 break;
             case 'ArrowUp':
             case 'w':
             case 'W':
-                plantModalFocusIndex = Math.max(
-                    plantModalFocusIndex - columns,
+                plantModalFocusedIndex = Math.max(
+                    plantModalFocusedIndex - columns,
                     0
                 );
                 handled = true;
                 break;
             case 'Enter':
             case ' ':
-                plantModalButtons[plantModalFocusIndex]?.click();
+                plantModalButtonList[plantModalFocusedIndex]?.click();
                 return;
             case '1': case '2': case '3': case '4': case '5':
             case '6': case '7': case '8': case '9': {
                 const index = Number(e.key) - 1;
-                if (plantModalButtons[index]) {
-                    plantModalButtons[index].click();
+                if (plantModalButtonList[index]) {
+                    plantModalButtonList[index].click();
                 }
                 return;
             }
@@ -635,7 +635,7 @@ document.addEventListener('keydown', (e) => {
         }
 
         if (handled) {
-            plantModalButtons[plantModalFocusIndex]?.focus();
+            plantModalButtonList[plantModalFocusedIndex]?.focus();
         }
         return;
     }

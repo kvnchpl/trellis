@@ -10,7 +10,7 @@ import {
 import {
     gameState,
     getTile,
-    attemptMove
+    attemptPlayerMove
 } from './state.js';
 
 import {
@@ -65,16 +65,16 @@ export function updatePlayer(config) {
 
     // Movement
     if (inputState.keysPressed[controls.up]) {
-        attemptMove(player, 0, -1, config);
+        attemptPlayerMove(player, 0, -1, config);
         inputState.keysPressed[controls.up] = false;
     } else if (inputState.keysPressed[controls.down]) {
-        attemptMove(player, 0, 1, config);
+        attemptPlayerMove(player, 0, 1, config);
         inputState.keysPressed[controls.down] = false;
     } else if (inputState.keysPressed[controls.left]) {
-        attemptMove(player, -1, 0, config);
+        attemptPlayerMove(player, -1, 0, config);
         inputState.keysPressed[controls.left] = false;
     } else if (inputState.keysPressed[controls.right]) {
-        attemptMove(player, 1, 0, config);
+        attemptPlayerMove(player, 1, 0, config);
         inputState.keysPressed[controls.right] = false;
     }
 
