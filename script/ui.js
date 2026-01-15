@@ -9,7 +9,6 @@ import {
     getBlockedActionMessages
 } from './game.js';
 import {
-    updateTileInfoPanel,
     render
 } from './renderer.js';
 
