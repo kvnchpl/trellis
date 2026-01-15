@@ -46,7 +46,7 @@ function drawTileOrColor(ctx, tile, x, y, size, config) {
     }
 }
 
-function updateTileInfoPanelIfChanged(config) {
+export function updateTileInfoPanelIfChanged(config) {
     const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
     if (currentKey !== lastSelectorKey) {
         updateTileInfoPanel(config);

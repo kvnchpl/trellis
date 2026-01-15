@@ -9,7 +9,8 @@ import {
 } from './game.js';
 
 import {
-    render
+    render,
+    updateTileInfoPanelIfChanged
 } from './renderer.js';
 
 import {
