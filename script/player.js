@@ -1,6 +1,6 @@
 import {
     getBlockedActionMessages
-} from './game.js';
+} from './actions.js';
 
 import {
     render
