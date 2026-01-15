@@ -3,6 +3,7 @@ import {
 } from './game.js';
 
 import {
+    updateTileInfoPanel,
     incrementTimeUI
 } from './ui.js';
 
