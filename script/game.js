@@ -11,7 +11,6 @@ import {
     initState
 } from './state.js';
 import {
-    incrementTime,
     showDayCompleteModal,
     showGameMessageModal
 } from './ui.js';

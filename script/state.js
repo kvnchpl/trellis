@@ -114,7 +114,7 @@ export function getTile(x, y, config) {
     return gameState.map[key];
 }
 
-export function incrementTime(minutes, config) {
+function incrementTime(minutes, config) {
     gameState.time.minute += minutes;
 
     while (gameState.time.minute >= 60) {

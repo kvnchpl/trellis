@@ -8,13 +8,13 @@ import {
 } from './game.js';
 import {
     strings,
-    incrementTime,
+    incrementTimeUI,
     updateTileInfoPanel,
     evaluateCondition,
     showPlantSelectionModal,
     inputState,
     showGameMessageModal,
-    finalizeAction
+    applyActionEffects
 } from './ui.js';
 import {
     render
@@ -70,7 +70,7 @@ function attemptMove(player, dx, dy, config) {
         gameState.dailyStats.steps++;
         saveGameState();
         const movementCost = config.movementTimeIncrement || 1;
-        incrementTime(movementCost, config);
+        incrementTimeUI(movementCost, config);
         updateTileInfoPanel(config);
     }
 }

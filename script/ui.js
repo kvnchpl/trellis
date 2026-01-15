@@ -279,7 +279,7 @@ function finalizeAction(actionDef, config) {
 
     // Use per-action timeIncrement
     const timeInc = actionDef.timeIncrement ?? 1; // fallback to 1 if missing
-    incrementTime(timeInc, config);
+    incrementTimeUI(timeInc, config);
 
     render(config);
 }
@@ -559,7 +559,7 @@ export function updateTimePanel(config) {
  * @param {number} minutes - Minutes to increment.
  * @param {Object} config - Game configuration.
  */
-export function incrementTime(minutes, config) {
+export function incrementTimeUI(minutes, config) {
     const time = gameState.time;
     time.minute += minutes;
     while (time.minute >= 60) {
@@ -601,7 +601,7 @@ function updateGrowth(config) {
         tile.fertility = Math.max(0, tile.fertility - def.fertilityUse);
     }
     // Refresh tile info panel to reflect updated growth stage and image.
-    // This call is only made once per day rollover due to incrementTime throttling.
+    // This call is only made once per day rollover due to incrementTimeUI throttling.
     updateTileInfoPanel(config);
 }
 
