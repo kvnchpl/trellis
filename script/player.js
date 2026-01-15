@@ -23,6 +23,9 @@ import {
     applyActionEffects
 } from './ui.js';
 
+/**
+ * Initializes player input event listeners.
+ */
 export function initPlayer() {
     window.addEventListener('keydown', (e) => {
         if (inputState.modalOpen) {
