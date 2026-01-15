@@ -22,7 +22,8 @@ import {
     updateTileInfoPanel,
     updateTimePanel,
     inputState,
-    loadStrings
+    loadStrings,
+    closeModal
 } from './ui.js';
 
 /**
