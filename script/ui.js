@@ -236,7 +236,7 @@ function formatFailedConditions(failed, actionLabel, tile, actionDef) {
  * @param {Object} config - Game configuration.
  * @returns {Object} The new tile object after applying effects.
  */
-function applyActionEffects(tile, actionDef, config) {
+export function applyActionEffects(tile, actionDef, config) {
     const newTile = {
         ...tile
     };
