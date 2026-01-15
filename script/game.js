@@ -2,27 +2,25 @@ import {
     initPlayer,
     updatePlayer
 } from './player.js';
+
 import {
-    generateMap,
+    render,
+    preloadImages,
     updateFog
-} from './map.js';
+} from './renderer.js';
+
 import {
     gameState,
     initState
 } from './state.js';
-import {
-    showDayCompleteModal,
-    showGameMessageModal
-} from './ui.js';
-import {
-    render,
-    preloadImages
-} from './renderer.js';
+
 import {
     updateTileInfoPanel,
     updateTimePanel,
     inputState,
     loadStrings,
+    showDayCompleteModal,
+    showGameMessageModal,
     closeModal
 } from './ui.js';
 
