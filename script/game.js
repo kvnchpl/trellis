@@ -22,7 +22,6 @@ import {
     inputState,
     loadStrings,
     showDayCompleteModal,
-    showGameMessageModal,
     closeModal
 } from './ui.js';
 
@@ -106,7 +105,7 @@ function loadGameState() {
 
 function startNewGame() {
     if (localStorage.getItem("trellisSave")) {
-        showGameMessageModal({
+        showModal('gameMessage', {
             title: "Start a new game?",
             message: "This will overwrite your current progress.",
             confirmText: "OK",
@@ -192,7 +191,7 @@ initGame(true).catch((err) => {
     });
 
     endDayBtn.addEventListener('click', () => {
-        showGameMessageModal({
+        showModal('gameMessage', {
             title: "End the day?",
             message: "You won’t be able to take more actions today.",
             confirmText: "End Day",

@@ -139,7 +139,7 @@ export function updatePlayer(config) {
             const result = attemptActionOnTile(tile, actionLabel, config, strings, gameState.dailyStats);
 
             if (!result.success) {
-                showGameMessageModal({
+                showModal('gameMessage', {
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
                     message: Array.isArray(result.message) ? result.message : [result.message]
                 });
@@ -147,7 +147,7 @@ export function updatePlayer(config) {
             }
 
             if (result.plantModal) {
-                showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
+                showModal('plantSelection', config, tile, gameState.selector.x, gameState.selector.y);
             } else {
                 finalizeAction(config.tiles.actions[actionLabel], config);
             }

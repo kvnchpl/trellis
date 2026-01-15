@@ -36,23 +36,44 @@ export const modalRegistry = {
         overlayId: 'plant-modal-overlay',
         modalId: 'plant-modal',
         setup: (config, tile, x, y) => {
+            const overlay = document.getElementById('plant-modal-overlay');
             const container = document.getElementById('plant-modal-buttons');
             container.innerHTML = '';
+
+            plantModalButtonList = [];
+            plantModalFocusedIndex = 0;
+
             Object.entries(config.plants.definitions).forEach(([plantKey, def], idx) => {
                 const btn = document.createElement('button');
                 btn.textContent = `[${idx + 1}] ${def.label}`;
                 btn.className = 'ui-button';
+                btn.tabIndex = 0;
                 btn.onclick = () => {
                     const newTile = { ...tile };
                     newTile.plantType = plantKey;
                     newTile.growthStage = def.growthStages[0];
+                    newTile.growthProgress = 0;
                     gameState.map[`${x},${y}`] = newTile;
                     gameState.dailyStats.planted++;
                     finalizeAction(config.tiles.actions.plant, config);
-                    closeModal();
+                    showModal('closeAll');
                 };
                 container.appendChild(btn);
+                plantModalButtonList.push(btn);
             });
+
+            overlay.style.display = 'flex';
+            openModal();
+
+            if (plantModalButtonList.length > 0) {
+                plantModalButtonList[0].focus();
+            }
+
+            overlay.onclick = (e) => {
+                if (e.target === overlay) {
+                    showModal('closeAll');
+                }
+            };
         }
     },
     gameMessage: {
@@ -60,7 +81,6 @@ export const modalRegistry = {
         modalId: 'game-message-modal',
         setup: ({ title, message, confirmText = 'OK', cancelText, onConfirm, onCancel }) => {
             const overlay = document.getElementById('game-message-overlay');
-            const modal = document.getElementById('game-message-modal');
             const titleEl = document.getElementById('game-message-title');
             const contentEl = document.getElementById('game-message-content');
             const confirmBtn = document.getElementById('game-message-confirm');
@@ -73,7 +93,7 @@ export const modalRegistry = {
 
             confirmBtn.textContent = confirmText;
             confirmBtn.onclick = () => {
-                closeModal();
+                showModal('closeAll');
                 onConfirm?.();
             };
 
@@ -81,14 +101,40 @@ export const modalRegistry = {
                 cancelBtn.textContent = cancelText;
                 cancelBtn.style.display = 'inline-block';
                 cancelBtn.onclick = () => {
-                    closeModal();
+                    showModal('closeAll');
                     onCancel?.();
                 };
-            } else cancelBtn.style.display = 'none';
+            } else {
+                cancelBtn.style.display = 'none';
+            }
 
             overlay.style.display = 'flex';
             openModal();
+
+            overlay.onclick = (e) => {
+                if (e.target === overlay && cancelText) {
+                    cancelBtn.click();
+                }
+            };
+
             confirmBtn.focus();
+        }
+    },
+    closeAll: {
+        setup: () => {
+            inputState.modalOpen = false;
+
+            Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
+            inputState.keysBlocked.clear();
+
+            const plantOverlay = document.getElementById('plant-modal-overlay');
+            if (plantOverlay) plantOverlay.style.display = 'none';
+
+            const gameOverlay = document.getElementById('game-message-overlay');
+            if (gameOverlay) gameOverlay.style.display = 'none';
+
+            plantModalButtonList = [];
+            plantModalFocusedIndex = 0;
         }
     }
 };
@@ -99,7 +145,6 @@ export function showModal(type, ...args) {
     modal.setup(...args);
 }
 
-// Modal helpers
 export function openModal() {
     inputState.modalOpen = true;
 }
