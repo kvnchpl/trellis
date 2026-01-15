@@ -136,40 +136,22 @@ export function updatePlayer(config) {
         const tile = getTile(gameState.selector.x, gameState.selector.y, config);
         if (inputState.keysPressed[key]) {
             inputState.keysPressed[key] = false; // consume the key
-            if (actionLabel === 'plant') {
-                // Consume all other action keys too
-                for (const k of Object.values(config.keyBindings.actions)) {
-                    inputState.keysPressed[k] = false;
-                }
-                showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
-                return;
-            }
-            // Extra safety: block all other actions if modal already open
-            if (inputState.modalOpen) {
-                return;
-            }
-            inputState.keysPressed[key] = false; // consume key immediately for non-plant actions
-            const actionDef = config.tiles.actions[actionLabel];
-            if (!actionDef) return;
 
-            const failedReasons = getBlockedActionMessages(tile, { ...actionDef, name: actionLabel }, strings);
-            if (failedReasons.length > 0) {
+            const result = attemptActionOnTile(tile, actionLabel, config, strings, gameState.dailyStats);
+
+            if (!result.success) {
                 showGameMessageModal({
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
-                    message: failedReasons
+                    message: Array.isArray(result.message) ? result.message : [result.message]
                 });
                 return;
             }
 
-            const newTile = applyActionEffects(tile, actionDef, config);
-            gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
-            // increment daily stats for each action label
-            if (actionLabel === 'plant') gameState.dailyStats.planted++;
-            if (actionLabel === 'till') gameState.dailyStats.tilled++;
-            if (actionLabel === 'water') gameState.dailyStats.watered++;
-            if (actionLabel === 'fertilize') gameState.dailyStats.fertilized++;
-            if (actionLabel === 'harvest') gameState.dailyStats.harvested++;
-            finalizeAction(actionDef, config);
+            if (result.plantModal) {
+                showPlantSelectionModal(config, tile, gameState.selector.x, gameState.selector.y);
+            } else {
+                finalizeAction(config.tiles.actions[actionLabel], config);
+            }
         }
     }
 }

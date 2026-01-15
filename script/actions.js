@@ -128,3 +128,46 @@ export function getBlockedActionMessages(tile, actionDef, strings) {
 
     return [...new Set(fallbackBlockedMessages)]; // remove duplicates and falsy
 }
+
+/**
+ * Attempts to perform an action on a tile, returning success status and messages.
+ * @param {Object} tile - The tile object.
+ * @param {string} actionLabel - The action label (e.g., 'till', 'plant').
+ * @param {Object} config - Game configuration.
+ * @param {Object} strings - Loaded strings.json
+ * @param {Object} dailyStats - Object to track daily stats (optional).
+ * @returns {Object} Result object with success boolean and optional messages or plantModal.
+ */
+export function attemptActionOnTile(tile, actionLabel, config, strings, dailyStats) {
+    const actionDef = config.tiles.actions[actionLabel];
+    if (!actionDef) return false;
+
+    const valid = evaluateCondition(tile, actionDef.condition);
+    if (!valid) {
+        const failedReasons = getBlockedActionMessages(tile, { ...actionDef, name: actionLabel }, strings);
+        return {
+            success: false,
+            message: failedReasons.length > 0 ? failedReasons : "The tile does not meet the requirements for this action."
+        };
+    }
+
+    if (actionLabel === 'plant') {
+        return {
+            success: true,
+            plantModal: { tile, x: tile.x, y: tile.y } // delegate to UI to show modal
+        };
+    }
+
+    const newTile = applyActionEffects(tile, actionDef, config);
+    Object.assign(tile, newTile); // update tile in place
+
+    // Increment daily stats
+    if (dailyStats) {
+        if (actionLabel === 'till') dailyStats.tilled++;
+        if (actionLabel === 'water') dailyStats.watered++;
+        if (actionLabel === 'fertilize') dailyStats.fertilized++;
+        if (actionLabel === 'harvest') dailyStats.harvested++;
+    }
+
+    return { success: true };
+}
