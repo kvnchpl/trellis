@@ -25,11 +25,11 @@ export const inputState = {
     keysBlocked: new Set()
 };
 
+export let strings = {};
+
 let plantModalButtonList = [];
 let plantModalFocusedIndex = 0;
 let lastGrowthUpdateWeek = null;
-
-export let strings = {};
 
 export const modalRegistry = {
     gameMessage: {
@@ -487,7 +487,6 @@ function updateGrowth(config) {
 }
 
 // Handles keyboard navigation and selection within the plant selection modal.
-// This also consumes keys so they do not trigger global actions.
 document.addEventListener('keydown', (e) => {
     // Only handle plant modal navigation if plant modal is open and visible
     const plantOverlay = document.getElementById('plant-modal-overlay');

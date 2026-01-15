@@ -84,7 +84,7 @@ export function initState(config) {
     };
 }
 
-function weightedRandomTile(weights) {
+function _weightedRandomTile(weights) {
     const entries = Object.entries(weights);
     const total = entries.reduce((sum, [, w]) => sum + w, 0);
     const rand = Math.random() * total;
@@ -107,7 +107,7 @@ export function getTile(x, y, config) {
     const key = `${x},${y}`;
     if (!gameState.map[key]) {
         gameState.map[key] = {
-            tile: weightedRandomTile(config.initialTileWeights),
+            tile: _weightedRandomTile(config.initialTileWeights),
             plantType: null,
             growthStage: null,
             growthProgress: 0,

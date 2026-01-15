@@ -18,6 +18,63 @@ let lastPlayerKey = null;
 let lastSaveSizeUpdate = 0;
 
 /**
+ * Draws a tile or its color at the given position.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context.
+ * @param {Object} tile - The tile object.
+ * @param {number} x - X position in pixels.
+ * @param {number} y - Y position in pixels.
+ * @param {number} size - Size of the tile in pixels.
+ * @param {Object} config - Game configuration.
+ */
+function drawTileOrColor(ctx, tile, x, y, size, config) {
+    const cache = config._imageCache;
+
+    // Prefer plant sprite if present
+    if (tile.plantType && cache?.plants?.[tile.plantType]) {
+        const def = config.plants.definitions[tile.plantType];
+        const stageIndex = def.growthStages.indexOf(tile.growthStage);
+        const stageImg = cache.plants[tile.plantType][stageIndex];
+        if (stageImg) {
+            ctx.drawImage(stageImg, x, y, size, size);
+            return;
+        }
+    }
+
+    // Otherwise draw tile sprite or fallback color
+    if (tile.tile && cache?.tiles?.[tile.tile]) {
+        ctx.drawImage(cache.tiles[tile.tile], x, y, size, size);
+    } else {
+        const color =
+            config.tiles.colors[tile.tile] ??
+            config.tiles.colors.default;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, size, size);
+    }
+}
+
+function updateTileInfoPanelIfChanged(config) {
+    const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
+    if (currentKey !== lastSelectorKey) {
+        updateTileInfoPanel(config);
+        lastSelectorKey = currentKey;
+    }
+}
+
+function maybeUpdateSaveSizeDisplay() {
+    const now = performance.now();
+    if (now - lastSaveSizeUpdate > 2000) { // update every 2 seconds
+        updateSaveSizeDisplay();
+        lastSaveSizeUpdate = now;
+    }
+}
+
+function refreshUI(config) {
+    updateTimePanel(config);
+    updateTileInfoPanelIfChanged(config);
+    maybeUpdateSaveSizeDisplay();
+}
+
+/**
  * Draws the player on the canvas.
  * @param {CanvasRenderingContext2D} ctx - The canvas context.
  * @param {Object} player - The player object.
@@ -110,6 +167,37 @@ export function render(config) {
     drawSelector(ctx, gameState.selector, camX, camY, tileSize, config);
 }
 
+export function refreshScreenIfChanged(config) {
+    const currentPlayerKey = `${gameState.player.x},${gameState.player.y}`;
+    if (currentPlayerKey !== lastPlayerKey) {
+        updateFog(config);
+        render(config);
+        lastPlayerKey = currentPlayerKey;
+    }
+    refreshUI(config);
+}
+
+/**
+ * Updates the fog of war, revealing tiles around the player.
+ * @param {Object} config - Game configuration (expects mapWidth, mapHeight, fogRevealRadius).
+ */
+export function updateFog(config) {
+    const fogRevealRadius = config.viewport.initialRevealRadius;
+    const {
+        player
+    } = gameState;
+
+    for (let dy = -fogRevealRadius; dy <= fogRevealRadius; dy++) {
+        for (let dx = -fogRevealRadius; dx <= fogRevealRadius; dx++) {
+            const nx = player.x + dx;
+            const ny = player.y + dy;
+            const key = `${nx},${ny}`;
+            getTile(nx, ny, config); // lazily generate tile if needed
+            gameState.revealed[key] = true;
+        }
+    }
+}
+
 /**
  * Preloads all tile, plant, and player images and returns a cache object.
  * @param {Object} config - Game configuration.
@@ -159,41 +247,6 @@ export function preloadImages(config) {
     return Promise.all(promises);
 }
 
-/**
- * Draws a tile or its color at the given position.
- * @param {CanvasRenderingContext2D} ctx - The canvas context.
- * @param {Object} tile - The tile object.
- * @param {number} x - X position in pixels.
- * @param {number} y - Y position in pixels.
- * @param {number} size - Size of the tile in pixels.
- * @param {Object} config - Game configuration.
- */
-function drawTileOrColor(ctx, tile, x, y, size, config) {
-    const cache = config._imageCache;
-
-    // Prefer plant sprite if present
-    if (tile.plantType && cache?.plants?.[tile.plantType]) {
-        const def = config.plants.definitions[tile.plantType];
-        const stageIndex = def.growthStages.indexOf(tile.growthStage);
-        const stageImg = cache.plants[tile.plantType][stageIndex];
-        if (stageImg) {
-            ctx.drawImage(stageImg, x, y, size, size);
-            return;
-        }
-    }
-
-    // Otherwise draw tile sprite or fallback color
-    if (tile.tile && cache?.tiles?.[tile.tile]) {
-        ctx.drawImage(cache.tiles[tile.tile], x, y, size, size);
-    } else {
-        const color =
-            config.tiles.colors[tile.tile] ??
-            config.tiles.colors.default;
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, size, size);
-    }
-}
-
 export function resizeCanvasAndTiles(config) {
     const canvas = document.getElementById('game-canvas');
     const container = document.getElementById('game-container');
@@ -230,57 +283,4 @@ export function resizeCanvasAndTiles(config) {
 
     // Store tile size in config (CSS pixels)
     config.tileSize = tileSize;
-}
-
-function updateTileInfoPanelIfChanged(config) {
-    const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
-    if (currentKey !== lastSelectorKey) {
-        updateTileInfoPanel(config);
-        lastSelectorKey = currentKey;
-    }
-}
-
-function maybeUpdateSaveSizeDisplay() {
-    const now = performance.now();
-    if (now - lastSaveSizeUpdate > 2000) { // update every 2 seconds
-        updateSaveSizeDisplay();
-        lastSaveSizeUpdate = now;
-    }
-}
-
-function refreshUI(config) {
-    updateTimePanel(config);
-    updateTileInfoPanelIfChanged(config);
-    maybeUpdateSaveSizeDisplay();
-}
-
-export function refreshScreenIfChanged(config) {
-    const currentPlayerKey = `${gameState.player.x},${gameState.player.y}`;
-    if (currentPlayerKey !== lastPlayerKey) {
-        updateFog(config);
-        render(config);
-        lastPlayerKey = currentPlayerKey;
-    }
-    refreshUI(config);
-}
-
-/**
- * Updates the fog of war, revealing tiles around the player.
- * @param {Object} config - Game configuration (expects mapWidth, mapHeight, fogRevealRadius).
- */
-export function updateFog(config) {
-    const fogRevealRadius = config.viewport.initialRevealRadius;
-    const {
-        player
-    } = gameState;
-
-    for (let dy = -fogRevealRadius; dy <= fogRevealRadius; dy++) {
-        for (let dx = -fogRevealRadius; dx <= fogRevealRadius; dx++) {
-            const nx = player.x + dx;
-            const ny = player.y + dy;
-            const key = `${nx},${ny}`;
-            getTile(nx, ny, config); // lazily generate tile if needed
-            gameState.revealed[key] = true;
-        }
-    }
 }
