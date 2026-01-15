@@ -22,26 +22,31 @@ function handleMovementKeys(player, controls, inputState, config) {
 }
 
 function handleSelectorKeys(player, controls, inputState, config) {
-    const { mapWidth, mapHeight } = config;
     const sel = gameState.selector;
 
-    let newX = sel.x;
-    let newY = sel.y;
+    // Start selector movement from player position
+    let newX = player.x;
+    let newY = player.y;
 
+    // Selector movement is always relative to player position
     if (inputState.keysPressed[controls.selectUp]) {
-        newY = Math.max(0, sel.y - 1);
+        newX = player.x;
+        newY = player.y - 1;
         inputState.keysPressed[controls.selectUp] = false;
     }
     if (inputState.keysPressed[controls.selectDown]) {
-        newY = Math.min(mapHeight - 1, sel.y + 1);
+        newX = player.x;
+        newY = player.y + 1;
         inputState.keysPressed[controls.selectDown] = false;
     }
     if (inputState.keysPressed[controls.selectLeft]) {
-        newX = Math.max(0, sel.x - 1);
+        newX = player.x - 1;
+        newY = player.y;
         inputState.keysPressed[controls.selectLeft] = false;
     }
     if (inputState.keysPressed[controls.selectRight]) {
-        newX = Math.min(mapWidth - 1, sel.x + 1);
+        newX = player.x + 1;
+        newY = player.y;
         inputState.keysPressed[controls.selectRight] = false;
     }
     if (inputState.keysPressed[controls.resetSelector]) {
@@ -49,15 +54,6 @@ function handleSelectorKeys(player, controls, inputState, config) {
         newY = player.y;
         inputState.keysPressed[controls.resetSelector] = false;
     }
-
-    // Constrain selector to adjacent tiles around the player
-    const minX = player.x - 1;
-    const maxX = player.x + 1;
-    const minY = player.y - 1;
-    const maxY = player.y + 1;
-
-    newX = Math.max(minX, Math.min(maxX, newX));
-    newY = Math.max(minY, Math.min(maxY, newY));
 
     const moved = newX !== sel.x || newY !== sel.y;
     if (moved) {
