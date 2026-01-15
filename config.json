@@ -110,8 +110,7 @@
                 "effect": {
                     "fertility": {
                         "inc": 20
-                    },
-                    "fertilized": true
+                    }
                 },
                 "timeIncrement": 4
             },
