@@ -58,7 +58,6 @@
             "fertility",
             "weeds",
             "mulch",
-            "fertilized",
             "readyToHarvest"
         ],
         "labels": {
@@ -70,7 +69,6 @@
             "growthProgress": "Growth Progress",
             "weeds": "Weeds Present",
             "mulch": "Mulched",
-            "fertilized": "Fertilized",
             "readyToHarvest": "Ready to Harvest",
             "plantType": "Plant",
             "growthStage": "Growth Stage"
