@@ -41,7 +41,7 @@ async function fetchConfig() {
     }
 }
 
-export function saveGameState() {
+export function saveGameState(config) {
     function defaultTile(config) {
         return {
             tile: null,
@@ -73,7 +73,7 @@ export function saveGameState() {
         time: gameState.time
     }));
 
-    updateSaveSizeDisplay();
+    updateSaveSizeDisplay(config);
 }
 
 function loadGameState() {
@@ -114,7 +114,7 @@ function startNewGame() {
                 updateTimePanel(config);
                 render(config);
                 updateTileInfoPanel(config);
-                saveGameState();
+                saveGameState(config);
             }
         });
         return;
@@ -126,7 +126,7 @@ function startNewGame() {
     updateTimePanel(config);
     render(config);
     updateTileInfoPanel(config);
-    saveGameState();
+    saveGameState(config);
     // New game started
 }
 
@@ -167,7 +167,7 @@ async function initGame(loadExisting = true) {
         updateTimePanel(config);
     } else {
         initState(config);
-        saveGameState();
+        saveGameState(config);
     }
 
     initPlayer();

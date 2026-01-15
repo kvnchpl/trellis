@@ -164,7 +164,7 @@ export function attemptPlayerMove(player, dx, dy, config) {
             y: player.y
         };
         gameState.dailyStats.steps++;
-        saveGameState();
+        saveGameState(config);
         const movementCost = config.movementTimeIncrement || 1;
         incrementTimeUI(movementCost, config);
         updateTileInfoPanel(config);

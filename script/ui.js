@@ -158,7 +158,7 @@ export const modalRegistry = {
                     lastGrowthUpdateWeek = gameState.time.week;
                 }
                 updateTimePanel(config);
-                saveGameState();
+                saveGameState(config);
             };
         }
     },
@@ -257,7 +257,7 @@ export function finalizeAction(actionDef, config) {
         }
     });
 
-    saveGameState();
+    saveGameState(config);
 
     // Use per-action timeIncrement
     const timeInc = actionDef.timeIncrement ?? 1; // fallback to 1 if missing
@@ -582,11 +582,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-/**
- * Updates the save size display in the UI.
- * @param {Object} config - Game configuration.
- */
-export function updateSaveSizeDisplay() {
+export function updateSaveSizeDisplay(config) {
     const saveEl = document.getElementById("save-size");
     if (!saveEl) return;
 
@@ -600,20 +596,20 @@ export function updateSaveSizeDisplay() {
     const sizeInKB = (sizeInBytes / 1024).toFixed(2);
 
     let warningText = "";
-    if (config.saveSizeWarningKB && sizeInBytes > 1024 * config.saveSizeWarningKB) {
+    if (config?.saveSizeWarningKB && sizeInBytes > 1024 * config.saveSizeWarningKB) {
         warningText = " ⚠ nearing limit";
     }
-    if (config.saveSizeCriticalKB && sizeInBytes > 1024 * config.saveSizeCriticalKB) {
+    if (config?.saveSizeCriticalKB && sizeInBytes > 1024 * config.saveSizeCriticalKB) {
         warningText = " ⚠⚠ close to limit!";
     }
 
     saveEl.textContent = `(${sizeInKB} KB${warningText})`;
 }
 
-function maybeUpdateSaveSizeDisplay() {
+function maybeUpdateSaveSizeDisplay(config) {
     const now = performance.now();
-    if (now - lastSaveSizeUpdate > 2000) { // update every 2 seconds
-        updateSaveSizeDisplay();
+    if (now - lastSaveSizeUpdate > 2000) {
+        updateSaveSizeDisplay(config);
         lastSaveSizeUpdate = now;
     }
 }
@@ -621,5 +617,5 @@ function maybeUpdateSaveSizeDisplay() {
 export function refreshUI(config) {
     updateTimePanel(config);
     updateTileInfoPanelIfChanged(config);
-    maybeUpdateSaveSizeDisplay();
+    maybeUpdateSaveSizeDisplay(config);
 }
