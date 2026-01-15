@@ -1,4 +1,5 @@
 import {
+    applyActionEffects,
     getBlockedActionMessages
 } from './actions.js';
 
@@ -18,8 +19,7 @@ import {
     showPlantSelectionModal,
     inputState,
     showGameMessageModal,
-    finalizeAction,
-    applyActionEffects
+    finalizeAction
 } from './ui.js';
 
 /**
