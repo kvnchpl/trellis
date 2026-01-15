@@ -5,7 +5,7 @@ import {
 
 import {
     render,
-    fullRender,
+    updateScreen,
     preloadImages,
     updateFog
 } from './renderer.js';
@@ -166,13 +166,13 @@ async function initGame(loadExisting = true) {
     }
 
     initPlayer(config);
-    fullRender(config);
+    updateScreen(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
 function gameLoop(config) {
     if (!inputState.modalOpen) updatePlayer(config); // player input blocked when modal open
-    fullRender(config);
+    updateScreen(config);
     requestAnimationFrame(() => gameLoop(config));
 }
 
