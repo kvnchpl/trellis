@@ -13,7 +13,8 @@ import {
     evaluateCondition,
     showPlantSelectionModal,
     inputState,
-    showGameMessageModal
+    showGameMessageModal,
+    finalizeAction
 } from './ui.js';
 import {
     render
@@ -46,19 +47,6 @@ function applyActionEffects(tile, actionDef, config) {
         }
     }
     return newTile;
-}
-
-/**
- * Finalizes an action by updating time, saving, updating UI, and rendering.
- * @param {Object} actionDef - The action definition.
- * @param {Object} config - Game configuration.
- */
-function finalizeAction(actionDef, config) {
-    const timeCost = actionDef.timeIncrement || 5;
-    incrementTime(timeCost, config);
-    saveGameState();
-    updateTileInfoPanel(config);
-    render(config);
 }
 
 /**
