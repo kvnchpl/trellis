@@ -1,11 +1,18 @@
 import {
-    gameState,
-    getTile
-} from './state.js';
-import {
     saveGameState,
     getBlockedActionMessages
 } from './game.js';
+
+import {
+    render
+} from './renderer.js';
+
+import {
+    gameState,
+    getTile,
+    attemptMove
+} from './state.js';
+
 import {
     strings,
     incrementTimeUI,
@@ -16,35 +23,6 @@ import {
     finalizeAction,
     applyActionEffects
 } from './ui.js';
-import {
-    render
-} from './renderer.js';
-
-/**
- * Attempts to move the player by (dx, dy) if the target tile is not rock and has no plant.
- * @param {Object} player - The player object.
- * @param {number} dx - Delta x.
- * @param {number} dy - Delta y.
- * @param {Object} config - Game configuration.
- */
-function attemptMove(player, dx, dy, config) {
-    const newX = player.x + dx;
-    const newY = player.y + dy;
-    const targetTile = getTile(newX, newY, config);
-    if (targetTile.tile !== 'rock' && !targetTile.plantType) {
-        player.x = newX;
-        player.y = newY;
-        gameState.selector = {
-            x: player.x,
-            y: player.y
-        };
-        gameState.dailyStats.steps++;
-        saveGameState();
-        const movementCost = config.movementTimeIncrement || 1;
-        incrementTimeUI(movementCost, config);
-        updateTileInfoPanel(config);
-    }
-}
 
 /**
  * Initializes player input event listeners.

@@ -26,84 +26,6 @@ import {
     closeModal
 } from './ui.js';
 
-/**
- * Returns human-readable messages explaining why an action is blocked on a tile.
- * Fully maps condition keys to per-action blocked messages dynamically.
- * Supports OR conditions, lt/gt/not, booleans, and tile-specific messages.
- * @param {Object} tile - The tile object.
- * @param {Object} actionDef - The action definition.
- * @param {Object} strings - Loaded strings.json
- * @returns {string[]} Array of human-readable messages
- */
-export function getBlockedActionMessages(tile, actionDef, strings) {
-    if (!tile || !actionDef || !strings?.messages?.blockedAction) return [];
-
-    const actionName = actionDef.name;
-    const blockedStrings = strings.messages.blockedAction[actionName] || {};
-    const keyMap = strings.conditionKeyMap || {};
-    const blockedKeyMap = strings.blockedKeyMap || {};
-
-    function collectFailed(tile, condition) {
-        if (!condition) return [];
-
-        // OR condition: fail only if all subconditions fail
-        if (condition.or && Array.isArray(condition.or)) {
-            const subFailed = condition.or.map(sub => collectFailed(tile, sub));
-            if (subFailed.every(f => f.length > 0)) return subFailed.flat();
-            return [];
-        }
-
-        const failed = [];
-        for (const [key, val] of Object.entries(condition)) {
-            const tileVal = tile[key];
-            if (val && typeof val === 'object' && !Array.isArray(val)) {
-                if ('lt' in val && !(tileVal < val.lt)) failed.push({ key, type: 'lt' });
-                else if ('gt' in val && !(tileVal > val.gt)) failed.push({ key, type: 'gt' });
-                else if ('not' in val && tileVal === val.not) failed.push({ key, type: 'not' });
-                else failed.push(...collectFailed(tileVal, val));
-            } else if (tileVal !== val) {
-                failed.push({ key, value: val });
-            }
-        }
-        return failed;
-    }
-
-    const rawFailed = collectFailed(tile, actionDef.condition);
-
-    const actionKeyMap = blockedKeyMap[actionName] || {};
-
-    // First pass: collect explicit per-action blocked reasons
-    const primaryReasons = rawFailed
-        .map(f => {
-            const mapVal = actionKeyMap[f.key];
-            if (typeof mapVal === 'string') return blockedStrings[mapVal];
-            if (mapVal && typeof mapVal === 'object') {
-                const tileValue = tile[f.key];
-                if (tileValue !== undefined && mapVal[tileValue]) {
-                    return blockedStrings[mapVal[tileValue]];
-                }
-            }
-            return null;
-        })
-        .filter(Boolean);
-
-    if (primaryReasons.length > 0) {
-        return [...new Set(primaryReasons)];
-    }
-
-    const reasons = rawFailed.map(f => {
-        // Then try conditionKeyMap
-        if (f.type && keyMap[f.key]?.[f.type]) return keyMap[f.key][f.type];
-        if (f.value !== undefined && keyMap[f.key]?.[f.value] !== undefined) return keyMap[f.key][f.value];
-
-        // Last fallback: dev warning
-        console.warn(`Unmapped blocked condition for action '${actionName}':`, f);
-        return null;
-    }).filter(Boolean);
-
-    return [...new Set(reasons)]; // remove duplicates and falsy
-}
-
 const configUrl = 'config.json';
 let config;
 
@@ -319,44 +241,6 @@ function updateSaveSizeDisplay() {
     saveEl.textContent = `(${sizeInKB} KB${warningText})`;
 }
 
-export function resizeCanvasAndTiles(config) {
-    const canvas = document.getElementById('game-canvas');
-    const container = document.getElementById('game-container');
-    const infoPanel = document.getElementById('info-panel');
-
-    if (!canvas || !container || !infoPanel) return;
-
-    const containerRect = container.getBoundingClientRect();
-    const infoPanelRect = infoPanel.getBoundingClientRect();
-
-    const padding = 16;
-    const availableWidth = containerRect.width - infoPanelRect.width - padding;
-    const availableHeight = containerRect.height - padding;
-
-    const viewportTiles = config.viewport.tiles;
-
-    // Compute tile size in CSS pixels to fit viewport
-    const tileSize = Math.floor(Math.min(availableWidth / viewportTiles, availableHeight / viewportTiles));
-
-    // Device Pixel Ratio for high-DPI
-    const dpr = window.devicePixelRatio || 1;
-
-    // Set canvas internal resolution
-    canvas.width = tileSize * viewportTiles * dpr;
-    canvas.height = tileSize * viewportTiles * dpr;
-
-    // Set CSS size (remains same as original pixel dimensions)
-    canvas.style.width = `${tileSize * viewportTiles}px`;
-    canvas.style.height = `${tileSize * viewportTiles}px`;
-
-    // Scale the drawing context for DPR
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    // Store tile size in config (CSS pixels)
-    config.tileSize = tileSize;
-}
-
 function maybeUpdateTileInfoPanel(config) {
     const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
     if (currentKey !== lastSelectorKey) {
@@ -373,22 +257,10 @@ function maybeUpdateSaveSizeDisplay() {
     }
 }
 
-function maybeRender(config) {
-    const currentPlayerKey = `${gameState.player.x},${gameState.player.y}`;
-    if (currentPlayerKey !== lastPlayerKey) {
-        updateFog(config);
-        render(config);
-        lastPlayerKey = currentPlayerKey;
-    }
-}
-
 function refreshUI(config) {
     updateTimePanel(config);
     maybeUpdateTileInfoPanel(config);
     maybeUpdateSaveSizeDisplay();
 }
 
-function fullRender(config) {
-    maybeRender(config);
-    refreshUI(config);
-}
+

@@ -1,16 +1,24 @@
 import {
+    evaluateCondition,
+    applyActionEffects,
+    getBlockedActionMessages
+} from './actions.js';
+
+import {
+    saveGameState,
+    getBlockedActionMessages
+} from './game.js';
+
+import {
+    render
+} from './renderer.js';
+
+import {
     gameState,
     getTile,
     resetDailyStats,
     advanceDay
 } from './state.js';
-import {
-    saveGameState,
-    getBlockedActionMessages
-} from './game.js';
-import {
-    render
-} from './renderer.js';
 
 export const inputState = {
     modalOpen: false,
@@ -185,33 +193,6 @@ export function showGameMessageModal({
 }
 
 /**
- * Evaluates if a tile meets a condition.
- * Supports nested AND/OR logic.
- * @param {Object} tile - The tile object.
- * @param {Object} condition - The condition object.
- * @returns {boolean} true if all conditions are met
- */
-export function evaluateCondition(tile, condition) {
-    if (!condition) return true;
-
-    if (condition.or && Array.isArray(condition.or)) {
-        return condition.or.some(sub => evaluateCondition(tile, sub));
-    }
-
-    return Object.entries(condition).every(([key, val]) => {
-        if (typeof val === "object" && val !== null) {
-            if ("lt" in val) return tile[key] < val.lt;
-            if ("gt" in val) return tile[key] > val.gt;
-            if ("not" in val) return tile[key] !== val.not;
-            // nested AND in object
-            return evaluateCondition(tile[key], val);
-        } else {
-            return tile[key] === val;
-        }
-    });
-}
-
-/**
  * Converts failed condition keys into human-readable messages.
  * Uses the unified getActionBlockReasons helper.
  * @param {string[]} failed - Array of failed condition keys/messages (ignored).
@@ -227,32 +208,6 @@ function formatFailedConditions(failed, actionLabel, tile, actionDef) {
     const reasons = getBlockedActionMessages(tile, { ...actionDef, name: actionLabel }, strings);
 
     return reasons;
-}
-
-/**
- * Applies the effects of an action to a tile and returns the new tile object.
- * @param {Object} tile - The current tile object.
- * @param {Object} actionDef - The action definition.
- * @param {Object} config - Game configuration.
- * @returns {Object} The new tile object after applying effects.
- */
-export function applyActionEffects(tile, actionDef, config) {
-    const newTile = {
-        ...tile
-    };
-    Object.entries(actionDef.effect).forEach(([key, change]) => {
-        if (change !== null && typeof change === 'object') {
-            if ('inc' in change) {
-                newTile[key] = Math.min(config[`${key}Range`].max, tile[key] + change.inc);
-            }
-            if ('dec' in change) {
-                newTile[key] = Math.max(config[`${key}Range`].min, tile[key] - change.dec);
-            }
-        } else {
-            newTile[key] = change;
-        }
-    });
-    return newTile;
 }
 
 /**

@@ -179,3 +179,55 @@ function drawTileOrColor(ctx, tile, x, y, size, config) {
         ctx.fillRect(x, y, size, size);
     }
 }
+
+export function resizeCanvasAndTiles(config) {
+    const canvas = document.getElementById('game-canvas');
+    const container = document.getElementById('game-container');
+    const infoPanel = document.getElementById('info-panel');
+
+    if (!canvas || !container || !infoPanel) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const infoPanelRect = infoPanel.getBoundingClientRect();
+
+    const padding = 16;
+    const availableWidth = containerRect.width - infoPanelRect.width - padding;
+    const availableHeight = containerRect.height - padding;
+
+    const viewportTiles = config.viewport.tiles;
+
+    // Compute tile size in CSS pixels to fit viewport
+    const tileSize = Math.floor(Math.min(availableWidth / viewportTiles, availableHeight / viewportTiles));
+
+    // Device Pixel Ratio for high-DPI
+    const dpr = window.devicePixelRatio || 1;
+
+    // Set canvas internal resolution
+    canvas.width = tileSize * viewportTiles * dpr;
+    canvas.height = tileSize * viewportTiles * dpr;
+
+    // Set CSS size (remains same as original pixel dimensions)
+    canvas.style.width = `${tileSize * viewportTiles}px`;
+    canvas.style.height = `${tileSize * viewportTiles}px`;
+
+    // Scale the drawing context for DPR
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Store tile size in config (CSS pixels)
+    config.tileSize = tileSize;
+}
+
+function maybeRender(config) {
+    const currentPlayerKey = `${gameState.player.x},${gameState.player.y}`;
+    if (currentPlayerKey !== lastPlayerKey) {
+        updateFog(config);
+        render(config);
+        lastPlayerKey = currentPlayerKey;
+    }
+}
+
+function fullRender(config) {
+    maybeRender(config);
+    refreshUI(config);
+}
