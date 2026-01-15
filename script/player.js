@@ -21,7 +21,7 @@ function handleMovementKeys(player, controls, inputState, config) {
     return 0;
 }
 
-function handleSelectorKeys(player, controls, config) {
+function handleSelectorKeys(player, controls, inputState, config) {
     const { mapWidth, mapHeight } = config;
     const sel = gameState.selector;
 
