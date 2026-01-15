@@ -1,6 +1,5 @@
 import {
     gameState,
-    finalizeAction,
     getTile,
     resetDailyStats,
     advanceDay
