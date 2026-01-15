@@ -237,27 +237,3 @@ function updateSaveSizeDisplay() {
 
     saveEl.textContent = `(${sizeInKB} KB${warningText})`;
 }
-
-function updateTileInfoPanelIfChanged(config) {
-    const currentKey = `${gameState.selector.x},${gameState.selector.y}`;
-    if (currentKey !== lastSelectorKey) {
-        updateTileInfoPanel(config);
-        lastSelectorKey = currentKey;
-    }
-}
-
-function maybeUpdateSaveSizeDisplay() {
-    const now = performance.now();
-    if (now - lastSaveSizeUpdate > 2000) { // update every 2 seconds
-        updateSaveSizeDisplay();
-        lastSaveSizeUpdate = now;
-    }
-}
-
-function refreshUI(config) {
-    updateTimePanel(config);
-    updateTileInfoPanelIfChanged(config);
-    maybeUpdateSaveSizeDisplay();
-}
-
-
