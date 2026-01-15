@@ -170,3 +170,32 @@ export function attemptPlayerMove(player, dx, dy, config) {
         updateTileInfoPanel(config);
     }
 }
+
+/**
+ * Updates plant growth for all tiles based on their growth time and conditions.
+ * @param {Object} config - Game configuration.
+ */
+function updateGrowth(config) {
+    for (const tile of Object.values(gameState.map)) {
+        if (!tile.plantType) continue;
+        const def = config.plants.definitions[tile.plantType];
+        if (!def) continue;
+
+        tile.growthProgress++;
+        if (tile.growthProgress >= def.growthTime) {
+            const idx = def.growthStages.indexOf(tile.growthStage);
+            if (idx < def.growthStages.length - 1) {
+                tile.growthStage = def.growthStages[idx + 1];
+                tile.growthProgress = 0;
+                if (def.harvestable && tile.growthStage === def.growthStages[def.growthStages.length - 1]) {
+                    tile.readyToHarvest = true;
+                }
+            }
+        }
+        tile.moisture = Math.max(0, tile.moisture - def.moistureUse);
+        tile.fertility = Math.max(0, tile.fertility - def.fertilityUse);
+    }
+    // Refresh tile info panel to reflect updated growth stage and image.
+    // This call is only made once per day rollover due to incrementTimeUI throttling.
+    updateTileInfoPanel(config);
+}

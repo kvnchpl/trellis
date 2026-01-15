@@ -1,15 +1,12 @@
 import {
-    updateSaveSizeDisplay
-} from './game.js';
-
-import {
     gameState,
     getTile
 } from './state.js';
 
 import {
     updateTileInfoPanel,
-    updateTimePanel
+    updateTimePanel,
+    updateSaveSizeDisplay
 } from './ui.js';
 
 let lastSelectorKey = null;
