@@ -1,3 +1,5 @@
+import { getBlockedActionMessages } from './actions.js';
+
 import {
     initPlayer,
     updatePlayer
@@ -15,7 +17,6 @@ import {
     gameState,
     initState,
     getTile,
-    attemptPlayerMove,
     saveGameState
 } from './state.js';
 
