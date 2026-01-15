@@ -284,17 +284,11 @@ initGame(true).catch((err) => {
 
     cancelBtn.addEventListener('click', () => {
         closeModal();
-        overlay.style.display = 'none';
-        Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-        inputState.blockedKeys.clear();
     });
 
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
             closeModal();
-            overlay.style.display = 'none';
-            Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-            inputState.blockedKeys.clear();
         }
     });
 });

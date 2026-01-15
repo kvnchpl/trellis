@@ -246,11 +246,8 @@ export function showPlantSelectionModal(config, tile, x, y) {
             const plantActionDef = config.tiles.actions.plant;
             finalizeAction(plantActionDef, config);
             closeModal();
-            Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-            inputState.blockedKeys.clear();
             plantModalButtons = [];
             plantModalFocusIndex = 0;
-            overlay.style.display = 'none';
         };
         modalButtonsEl.appendChild(btn);
     });
@@ -260,11 +257,8 @@ export function showPlantSelectionModal(config, tile, x, y) {
     overlay.onclick = (e) => {
         if (e.target === overlay) {
             closeModal();
-            Object.keys(inputState.keysPressed).forEach(k => inputState.keysPressed[k] = false);
-            inputState.blockedKeys.clear();
             plantModalButtons = [];
             plantModalFocusIndex = 0;
-            overlay.style.display = 'none';
         }
     };
     openModal();
