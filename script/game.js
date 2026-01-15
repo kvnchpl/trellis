@@ -135,6 +135,16 @@ function startNewGame() {
     // New game started
 }
 
+function endDayPrompt() {
+    showModal('gameMessage', {
+        title: "End the day?",
+        message: "You won’t be able to take more actions today.",
+        confirmText: "End Day",
+        cancelText: "Cancel",
+        onConfirm: () => showModal('dayComplete', { ...gameState.dailyStats }, config)
+    });
+}
+
 async function initGame(loadExisting = true) {
     await fetchConfig();
     await loadStrings();
@@ -192,13 +202,7 @@ initGame(true).catch((err) => {
     });
 
     endDayBtn.addEventListener('click', () => {
-        showModal('gameMessage', {
-            title: "End the day?",
-            message: "You won’t be able to take more actions today.",
-            confirmText: "End Day",
-            cancelText: "Cancel",
-            onConfirm: () => showModal('dayComplete', { ...gameState.dailyStats }, config)
-        });
+        endDayPrompt();
     });
 
     cancelBtn.addEventListener('click', () => {
