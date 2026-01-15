@@ -513,14 +513,15 @@ export function updateTileInfoPanel(config) {
             if (!valid) {
                 const reasonText = formatFailedConditions(null, actionLabel, tileNow, actionDef);
 
-                showGameMessageModal({
+                showModal('gameMessage', {
                     title: `Cannot ${strings.actions[actionLabel] || actionLabel} this tile`,
                     message: Array.isArray(reasonText) ? reasonText : "The tile does not meet the requirements for this action."
                 });
                 return;
             }
+
             if (isPlant) {
-                showPlantSelectionModal(config, tileNow, gameState.selector.x, gameState.selector.y);
+                showModal('plantSelection', config, tileNow, gameState.selector.x, gameState.selector.y);
             } else {
                 const newTile = applyActionEffects(tileNow, actionDef, config);
                 gameState.map[`${gameState.selector.x},${gameState.selector.y}`] = newTile;
