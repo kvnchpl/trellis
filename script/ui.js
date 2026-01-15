@@ -32,6 +32,7 @@ export let strings = {};
 let plantModalButtonList = [];
 let plantModalFocusedIndex = 0;
 let lastGrowthUpdateWeek = null;
+let lastSaveSizeUpdate = 0;
 
 export const modalRegistry = {
     gameMessage: {
