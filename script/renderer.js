@@ -179,9 +179,3 @@ function drawTileOrColor(ctx, tile, x, y, size, config) {
         ctx.fillRect(x, y, size, size);
     }
 }
-
-// Only used for fog tiles if needed in future
-function drawFog(ctx, color, x, y, size) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, size, size);
-}

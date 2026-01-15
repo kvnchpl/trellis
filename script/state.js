@@ -112,20 +112,6 @@ export function getTile(x, y, config) {
     return gameState.map[key];
 }
 
-function incrementTime(minutes, config) {
-    gameState.time.minute += minutes;
-
-    while (gameState.time.minute >= 60) {
-        gameState.time.minute -= 60;
-        gameState.time.hour += 1;
-
-        // End-of-day rollover
-        if (gameState.time.hour >= config.dayEndHour) {
-            advanceDay(config);
-        }
-    }
-}
-
 export function advanceDay(config) {
     // Move to start hour next day
     gameState.time.hour = config.dayStartHour;

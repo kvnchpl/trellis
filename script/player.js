@@ -10,7 +10,6 @@ import {
     strings,
     incrementTimeUI,
     updateTileInfoPanel,
-    evaluateCondition,
     showPlantSelectionModal,
     inputState,
     showGameMessageModal,
