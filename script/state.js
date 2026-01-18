@@ -71,7 +71,9 @@ export function initState(config) {
         fertility: 0,
         weeds: false,
         mulch: false,
-        readyToHarvest: false
+        readyToHarvest: false,
+        tileVariant: null,
+        plantVariant: null
     };
 }
 
@@ -106,7 +108,9 @@ export function getTile(x, y, config) {
             fertility: 0,
             weeds: false,
             mulch: false,
-            readyToHarvest: false
+            readyToHarvest: false,
+            tileVariant: null,
+            plantVariant: null
         };
     }
     return gameState.map[key];
@@ -225,7 +229,9 @@ export function saveGameState(config) {
             fertility: 0,
             weeds: false,
             mulch: false,
-            readyToHarvest: false
+            readyToHarvest: false,
+            tileVariant: null,
+            plantVariant: null
         };
     }
 

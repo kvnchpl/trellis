@@ -27,23 +27,30 @@ function drawTileOrColor(ctx, tile, x, y, size, config) {
     if (tile.plantType && cache?.plants?.[tile.plantType]) {
         const def = config.plants.definitions[tile.plantType];
         const stageIndex = def.growthStages.indexOf(tile.growthStage);
-        const stageImg = cache.plants[tile.plantType][stageIndex];
-        if (stageImg) {
-            ctx.drawImage(stageImg, x, y, size, size);
+        const variants = cache.plants[tile.plantType][stageIndex];
+        if (variants && variants.length) {
+            if (tile.plantVariant == null) {
+                tile.plantVariant = Math.floor(Math.random() * variants.length);
+            }
+            ctx.drawImage(variants[tile.plantVariant], x, y, size, size);
             return;
         }
     }
 
     // Otherwise draw tile sprite or fallback color
     if (tile.tile && cache?.tiles?.[tile.tile]) {
-        ctx.drawImage(cache.tiles[tile.tile], x, y, size, size);
-    } else {
-        const color =
-            config.tiles.colors[tile.tile] ??
-            config.tiles.colors.default;
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, size, size);
+        const variants = cache.tiles[tile.tile];
+        if (tile.tileVariant == null) {
+            tile.tileVariant = Math.floor(Math.random() * variants.length);
+        }
+        ctx.drawImage(variants[tile.tileVariant], x, y, size, size);
+        return;
     }
+    const color =
+        config.tiles.colors[tile.tile] ??
+        config.tiles.colors.default;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, size, size);
 }
 
 export function updateTileInfoPanelIfChanged(config) {
@@ -191,25 +198,29 @@ export function preloadImages(config) {
     };
     const promises = [];
 
-    // Tile images
+    // Tile images (with variants)
     if (config.tiles.images) {
-        for (const [tileType, path] of Object.entries(config.tiles.images)) {
-            const img = new Image();
-            img.src = path;
-            cache.tiles[tileType] = img;
-            promises.push(new Promise(res => img.onload = res));
+        for (const [tileType, paths] of Object.entries(config.tiles.images)) {
+            cache.tiles[tileType] = [];
+            paths.forEach((path) => {
+                const img = new Image();
+                img.src = path;
+                cache.tiles[tileType].push(img);
+                promises.push(new Promise(res => img.onload = res));
+            });
         }
     }
 
-    // Plant images
+    // Plant images (stage -> variants)
     if (config.plants.images) {
-        for (const [plantType, paths] of Object.entries(config.plants.images)) {
-            cache.plants[plantType] = [];
-            paths.forEach((path, index) => {
-                const img = new Image();
-                img.src = path;
-                cache.plants[plantType][index] = img;
-                promises.push(new Promise(res => img.onload = res));
+        for (const [plantType, stages] of Object.entries(config.plants.images)) {
+            cache.plants[plantType] = stages.map(stageVariants => {
+                return stageVariants.map(path => {
+                    const img = new Image();
+                    img.src = path;
+                    promises.push(new Promise(res => img.onload = res));
+                    return img;
+                });
             });
         }
     }

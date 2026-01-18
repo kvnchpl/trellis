@@ -280,19 +280,25 @@ function _getTileImage(tile, config) {
     const imageEl = document.getElementById('tile-image');
     if (!imageEl) return;
 
+    // Plant image (with variants)
     if (tile.plantType && config.plants.images && Array.isArray(config.plants.images[tile.plantType])) {
         const def = config.plants.definitions[tile.plantType];
         const stageIndex = def.growthStages.indexOf(tile.growthStage);
-        if (stageIndex >= 0 && config.plants.images[tile.plantType][stageIndex]) {
-            imageEl.src = config.plants.images[tile.plantType][stageIndex];
+        const variants = config.plants.images[tile.plantType][stageIndex];
+        if (variants && variants.length) {
+            const idx = tile.plantVariant ?? 0;
+            imageEl.src = variants[idx];
             imageEl.style.display = 'block';
         } else {
             imageEl.style.display = 'none';
         }
     } else {
+        // Tile image (with variants)
         const imageKey = tile.tile;
-        if (imageKey && config.tiles.images && config.tiles.images[imageKey]) {
-            imageEl.src = config.tiles.images[imageKey];
+        const variants = config.tiles.images[imageKey];
+        if (variants && variants.length) {
+            const idx = tile.tileVariant ?? 0;
+            imageEl.src = variants[idx];
             imageEl.style.display = 'block';
         } else {
             imageEl.style.display = 'none';
