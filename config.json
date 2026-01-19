@@ -5,8 +5,8 @@
     "mapWidth": 64,
     "mapHeight": 64,
     "initialTileWeights": {
-        "soil": 0.6,
-        "grass": 0.3,
+        "soil": 0.3,
+        "grass": 0.6,
         "rock": 0.1
     },
     "playerColor": "#FFD700",
