@@ -26,8 +26,7 @@ function drawTileOrColor(ctx, tile, x, y, size, config) {
     // Prefer plant sprite if present
     if (tile.plantType && cache?.plants?.[tile.plantType]) {
         const def = config.plants.definitions[tile.plantType];
-        const stageIndex = def.growthStages.indexOf(tile.growthStage);
-        const variants = cache.plants[tile.plantType][stageIndex];
+        const variants = cache.plants[tile.plantType][tile.growthStage];
         if (variants && variants.length) {
             if (tile.plantVariant == null) {
                 tile.plantVariant = Math.floor(Math.random() * variants.length);
