@@ -203,7 +203,7 @@
             "beans": "assets/plants/beans",
             "corn": "assets/plants/corn",
             "walnut": "assets/plants/walnut",
-            "sugarMaple": "assets/plants/sugar_maple",
+            "sugarMaple": "assets/plants/sugar-maple",
             "milkweed": "assets/plants/milkweed"
         },
         "definitions": {
