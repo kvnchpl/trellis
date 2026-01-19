@@ -241,7 +241,8 @@ export function preloadImages(config) {
 
                 for (let v = 1; v <= variantCount; v++) {
                     const img = new Image();
-                    img.src = `${baseDir}/${plantType}_${stageIndex + 1}_${v}.png`;
+                    const prefix = def.imagePrefix || plantType;
+                    img.src = `${baseDir}/${prefix}_${stageIndex + 1}_${v}.png`;
                     cache.plants[plantType][stage].push(img);
                     promises.push(new Promise(res => {
                         img.onload = res;

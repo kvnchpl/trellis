@@ -285,6 +285,7 @@
                 "fertilityUse": 4
             },
             "sugarMaple": {
+                "imagePrefix": "sugar-maple",
                 "growthStages": [
                     "sapling",
                     "tree"
