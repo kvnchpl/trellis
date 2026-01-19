@@ -198,17 +198,33 @@ export function preloadImages(config) {
     };
     const promises = [];
 
-    // Tile images (with variants)
+    // Fallback debug image (visible checkerboard)
+    const fallbackImage = (() => {
+        const img = new Image();
+        img.src = 'assets/debug/missing.png';
+        return img.src;
+    })();
+
+    // Tile images (auto-generated variants like plants)
     if (config.tiles.images) {
-        for (const [tileType, paths] of Object.entries(config.tiles.images)) {
+        const variantCount = config.imageVariantCount || 3;
+
+        for (const [tileType, baseDir] of Object.entries(config.tiles.images)) {
             cache.tiles[tileType] = [];
-            const pathList = Array.isArray(paths) ? paths : [paths];
-            pathList.forEach((path) => {
+
+            for (let v = 1; v <= variantCount; v++) {
                 const img = new Image();
-                img.src = path;
+                img.src = `${baseDir}/${tileType}_${v}.png`;
                 cache.tiles[tileType].push(img);
-                promises.push(new Promise(res => img.onload = res));
-            });
+                promises.push(new Promise(res => {
+                    img.onload = res;
+                    img.onerror = () => {
+                        console.warn(`Missing tile image: ${img.src}`);
+                        img.src = fallbackImage;
+                        res();
+                    };
+                }));
+            }
         }
     }
 
@@ -227,7 +243,14 @@ export function preloadImages(config) {
                     const img = new Image();
                     img.src = `${baseDir}/${plantType}_${stageIndex + 1}_${v}.png`;
                     cache.plants[plantType][stage].push(img);
-                    promises.push(new Promise(res => img.onload = res));
+                    promises.push(new Promise(res => {
+                        img.onload = res;
+                        img.onerror = () => {
+                            console.warn(`Missing plant image: ${img.src}`);
+                            img.src = fallbackImage;
+                            res();
+                        };
+                    }));
                 }
             });
         }
@@ -238,7 +261,14 @@ export function preloadImages(config) {
         const img = new Image();
         img.src = config.playerImagePath;
         cache.player = img;
-        promises.push(new Promise(res => img.onload = res));
+        promises.push(new Promise(res => {
+            img.onload = res;
+            img.onerror = () => {
+                console.warn(`Missing player image: ${img.src}`);
+                img.src = fallbackImage;
+                res();
+            };
+        }));
     }
 
     config._imageCache = cache;
