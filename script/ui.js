@@ -623,3 +623,15 @@ export function refreshUI(config) {
     updateTileInfoPanelIfChanged(config);
     maybeUpdateSaveSizeDisplay(config);
 }
+// DEBUG: Global fetch and XHR logger
+const oldFetch = window.fetch;
+window.fetch = async (...args) => {
+    console.log("DEBUG: Fetch called:", ...args);
+    return oldFetch(...args);
+};
+
+const oldOpen = XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+    console.log("DEBUG: XHR request:", method, url);
+    return oldOpen.call(this, method, url, ...rest);
+};
