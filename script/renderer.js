@@ -202,7 +202,8 @@ export function preloadImages(config) {
     if (config.tiles.images) {
         for (const [tileType, paths] of Object.entries(config.tiles.images)) {
             cache.tiles[tileType] = [];
-            paths.forEach((path) => {
+            const pathList = Array.isArray(paths) ? paths : [paths];
+            pathList.forEach((path) => {
                 const img = new Image();
                 img.src = path;
                 cache.tiles[tileType].push(img);
