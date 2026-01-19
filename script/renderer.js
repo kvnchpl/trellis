@@ -4,7 +4,8 @@ import {
 } from './state.js';
 
 import {
-    refreshUI
+    refreshUI,
+    updateTileInfoPanel
 } from './ui.js';
 
 let lastSelectorKey = null;
