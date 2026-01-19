@@ -99,11 +99,14 @@ export const modalRegistry = {
                     newTile.growthStage = def.growthStages[0];
                     newTile.growthProgress = 0;
 
+                    // Assign a random plant variant immediately
+                    newTile.plantVariant = Math.floor(Math.random() * (config._imageCache.plants[plantKey][newTile.growthStage]?.length || 1));
+
                     // Debug logging
                     console.log("DEBUG: Planting tile at", x, y);
                     console.log("DEBUG: plantType =", newTile.plantType);
                     console.log("DEBUG: growthStage =", newTile.growthStage);
-                    console.log("DEBUG: plantVariant (before) =", newTile.plantVariant);
+                    console.log("DEBUG: plantVariant (after assignment) =", newTile.plantVariant);
                     console.log("DEBUG: image cache variants =", config._imageCache.plants[plantKey]?.[newTile.growthStage]?.length);
 
                     gameState.map[`${x},${y}`] = newTile;
