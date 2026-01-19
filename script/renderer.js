@@ -211,16 +211,23 @@ export function preloadImages(config) {
         }
     }
 
-    // Plant images (stage -> variants)
+    // Plant images (plant_stage_variant)
     if (config.plants.images) {
-        for (const [plantType, stages] of Object.entries(config.plants.images)) {
-            cache.plants[plantType] = stages.map(stageVariants => {
-                return stageVariants.map(path => {
+        const variantCount = config.imageVariantCount || 3;
+
+        for (const [plantType, baseDir] of Object.entries(config.plants.images)) {
+            const def = config.plants.definitions[plantType];
+            cache.plants[plantType] = {};
+
+            def.growthStages.forEach((stage, stageIndex) => {
+                cache.plants[plantType][stage] = [];
+
+                for (let v = 1; v <= variantCount; v++) {
                     const img = new Image();
-                    img.src = path;
+                    img.src = `${baseDir}/${plantType}_${stageIndex + 1}_${v}.png`;
+                    cache.plants[plantType][stage].push(img);
                     promises.push(new Promise(res => img.onload = res));
-                    return img;
-                });
+                }
             });
         }
     }
