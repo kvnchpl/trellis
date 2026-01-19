@@ -1,5 +1,4 @@
 {
-    "imageVariantCount": 3,
     "maxSaveSlots": 3,
     "saveSizeWarningKB": 750,
     "saveSizeCriticalKB": 950,
@@ -18,6 +17,7 @@
         "tiles": 11,
         "initialRevealRadius": 3
     },
+    "imageVariantCount": 3,
     "fog": {
         "color": "#000000",
         "opacity": 0.8
