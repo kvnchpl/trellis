@@ -302,13 +302,6 @@ function _getTileImage(tile, config) {
             return;
         }
 
-        const stageIndex = def.growthStages.indexOf(tile.growthStage);
-        if (stageIndex < 0) {
-            console.warn('Invalid growth stage for', tile.plantType, tile.growthStage);
-            imageEl.style.display = 'none';
-            return;
-        }
-
         const variants = config._imageCache.plants[tile.plantType]?.[tile.growthStage];
         if (!variants || variants.length === 0) {
             console.warn('Missing plant images for', tile.plantType, tile.growthStage);

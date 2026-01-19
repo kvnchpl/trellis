@@ -3,8 +3,6 @@
     "maxSaveSlots": 3,
     "saveSizeWarningKB": 750,
     "saveSizeCriticalKB": 950,
-    "canvasWidth": 416,
-    "canvasHeight": 416,
     "mapWidth": 64,
     "mapHeight": 64,
     "initialTileWeights": {
