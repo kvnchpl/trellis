@@ -280,30 +280,49 @@ function _getTileImage(tile, config) {
     const imageEl = document.getElementById('tile-image');
     if (!imageEl) return;
 
+    const fallbackImage = 'assets/debug/missing.png';
+
     // Plant image (with variants)
-    if (tile.plantType && config.plants.images && Array.isArray(config.plants.images[tile.plantType])) {
+    if (tile.plantType && config.plants.images && config.plants.images[tile.plantType]) {
         const def = config.plants.definitions[tile.plantType];
+        if (!def) {
+            console.warn('Missing plant definition for', tile.plantType);
+            imageEl.style.display = 'none';
+            return;
+        }
+
         const stageIndex = def.growthStages.indexOf(tile.growthStage);
-        const variants = config.plants.images[tile.plantType][stageIndex];
-        if (variants && variants.length) {
-            const idx = tile.plantVariant ?? 0;
-            imageEl.src = variants[idx];
-            imageEl.style.display = 'block';
-        } else {
+        if (stageIndex < 0) {
+            console.warn('Invalid growth stage for', tile.plantType, tile.growthStage);
             imageEl.style.display = 'none';
+            return;
         }
-    } else {
-        // Tile image (with variants)
-        const imageKey = tile.tile;
-        const variants = config.tiles.images[imageKey];
-        if (variants && variants.length) {
-            const idx = tile.tileVariant ?? 0;
-            imageEl.src = variants[idx];
-            imageEl.style.display = 'block';
-        } else {
+
+        const variants = config._imageCache.plants[tile.plantType]?.[tile.growthStage];
+        if (!variants || variants.length === 0) {
+            console.warn('Missing plant images for', tile.plantType, tile.growthStage);
             imageEl.style.display = 'none';
+            return;
         }
+
+        const idx = tile.plantVariant ?? 0;
+        imageEl.src = variants[idx]?.src || fallbackImage;
+        imageEl.style.display = 'block';
+        return;
     }
+
+    // Tile image (with variants)
+    const imageKey = tile.tile || 'default';
+    const variants = config._imageCache.tiles[imageKey];
+    if (!variants || variants.length === 0) {
+        console.warn('Missing tile images for', imageKey);
+        imageEl.style.display = 'none';
+        return;
+    }
+
+    const idx = tile.tileVariant ?? 0;
+    imageEl.src = variants[idx]?.src || fallbackImage;
+    imageEl.style.display = 'block';
 }
 
 /**
