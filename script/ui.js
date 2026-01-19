@@ -98,6 +98,14 @@ export const modalRegistry = {
                     newTile.plantType = plantKey;
                     newTile.growthStage = def.growthStages[0];
                     newTile.growthProgress = 0;
+
+                    // Debug logging
+                    console.log("DEBUG: Planting tile at", x, y);
+                    console.log("DEBUG: plantType =", newTile.plantType);
+                    console.log("DEBUG: growthStage =", newTile.growthStage);
+                    console.log("DEBUG: plantVariant (before) =", newTile.plantVariant);
+                    console.log("DEBUG: image cache variants =", config._imageCache.plants[plantKey]?.[newTile.growthStage]?.length);
+
                     gameState.map[`${x},${y}`] = newTile;
                     gameState.dailyStats.planted++;
                     finalizeAction(config.tiles.actions.plant, config);
@@ -650,7 +658,7 @@ window.fetch = async (...args) => {
 };
 
 const oldOpen = XMLHttpRequest.prototype.open;
-XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+XMLHttpRequest.prototype.open = function (method, url, ...rest) {
     console.log("DEBUG: XHR request:", method, url);
     return oldOpen.call(this, method, url, ...rest);
 };
