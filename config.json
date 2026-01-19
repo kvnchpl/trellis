@@ -180,7 +180,6 @@
                 },
                 "effect": {
                     "tile": "soil",
-                    "plant": null,
                     "plantType": null,
                     "growthStage": null,
                     "growthProgress": 0,

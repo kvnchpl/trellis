@@ -214,12 +214,12 @@ export function preloadImages(config) {
             for (let v = 1; v <= variantCount; v++) {
                 const img = new Image();
                 img.src = `${baseDir}/${tileType}_${v}.png`;
-                console.log("DEBUG: Loading tile image:", img.src);
                 cache.tiles[tileType].push(img);
                 promises.push(new Promise(res => {
-                    img.onload = () => { console.log("DEBUG: Tile image loaded:", img.src); res(); };
+                    img.onload = () => {
+                        res();
+                    };
                     img.onerror = () => {
-                        console.warn(`DEBUG: Missing tile image: ${img.src}`);
                         img.src = fallbackImage;
                         res();
                     };
@@ -243,12 +243,12 @@ export function preloadImages(config) {
                     const img = new Image();
                     const prefix = def.imagePrefix || plantType;
                     img.src = `${baseDir}/${prefix}_${stageIndex + 1}_${v}.png`;
-                    console.log("DEBUG: Loading plant image:", img.src);
                     cache.plants[plantType][stage].push(img);
                     promises.push(new Promise(res => {
-                        img.onload = () => { console.log("DEBUG: Plant image loaded:", img.src); res(); };
+                        img.onload = () => {
+                            res();
+                        };
                         img.onerror = () => {
-                            console.warn(`DEBUG: Missing plant image: ${img.src}`);
                             img.src = fallbackImage;
                             res();
                         };

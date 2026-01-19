@@ -101,13 +101,6 @@ export const modalRegistry = {
                     // Assign a random plant variant immediately
                     newTile.plantVariant = Math.floor(Math.random() * (config._imageCache.plants[plantKey][newTile.growthStage]?.length || 1));
 
-                    // Debug logging
-                    console.log("DEBUG: Planting tile at", x, y);
-                    console.log("DEBUG: plantType =", newTile.plantType);
-                    console.log("DEBUG: growthStage =", newTile.growthStage);
-                    console.log("DEBUG: plantVariant (after assignment) =", newTile.plantVariant);
-                    console.log("DEBUG: image cache variants =", config._imageCache.plants[plantKey]?.[newTile.growthStage]?.length);
-
                     gameState.map[`${x},${y}`] = newTile;
                     gameState.dailyStats.planted++;
                     finalizeAction(config.tiles.actions.plant, config);
@@ -642,15 +635,3 @@ export function refreshUI(config) {
     updateTileInfoPanelIfChanged(config);
     maybeUpdateSaveSizeDisplay(config);
 }
-// DEBUG: Global fetch and XHR logger
-const oldFetch = window.fetch;
-window.fetch = async (...args) => {
-    console.log("DEBUG: Fetch called:", ...args);
-    return oldFetch(...args);
-};
-
-const oldOpen = XMLHttpRequest.prototype.open;
-XMLHttpRequest.prototype.open = function (method, url, ...rest) {
-    console.log("DEBUG: XHR request:", method, url);
-    return oldOpen.call(this, method, url, ...rest);
-};
